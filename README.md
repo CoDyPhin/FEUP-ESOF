@@ -52,7 +52,7 @@ ConfMate is an app designed to redefine giveaways on conferences. Instead of rel
 
 ### Use case diagram
 
-![Use case diagram](./docs/img/usecases.png)
+![Use case diagram](./docs/img/usecase.png)
 ---
 
 ### User Stories
