@@ -62,8 +62,10 @@ ConfMate is an app designed to redefine giveaways on conferences. Instead of rel
 As a host I want to be able to promote and recommend products I find relevant to the conference.
 
 _User interface mockups_
+
 ![Mockup 1](./docs/img/mockup1.png)
 ![Mockup 2](./docs/img/mockup2.png)
+
 _Acceptance Tests_
 
 ```gherkin
@@ -86,7 +88,9 @@ Effort: XL
 As a host I want to be able to choose which attendees I wish to giveaway the products to.
 
 _User interface mockups_
+
 ![Mockup 3](./docs/img/mockup3.png)
+
 _Acceptance Tests_
 
 ```gherkin
@@ -108,7 +112,9 @@ Effort: XL
 As an attendee I want to be able to apply for products.
 
 _User interface mockups_
+
 ![Mockup 4](./docs/img/mockup4.png)
+
 _Acceptance Tests_
 
 ```gherkin
@@ -130,7 +136,9 @@ Effort: XL
 As a host I want to be able to book a room to host my conference.
 
 _User interface mockups_
+
 ![Mockup 5](./docs/img/mockup5.png)
+
 _Acceptance Tests_
 ```gherkin
 Scenario: Booking a room to host a conference
@@ -154,7 +162,9 @@ Effort: XL
 As an attendee I want to be able to book a seat for conferences that I wish to attend.
 
 _User interface mockups_
+
 ![Mockup 6](./docs/img/mockup6.png)
+
 _Acceptance Tests_
 ```gherkin
 Scenario: Booking a seat for a conference
