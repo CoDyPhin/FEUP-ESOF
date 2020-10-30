@@ -63,7 +63,8 @@ As a host I want to be able to promote and recommend products I find relevant to
 
 _User interface mockups_
 
-
+![Mockup 1](./docs/img/mockup1.png)
+![Mockup 2](./docs/img/mockup2.png)
 
 _Acceptance Tests_
 
@@ -88,7 +89,7 @@ As a host I want to be able to choose which attendees I wish to giveaway the pro
 
 _User interface mockups_
 
-
+![Mockup 3](./docs/img/mockup3.png)
 
 _Acceptance Tests_
 
@@ -108,18 +109,18 @@ Effort: XL
 ---
 #### **Story #3**
 
-As an attendee I want to be able to book products.
+As an attendee I want to be able to apply for products.
 
 _User interface mockups_
 
-
+![Mockup 4](./docs/img/mockup4.png)
 
 _Acceptance Tests_
 
 ```gherkin
-Scenario: Booking a product related to a certain conference
-	Given that I wish to book a promoted producted
-	When I tap the "Apply for Product" button
+Scenario: Applying a product related to a certain conference
+	Given that I wish to apply for a promoted producted
+	When I tap the "Apply for" button
 	Then I will able be to the possible candidates capable of receiving the selected product
 ```
 
@@ -136,7 +137,7 @@ As a host I want to be able to book a room to host my conference.
 
 _User interface mockups_
 
-
+![Mockup 5](./docs/img/mockup5.png)
 
 _Acceptance Tests_
 ```gherkin
@@ -162,7 +163,7 @@ As an attendee I want to be able to book a seat for conferences that I wish to a
 
 _User interface mockups_
 
-
+![Mockup 6](./docs/img/mockup6.png)
 
 _Acceptance Tests_
 ```gherkin
