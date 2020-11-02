@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:confmate/database.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'Talk.dart';
@@ -10,7 +7,6 @@ void main() {
 }
 
 class startApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -173,7 +169,7 @@ class _HomeState extends State<Home> {
                     'Caio Nogueira from Albergaria',
                     'Ben Yedder, Guida FC Legend',
                     'Today at 3pm',
-                    "AAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH OH MEU DEUSSSSSSSSSSSS O QUEEEEEEEEEE NAO DEIXA ME SAIR POR FAVOR ESTE JA ESTA PERDIDO XAU XAU XAU",
+                    "AAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH OH MEU DEUSSSSSSSSSSSS O QUEEEEEEEEEE NAO DEIXA ME SAIR POR FAVOR ESTE JA ESTA PERDIDO",
                     'assets/caio.png'),
                 _talkListCard(
                     'Pedro Queirós',
