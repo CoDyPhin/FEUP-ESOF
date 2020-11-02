@@ -10,23 +10,16 @@ class Talk {
 }
 
 class talkDescription extends StatefulWidget {
-  String name;
-  String hostName;
-  String description;
-  String photo;
-  talkDescription(this.name, this.hostName, this.description, this.photo);
+  Talk talk;
+  talkDescription(this.talk);
 
   @override
-  _talkDescriptionState createState() => _talkDescriptionState(
-      this.name, this.hostName, this.description, this.photo);
+  _talkDescriptionState createState() => _talkDescriptionState(this.talk);
 }
 
 class _talkDescriptionState extends State<talkDescription> {
-  String name;
-  String hostName;
-  String description;
-  String photo;
-  _talkDescriptionState(this.name, this.hostName, this.description, this.photo);
+  Talk talk;
+  _talkDescriptionState(this.talk);
 
   @override
   Widget build(BuildContext context) {
@@ -65,13 +58,13 @@ class _talkDescriptionState extends State<talkDescription> {
                       borderRadius: BorderRadius.circular(200.0),
                       image: DecorationImage(
                           alignment: Alignment.center,
-                          image: AssetImage(this.photo),
+                          image: AssetImage(this.talk.photo),
                           fit: BoxFit.cover)))),
           Positioned(
               top: 220.0,
               child: Container(
                 child: Text(
-                  this.name,
+                  this.talk.name,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 25.0,
@@ -83,7 +76,7 @@ class _talkDescriptionState extends State<talkDescription> {
               top: 260.0,
               child: Container(
                 child: Text(
-                  this.hostName,
+                  this.talk.hostName,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 25.0,
@@ -99,7 +92,7 @@ class _talkDescriptionState extends State<talkDescription> {
                 height: 260.0,
                 width: 225.0,
                 child: Text(
-                  this.description,
+                  this.talk.description,
                   style: TextStyle(fontSize: 22),
                   textAlign: TextAlign.center,
                 ),
