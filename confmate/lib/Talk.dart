@@ -6,26 +6,19 @@ class Talk {
   String hostName;
   String description;
   String photo;
-  List<Product> products;
 
-  Talk(this.name, this.hostName, this.description, this.photo, this.products);
+  Talk(this.name, this.hostName, this.description, this.photo);
 }
 
 class talkDescription extends StatefulWidget {
-  String name;
-  String hostName;
-  String description;
-  String photo;
-  List<Product> products;
-  talkDescription(
-      this.name, this.hostName, this.description, this.photo, this.products);
+  Talk talk;
+  talkDescription(this.talk);
 
   @override
-  _talkDescriptionState createState() => _talkDescriptionState(
-      this.name, this.hostName, this.description, this.photo);
+  _talkDescriptionState createState() => _talkDescriptionState(this.talk);
 }
 
-/*class talkPromotedProducts extends StatefulWidget {
+class talkPromotedProducts extends StatefulWidget {
   List<Product> products;
 
   talkPromotedProducts(this.products);
@@ -54,17 +47,20 @@ class _talkPromotedProductsState extends State<talkPromotedProducts> {
   AppBar buildAppBar() =>
       AppBar(backgroundColor: Colors.blue[700], elevation: 0);
 
-  Body(BuildContext context) {}
-}*/
+  Body(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[],
+      ),
+    );
+  }
+}
 
 class _talkDescriptionState extends State<talkDescription> {
-  String name;
-  String hostName;
-  String description;
-  String photo;
+  Talk talk;
   List<Product> products;
-  _talkDescriptionState(
-      this.name, this.hostName, this.description, this.photo, this.products);
+  _talkDescriptionState(this.talk);
 
   @override
   Widget build(BuildContext context) {
@@ -103,13 +99,13 @@ class _talkDescriptionState extends State<talkDescription> {
                       borderRadius: BorderRadius.circular(200.0),
                       image: DecorationImage(
                           alignment: Alignment.center,
-                          image: AssetImage(this.photo),
+                          image: AssetImage(this.talk.photo),
                           fit: BoxFit.cover)))),
           Positioned(
               top: 220.0,
               child: Container(
                 child: Text(
-                  this.name,
+                  this.talk.name,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 25.0,
@@ -121,7 +117,7 @@ class _talkDescriptionState extends State<talkDescription> {
               top: 260.0,
               child: Container(
                 child: Text(
-                  this.hostName,
+                  this.talk.hostName,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 25.0,
@@ -137,7 +133,7 @@ class _talkDescriptionState extends State<talkDescription> {
                 height: 260.0,
                 width: 225.0,
                 child: Text(
-                  this.description,
+                  this.talk.description,
                   style: TextStyle(fontSize: 22),
                   textAlign: TextAlign.center,
                 ),
