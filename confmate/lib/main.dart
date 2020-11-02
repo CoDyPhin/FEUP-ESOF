@@ -182,7 +182,7 @@ class _HomeState extends State<Home> {
   }
 
   _talkListCard(String hostName, String talkName, String time,
-      String description, String imgPath) {
+      String description, String imgPath, List<Product> products) {
     return Padding(
         padding: EdgeInsets.only(left: 15.0, right: 15.0),
         child: Container(

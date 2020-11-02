@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'Product.dart';
 
 class Talk {
   String name;
   String hostName;
   String description;
   String photo;
+  List<Product> products;
 
-  Talk(this.name, this.hostName, this.description, this.photo);
+  Talk(this.name, this.hostName, this.description, this.photo, this.products);
 }
 
 class talkDescription extends StatefulWidget {
@@ -14,19 +16,55 @@ class talkDescription extends StatefulWidget {
   String hostName;
   String description;
   String photo;
-  talkDescription(this.name, this.hostName, this.description, this.photo);
+  List<Product> products;
+  talkDescription(
+      this.name, this.hostName, this.description, this.photo, this.products);
 
   @override
   _talkDescriptionState createState() => _talkDescriptionState(
       this.name, this.hostName, this.description, this.photo);
 }
 
+/*class talkPromotedProducts extends StatefulWidget {
+  List<Product> products;
+
+  talkPromotedProducts(this.products);
+
+  @override
+  _talkPromotedProductsState createState() =>
+      _talkPromotedProductsState(this.products);
+}
+
+class _talkPromotedProductsState extends State<talkPromotedProducts> {
+  List<Product> products;
+
+  _talkPromotedProductsState(this.products);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.blue[700],
+      appBar: buildAppBar(),
+      body: buildBody(context),
+    );
+  }
+
+  buildBody(context) => Body(context);
+
+  AppBar buildAppBar() =>
+      AppBar(backgroundColor: Colors.blue[700], elevation: 0);
+
+  Body(BuildContext context) {}
+}*/
+
 class _talkDescriptionState extends State<talkDescription> {
   String name;
   String hostName;
   String description;
   String photo;
-  _talkDescriptionState(this.name, this.hostName, this.description, this.photo);
+  List<Product> products;
+  _talkDescriptionState(
+      this.name, this.hostName, this.description, this.photo, this.products);
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +130,7 @@ class _talkDescriptionState extends State<talkDescription> {
                 ),
               )),
           Positioned(
-              top: 320.0,
+              top: 380.0,
               width: 330.0,
               child: Container(
                 padding: EdgeInsets.only(left: 0.0, right: 0.0),
@@ -123,7 +161,41 @@ class _talkDescriptionState extends State<talkDescription> {
                 textAlign: TextAlign.center,
               ),
             ),
-          )
+          ),
+          Positioned(
+            width: 300.0,
+            height: 40.0,
+            top: 310.0,
+            child: RaisedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              talkPromotedProducts(products)));
+                },
+                textColor: Colors.grey,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.shopping_cart_rounded,
+                      color: Colors.black,
+                    ),
+                    new Text(
+                      "Promoted Products",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontFamily: 'nunito',
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
+                  ],
+                )),
+          ),
         ]),
       ]),
     );
