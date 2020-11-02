@@ -1,10 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:confmate/database.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import 'Talk.dart';
+
 void main() {
-  runApp(MyApp());
+  runApp(startApp());
 }
 
-class MyApp extends StatelessWidget {
+class startApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -26,6 +31,16 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      home: ConfMate(),
+    );
+  }
+}
+
+class ConfMate extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'ConfMate',
       home: Home(),
     );
   }
@@ -37,6 +52,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final List<Talk> talksList = [
+    Talk(
+        "Paysafes as Global Currency",
+        "Tiago Saramago",
+        "Dedicated to PaysafeCards, I will show you how to scam people on the mythical Metin and if you want to buy coins, sell or even trade, FifaCoinsBuy has the best prices and quickness. Use code Tiagovski for an extra 8% coins.",
+        "assets/tiagovski.jpg"),
+    Talk(
+        "How To Protect Your Data", "Ricardo Fazeres", "", "assets/ricardo.jpg")
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,16 +157,36 @@ class _HomeState extends State<Home> {
           Container(
               height: 410.0,
               child: ListView(scrollDirection: Axis.horizontal, children: [
-                _talkListCard('assets/tiago.jpg', 'Paysafes as Global Currency',
-                    'Tiago Saramago', 'Today at 1pm'),
-                _talkListCard('assets/ricardo.jpg', 'How To Protect Your Data',
-                    'Ricardo Fazeres', 'Today at 3pm'),
+                _talkListCard(
+                    'Tiago Saramago',
+                    'Paysafes as Global Currency',
+                    'Today at 1pm',
+                    'Dedicated to PaysafeCards, I will show you how to scam people on the mythical Metin and if you want to buy coins, sell or even trade, FifaCoinsBuy has the best prices and quickness. Use code Tiagovski for an extra 8% coins.',
+                    'assets/tiago.jpg'),
+                _talkListCard(
+                    'Richard Makers',
+                    'How To Protect Your Data',
+                    'Today at 3pm',
+                    "I will show you how I, after getting hacked, conducted my army of penguins to hunt down the people that did this to me and successfully captured them.",
+                    'assets/ricardo.jpg'),
+                _talkListCard(
+                    'Caio Nogueira from Albergaria',
+                    'Ben Yedder, Guida FC Legend',
+                    'Today at 3pm',
+                    "AAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH OH MEU DEUSSSSSSSSSSSS O QUEEEEEEEEEE NAO DEIXA ME SAIR POR FAVOR ESTE JA ESTA PERDIDO XAU XAU XAU",
+                    'assets/caio.png'),
+                _talkListCard(
+                    'Pedro Queirós',
+                    'CAARLOS TAS ME A OUBIR',
+                    'Today at 6pm',
+                    "Join me as I tell carlos if he can listen to me. Not Recommended for non deaf humans",
+                    'assets/queiros.png'),
               ])),
         ]));
   }
 
-  _talkListCard(
-      String imgPath, String talkName, String hostName, String description) {
+  _talkListCard(String hostName, String talkName, String time,
+      String description, String imgPath) {
     return Padding(
         padding: EdgeInsets.only(left: 15.0, right: 15.0),
         child: Container(
@@ -185,7 +230,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 SizedBox(height: 10.0),
                                 Text(
-                                  description,
+                                  time,
                                   style: TextStyle(
                                       fontFamily: 'nunito',
                                       fontSize: 14.0,
@@ -200,7 +245,14 @@ class _HomeState extends State<Home> {
                       child: FlatButton.icon(
                         textColor: Color(0xFF6200EE),
                         onPressed: () {
-                          // Respond to button press
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => talkDescription(
+                                      talkName,
+                                      hostName,
+                                      description,
+                                      imgPath)));
                         },
                         icon: Icon(Icons.arrow_forward_ios, size: 18),
                         label: Text("MORE DETAILS"),
