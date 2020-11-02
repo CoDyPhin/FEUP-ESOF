@@ -9,12 +9,11 @@ class Talk {
   Talk(this.name, this.hostName, this.description, this.photo);
 }
 
-// ignore: camel_case_types
 class talkDescription extends StatefulWidget {
-  final String name;
-  final String hostName;
-  final String description;
-  final String photo;
+  String name;
+  String hostName;
+  String description;
+  String photo;
   talkDescription(this.name, this.hostName, this.description, this.photo);
 
   @override
@@ -22,7 +21,6 @@ class talkDescription extends StatefulWidget {
       this.name, this.hostName, this.description, this.photo);
 }
 
-// ignore: camel_case_types
 class _talkDescriptionState extends State<talkDescription> {
   String name;
   String hostName;
