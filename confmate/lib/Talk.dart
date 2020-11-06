@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'Profile.dart';
+
 class Talk {
   String name;
-  String hostName;
+  Profile host;
   String description;
   String photo;
 
-  Talk(this.name, this.hostName, this.description, this.photo);
+  Talk(this.name, this.host, this.description, this.photo);
 }
 
 class talkDescription extends StatefulWidget {
@@ -76,7 +78,7 @@ class _talkDescriptionState extends State<talkDescription> {
               top: 260.0,
               child: Container(
                 child: Text(
-                  this.talk.hostName,
+                  this.talk.host.name,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 25.0,

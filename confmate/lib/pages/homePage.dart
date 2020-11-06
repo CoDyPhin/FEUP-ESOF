@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../Profile.dart';
 import '../Talk.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,25 +11,62 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  static List<Profile> profilesList = [
+    Profile(
+        "Tiago Saramago",
+        "Youtuber",
+        "Digital Influencer",
+        "Porto",
+        "Portugal",
+        "assets/tiago.jpg",
+        "Goods people you already know who is talking, here is Tiagovski blowing the scale"),
+    Profile(
+        "Ricardo Fazeres",
+        "Youtuber",
+        "Digital Influencer",
+        "Odivelas",
+        "Portugal",
+        "assets/ricardo.jpg",
+        "How is it little people, here with you is RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRIC THE FEIZERSSSSSSSSSS"),
+    Profile(
+        "Ricardo Fazeres",
+        "Youtuber",
+        "Digital Influencer",
+        "Odivelas",
+        "Portugal",
+        "assets/ricardo.jpg",
+        "How is it little people, here with you is RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRIC THE FEIZERSSSSSSSSSS"),
+    Profile(
+        "Caio Nogueira",
+        "Student",
+        "FEUP",
+        "Aveiro",
+        "Portugal",
+        "assets/caio.png",
+        "ESTE JA ESTA PERDIDO NAO NAO NAO DEIXA ME SAIR POR FAVOR"),
+    Profile("Pedro Queirós", "Student", "FEUP", "Penafiel", "Portugal",
+        "assets/queiros.png", "Fds mén")
+  ];
+
   List<Talk> talksList = [
     Talk(
         "Paysafes as Global Currency",
-        "Tiago Saramago",
+        profilesList[0],
         "Dedicated to PaysafeCards, I will show you how to scam people on the mythical Metin and if you want to buy coins, sell or even trade, FifaCoinsBuy has the best prices and quickness. Use code Tiagovski for an extra 8% coins.",
         "assets/tiago.jpg"),
     Talk(
         "How To Protect Your Data",
-        "Ricardo Fazeres",
+        profilesList[1],
         "Dedicated to PaysafeCards, I will show you how to scam people on the mythical Metin and if you want to buy coins, sell or even trade, FifaCoinsBuy has the best prices and quickness. Use code Tiagovski for an extra 8% coins.",
         "assets/ricardo.jpg"),
     Talk(
         "Ben Yedder, Guida FC Legend",
-        "Caio Nogueira from Albergaria",
+        profilesList[2],
         "AAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH OH MEU DEUSSSSSSSSSSSS O QUEEEEEEEEEE NAO DEIXA ME SAIR POR FAVOR ESTE JA ESTA PERDIDO",
         "assets/caio.png"),
     Talk(
-        "Pedro Queirós",
         "CAARLOS TAS ME A OUBIR",
+        profilesList[3],
         "Join me as I tell carlos if he can listen to me. Not Recommended for non deaf humans",
         "assets/queiros.png")
   ];
@@ -133,7 +171,7 @@ class _HomePageState extends State<HomePage> {
                                   height: 50.0,
                                 ),
                                 Text(
-                                  talk.hostName,
+                                  talk.host.name,
                                   style: TextStyle(
                                       fontFamily: 'nunito',
                                       fontSize: 14.0,
