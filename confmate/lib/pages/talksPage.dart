@@ -4,7 +4,8 @@ import '../Profile.dart';
 import '../Talk.dart';
 
 class TalksPage extends StatefulWidget {
-  TalksPage({Key key}) : super(key: key);
+  Profile profile;
+  TalksPage(this.profile);
 
   @override
   _TalksPageState createState() => _TalksPageState();

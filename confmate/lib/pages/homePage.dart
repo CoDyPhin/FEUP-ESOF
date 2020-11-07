@@ -4,7 +4,8 @@ import '../Profile.dart';
 import '../Talk.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+  HomePage(this.profile);
+  Profile profile;
 
   @override
   _HomePageState createState() => _HomePageState();

@@ -5,15 +5,19 @@ import 'package:confmate/Talk.dart';
 import 'package:confmate/Profile.dart';
 
 class ProductsPage extends StatefulWidget {
-  ProductsPage({Key key}) : super(key: key);
+  Profile profile;
+  ProductsPage(this.profile);
 
   @override
-  _ProductsPageState createState() => _ProductsPageState();
+  _ProductsPageState createState() => _ProductsPageState(this.profile);
 }
 
 class _ProductsPageState extends State<ProductsPage>
     with SingleTickerProviderStateMixin {
+  Profile profile;
   TabController _tabController;
+
+  _ProductsPageState(this.profile);
   @override
   static List<Profile> profilesList = [
     Profile(
@@ -44,7 +48,7 @@ class _ProductsPageState extends State<ProductsPage>
         "assets/queiros.png", "Fds mén")
   ];
 
-  List<Talk> talksList = [
+  static List<Talk> talksList = [
     Talk(
         "Paysafes as Global Currency",
         profilesList[0],
@@ -66,31 +70,40 @@ class _ProductsPageState extends State<ProductsPage>
         "Join me as I tell carlos if he can listen to me. Not Recommended for non deaf humans",
         "assets/queiros.png")
   ];
+
   List<Product> productList = [
     Product(
         "Paysafes roubados",
         0,
         "Paysafes scammados pelo mitico #vski no Metin. Não garantimos que ainda tenham saldo, provavelmente foram totalmente depositados em apostas no CS ou em FIFA Points.",
         0,
-        "assets/paysafe.jpg"),
+        "assets/paysafe.jpg",
+        "For Students",
+        talksList[0]),
     Product(
         "FIFA 21",
         1,
         "Conta do Caio de FIFA visto que ele aziou tanto que partiu o PC e não pode jogar mais. Para ajudar a EA a fazer o mesmo jogo todos os anos, preço especial de 120€",
         120,
-        "assets/fifa.jpg"),
+        "assets/fifa.jpg",
+        "For Pepegas",
+        talksList[2]),
     Product(
         "Microfone do Queiros",
         2,
         "Apenas funciona na perfeição no Ubuntu. Melhor microfone de ear rape alguma vez visto. CAAAAAAAAAAAARLOOOOOOOOOS TAS ME A OUVIIIIIIIIIIIIIIIIIR",
         50,
-        "assets/microfone.jpg"),
+        "assets/microfone.jpg",
+        "For Big Kings",
+        talksList[3]),
     Product(
         "Improviso pos meus subs 2",
         3,
         "Após o grande sucesso do primeiro improviso, Tiagovski volta a dar cartas com o seu mais recente single. Dedicado especialmente aos àters, mas os subs continuam no coração. Video exclusivo",
         25,
-        "assets/videovski.jpg")
+        "assets/videovski.jpg",
+        "For researchers",
+        talksList[1])
   ];
 
   @override
@@ -142,104 +155,104 @@ class _ProductsPageState extends State<ProductsPage>
                   ]),
               Container(
                   height: 500.0,
-                  child: ListView(scrollDirection: Axis.vertical, children: [
-                    /*for (Talk x in talksList) _talkCard(x),*/
-                    for (Product x in productList) _productDisplay(x),
-                  ])),
+                  child: GridView.builder(
+                    itemCount: productList.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemBuilder: (context, index) =>
+                        _productDisplay(productList[index]),
+                  )),
             ]));
   }
 
-  _talkCard(Talk talk) {
-    return Padding(
-        padding: EdgeInsets.only(left: 15.0, right: 15.0),
-        child: Container(
-            height: 150.0,
-            width: 325.0,
-            child: Column(
-              children: <Widget>[
-                Stack(children: [
-                  Container(height: 150.0),
-                  Positioned(
-                      top: 0.0,
-                      child: Container(
-                        padding: EdgeInsets.only(left: 10.0, right: 0.0),
-                        height: 125.0,
-                        width: 325.0,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25.0),
-                            color: Colors.blue[200]),
-                      )),
-                  Positioned(
-                      top: 15.0,
-                      left: 20.0,
-                      child: Text(
-                        talk.name,
-                        style: TextStyle(
-                            fontFamily: 'varela',
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      )),
-                  Positioned(
-                      left: 20.0,
-                      top: 50.0,
-                      child: Container(
-                          height: 60.0,
-                          width: 60.0,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(200.0),
-                              image: DecorationImage(
-                                  image: AssetImage(talk.host.photo),
-                                  fit: BoxFit.cover)))),
-                  Positioned(
-                      left: 95.0,
-                      top: 52.5,
-                      child: Text(
-                        talk.host.name,
-                        style: TextStyle(
-                            fontFamily: 'nunito',
-                            fontSize: 17.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      )),
-                  Positioned(
-                      left: 95.0,
-                      top: 75.0,
-                      child: Text(
-                        talk.host.job,
-                        style: TextStyle(
-                            fontFamily: 'nunito',
-                            fontSize: 17.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      )),
-                  Positioned(
-                      right: 15.0,
-                      bottom: 20.0,
-                      child: FlatButton.icon(
-                        textColor: Color(0xFF6200EE),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => talkDescription(talk)));
-                        },
-                        icon: Icon(Icons.arrow_forward_ios, size: 15),
-                        label: Text("MORE DETAILS",
-                            style: TextStyle(fontSize: 12.0)),
-                      )),
-                ]),
+  _productDisplay(Product product) {
+    return Container(
+        height: 390.0,
+        width: 380.0,
+        child: Column(
+          children: <Widget>[
+            Stack(
+              children: [
+                Container(height: 200.0, width: 230.0),
+                Positioned(
+                    right: 22.5,
+                    child: Container(
+                      height: 160.0,
+                      width: 160.0,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25.0),
+                          color: Colors.blue[200]),
+                    )),
+                Positioned(
+                    right: 22.5,
+                    top: 20.0,
+                    child: new SizedBox(
+                        width: 162.5,
+                        child: FlatButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          productDescription(product)));
+                            },
+                            child: Container(
+                                height: 125.0,
+                                width: 125.0,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    image: DecorationImage(
+                                        image: AssetImage(product.picture),
+                                        fit: BoxFit.cover)))))),
+                Positioned(
+                    left: 5.0,
+                    top: 165.0,
+                    child: Text(
+                      product.name,
+                      style: TextStyle(
+                          fontFamily: 'nunito',
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    )),
+                Positioned(
+                    left: 5.0,
+                    top: 185,
+                    child: Text(
+                      product.audience,
+                      style: TextStyle(
+                          fontFamily: 'nunito',
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black38),
+                    )),
               ],
-            )));
+            ),
+          ],
+        ));
   }
 
-  _productDisplay(Product product) {
+  /*_productDisplay(Product product) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
+          Container(
+              height: 180.0,
+              width: 180.0,
+              padding: EdgeInsets.all(2.0),
+              decoration: BoxDecoration(
+                color: Colors.blue[900],
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Container(
+                  height: 150.0,
+                  child: Image.asset(product.picture,
+                      width: 10.0, height: 10.0, fit: BoxFit.fill)))
+          /*Text(
             product.name,
             style: Theme.of(context)
                 .textTheme
@@ -272,9 +285,9 @@ class _ProductsPageState extends State<ProductsPage>
                 ),
               )
             ],
-          )
+          )*/
         ],
       ),
     );
-  }
+  }*/
 }

@@ -1,8 +1,8 @@
+import 'package:confmate/Profile.dart';
 import 'package:confmate/pages/productsPage.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
-import 'Talk.dart';
 import 'pages/profilePage.dart';
 import 'pages/homePage.dart';
 import 'pages/talksPage.dart';
@@ -48,19 +48,30 @@ class ConfMate extends StatelessWidget {
 }
 
 class Home extends StatefulWidget {
+  Profile profile = Profile(
+      "Wissam Ben Yedder",
+      "Player at AS Monaco",
+      "Football",
+      "Monaco",
+      "France",
+      "assets/wissam.jpg",
+      "Since debuting in FIFA, I have become one the most horrific terrors to face during FUT Champions. I love destroying the opponent team with my magnific moustache");
   @override
-  _HomeState createState() => _HomeState();
+  _HomeState createState() => _HomeState(profile);
 }
 
 class _HomeState extends State<Home> {
+  Profile profile;
+  _HomeState(this.profile);
+
   @override
   Widget build(BuildContext context) {
     int _currentIndex = 0;
     PageController _pageController = PageController();
     List<Widget> _screens = [
-      HomePage(),
-      TalksPage(),
-      ProductsPage(),
+      HomePage(this.profile),
+      TalksPage(this.profile),
+      ProductsPage(this.profile),
       ProfilePage()
     ];
 
