@@ -70,7 +70,7 @@ class _TalksPageState extends State<TalksPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -101,26 +101,19 @@ class _TalksPageState extends State<TalksPage>
                           )),
                     ),
                     Tab(
-                      child: Text('Computer Science',
+                      child: Text('My Talks',
                           style: TextStyle(
                             fontFamily: 'Varela',
                             fontSize: 21.0,
                           )),
                     ),
                     Tab(
-                      child: Text('Data Analysis',
+                      child: Text('All Talks',
                           style: TextStyle(
                             fontFamily: 'Varela',
                             fontSize: 21.0,
                           )),
                     ),
-                    Tab(
-                      child: Text('Gaming',
-                          style: TextStyle(
-                            fontFamily: 'Varela',
-                            fontSize: 21.0,
-                          )),
-                    )
                   ]),
               Container(
                   height: 500.0,

@@ -44,7 +44,7 @@ ConfMate is an app designed to redefine giveaways on conferences. Instead of rel
 
 ## Elevator Pitch
 
-
+Most conferences have a common problem: products promoted by the hosts are often given away randomly and, most of the times, the attendees that receive them don't even give much use to them. That’s the reason why we decided to create ConfMate, an app designed to redefine conferences' giveaways. This way, instead of purely relying on luck, ConfMate allows hosts to select who they want to give or sell the products to, based on requirements they previously set. With our safe and reliable app, ConfMate will definitely make justice to conferences' giveaways.
 
 ------
 
