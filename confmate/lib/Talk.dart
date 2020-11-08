@@ -176,7 +176,10 @@ class _talkDescriptionState extends State<talkDescription> {
             height: 50.0,
             top: 600.0,
             child: RaisedButton(
-              onPressed: bookingUnbooking,
+              onPressed: () {
+                //bookingUnbooking();
+                bookingUnbookingAlert(context);
+              },
               textColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0)),
@@ -227,6 +230,46 @@ class _talkDescriptionState extends State<talkDescription> {
           ),
         ]),
       ]),
+    );
+  }
+
+  void bookingUnbookingAlert(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Continue"),
+      onPressed: () {
+        bookingUnbooking();
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("AlertDialog"),
+      content: Text((() {
+        if (bookSeat == "Book Seat") {
+          return "You're about to book a seat in this talk!";
+        }
+
+        return "You're about to unbook a seat in this talk!";
+      })()),
+      //Text("You're about to book a seat in this talk!"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }
