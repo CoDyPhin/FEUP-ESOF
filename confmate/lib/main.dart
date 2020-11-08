@@ -71,7 +71,7 @@ class _HomeState extends State<Home> {
     List<Widget> _screens = [
       HomePage(this.profile),
       TalksPage(this.profile),
-      ProductsPage(this.profile),
+      ProductsPage(),
       ProfilePage()
     ];
 

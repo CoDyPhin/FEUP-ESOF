@@ -10,7 +10,7 @@ class Profile {
   String country;
   String photo;
   String description;
-  List<Product> applied;
+  List<Product> applied = [];
 
   Profile(this.name, this.job, this.area, this.city, this.country, this.photo,
       this.description);

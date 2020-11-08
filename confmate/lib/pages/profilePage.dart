@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../Profile.dart';
 
@@ -18,7 +19,7 @@ class _ProfilePageState extends State<ProfilePage> {
       "France",
       "assets/wissam.jpg",
       "Since debuting in FIFA, I have become one the most horrific terrors to face during FUT Champions. I love destroying the opponent team with my magnific moustache");
-
+  final formatter = new NumberFormat("#,###");
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -99,6 +100,19 @@ class _ProfilePageState extends State<ProfilePage> {
                 width: 225.0,
                 child: Text(
                   profile.description,
+                  style: TextStyle(fontSize: 20),
+                  textAlign: TextAlign.center,
+                ),
+              )),
+          Positioned(
+              top: 550.0,
+              width: 330.0,
+              child: Container(
+                padding: EdgeInsets.only(left: 0.0, right: 0.0),
+                height: 260.0,
+                width: 225.0,
+                child: Text(
+                  formatter.format(this.profile.applied.length),
                   style: TextStyle(fontSize: 20),
                   textAlign: TextAlign.center,
                 ),
