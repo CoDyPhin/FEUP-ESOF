@@ -49,6 +49,7 @@ class ConfMate extends StatelessWidget {
 
 class Home extends StatefulWidget {
   Profile profile = Profile(
+      0,
       "Wissam Ben Yedder",
       "Player at AS Monaco",
       "Football",

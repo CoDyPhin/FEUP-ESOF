@@ -4,12 +4,16 @@ import 'Product.dart';
 import 'Profile.dart';
 
 class Talk {
+  int id;
   String name;
   Profile host;
   String description;
+  int seats;
+  List<int> people;
   String photo;
 
-  Talk(this.name, this.host, this.description, this.photo);
+  Talk(this.id, this.name, this.host, this.description, this.seats, this.people,
+      this.photo);
 }
 
 class talkDescription extends StatefulWidget {
@@ -63,6 +67,32 @@ class _talkDescriptionState extends State<talkDescription> {
   Talk talk;
   List<Product> products;
   _talkDescriptionState(this.talk);
+  String bookSeat = "Book Seat";
+
+  //Check if the seat is already booked
+  void checkBooked() {
+    setState(() {
+      for (int i = 0; i < this.talk.people.length; i++)
+        if (this.talk.people.elementAt(i) == 0) {
+          bookSeat = "Unbook Seat";
+        } else {
+          bookSeat = "Book Seat";
+        }
+    });
+  }
+
+  //Booking/unbooking seat
+  void bookingUnbooking() {
+    setState(() {
+      if (bookSeat == "Book Seat") {
+        bookSeat = "Unbook Seat";
+        this.talk.people.add(0);
+      } else {
+        bookSeat = "Book Seat";
+        this.talk.people.remove(0);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +109,7 @@ class _talkDescriptionState extends State<talkDescription> {
       AppBar(backgroundColor: Colors.blue[700], elevation: 0);
 
   Body(BuildContext context) {
+    checkBooked();
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Column(children: <Widget>[
@@ -145,12 +176,15 @@ class _talkDescriptionState extends State<talkDescription> {
             height: 50.0,
             top: 600.0,
             child: RaisedButton(
-              onPressed: () {},
+              onPressed: () {
+                //bookingUnbooking();
+                bookingUnbookingAlert(context);
+              },
               textColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0)),
               child: new Text(
-                "Book Seat",
+                "$bookSeat",
                 style: TextStyle(
                     fontFamily: 'nunito',
                     fontSize: 25.0,
@@ -196,6 +230,46 @@ class _talkDescriptionState extends State<talkDescription> {
           ),
         ]),
       ]),
+    );
+  }
+
+  void bookingUnbookingAlert(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Continue"),
+      onPressed: () {
+        bookingUnbooking();
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("AlertDialog"),
+      content: Text((() {
+        if (bookSeat == "Book Seat") {
+          return "You're about to book a seat in this talk!";
+        }
+
+        return "You're about to unbook a seat in this talk!";
+      })()),
+      //Text("You're about to book a seat in this talk!"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

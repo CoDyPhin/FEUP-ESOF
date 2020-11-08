@@ -12,6 +12,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   Profile profile = Profile(
+      0,
       "Wissam Ben Yedder",
       "Player at AS Monaco",
       "Football",
