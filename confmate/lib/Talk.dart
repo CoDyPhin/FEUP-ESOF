@@ -4,12 +4,16 @@ import 'Product.dart';
 import 'Profile.dart';
 
 class Talk {
+  int id;
   String name;
   Profile host;
   String description;
+  int seats;
+  List<int> people;
   String photo;
 
-  Talk(this.name, this.host, this.description, this.photo);
+  Talk(this.id, this.name, this.host, this.description, this.seats, this.people,
+      this.photo);
 }
 
 class talkDescription extends StatefulWidget {
@@ -63,6 +67,32 @@ class _talkDescriptionState extends State<talkDescription> {
   Talk talk;
   List<Product> products;
   _talkDescriptionState(this.talk);
+  String bookSeat = "Book Seat";
+
+  //Check if the seat is already booked
+  void checkBooked() {
+    setState(() {
+      for (int i = 0; i < this.talk.people.length; i++)
+        if (this.talk.people.elementAt(i) == 0) {
+          bookSeat = "Unbook Seat";
+        } else {
+          bookSeat = "Book Seat";
+        }
+    });
+  }
+
+  //Booking/unbooking seat
+  void bookingUnbooking() {
+    setState(() {
+      if (bookSeat == "Book Seat") {
+        bookSeat = "Unbook Seat";
+        this.talk.people.add(0);
+      } else {
+        bookSeat = "Book Seat";
+        this.talk.people.remove(0);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +109,7 @@ class _talkDescriptionState extends State<talkDescription> {
       AppBar(backgroundColor: Colors.blue[700], elevation: 0);
 
   Body(BuildContext context) {
+    checkBooked();
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Column(children: <Widget>[
@@ -145,12 +176,12 @@ class _talkDescriptionState extends State<talkDescription> {
             height: 50.0,
             top: 600.0,
             child: RaisedButton(
-              onPressed: () {},
+              onPressed: bookingUnbooking,
               textColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0)),
               child: new Text(
-                "Book Seat",
+                "$bookSeat",
                 style: TextStyle(
                     fontFamily: 'nunito',
                     fontSize: 25.0,

@@ -17,6 +17,7 @@ class _TalksPageState extends State<TalksPage>
 
   static List<Profile> profilesList = [
     Profile(
+        1,
         "Tiago Saramago",
         "Youtuber",
         "Digital Influencer",
@@ -25,6 +26,7 @@ class _TalksPageState extends State<TalksPage>
         "assets/tiago.jpg",
         "Goods people you already know who is talking, here is Tiagovski blowing the scale"),
     Profile(
+        2,
         "Ricardo Fazeres",
         "Youtuber",
         "Digital Influencer",
@@ -33,6 +35,7 @@ class _TalksPageState extends State<TalksPage>
         "assets/ricardo.jpg",
         "How is it little people, here with you is RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRIC THE FEIZERSSSSSSSSSS"),
     Profile(
+        3,
         "Caio Nogueira",
         "Student",
         "FEUP",
@@ -40,30 +43,42 @@ class _TalksPageState extends State<TalksPage>
         "Portugal",
         "assets/caio.png",
         "ESTE JA ESTA PERDIDO NAO NAO NAO DEIXA ME SAIR POR FAVOR"),
-    Profile("Pedro Queirós", "Student", "FEUP", "Penafiel", "Portugal",
+    Profile(4, "Pedro Queirós", "Student", "FEUP", "Penafiel", "Portugal",
         "assets/queiros.png", "Fds mén")
   ];
 
   List<Talk> talksList = [
     Talk(
+        0,
         "Paysafes as Global Currency",
         profilesList[0],
         "Dedicated to PaysafeCards, I will show you how to scam people on the mythical Metin and if you want to buy coins, sell or even trade, FifaCoinsBuy has the best prices and quickness. Use code Tiagovski for an extra 8% coins.",
+        25,
+        new List<int>(),
         "assets/tiago.jpg"),
     Talk(
+        1,
         "How To Protect Your Data",
         profilesList[1],
         "Dedicated to PaysafeCards, I will show you how to scam people on the mythical Metin and if you want to buy coins, sell or even trade, FifaCoinsBuy has the best prices and quickness. Use code Tiagovski for an extra 8% coins.",
+        80,
+        new List<int>(),
         "assets/ricardo.jpg"),
     Talk(
+        2,
         "Ben Yedder, Guida FC Legend",
         profilesList[2],
         "AAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH OH MEU DEUSSSSSSSSSSSS O QUEEEEEEEEEE NAO DEIXA ME SAIR POR FAVOR ESTE JA ESTA PERDIDO",
+        35,
+        new List<int>(),
         "assets/caio.png"),
     Talk(
+        3,
         "CAARLOS TAS ME A OUBIR",
         profilesList[3],
         "Join me as I tell carlos if he can listen to me. Not Recommended for non deaf humans",
+        12,
+        new List<int>(),
         "assets/queiros.png")
   ];
 
