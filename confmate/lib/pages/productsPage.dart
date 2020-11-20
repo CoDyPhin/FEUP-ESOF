@@ -182,7 +182,7 @@ class _ProductsPageState extends State<ProductsPage>
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-              title: Text("Talks"),
+              title: Text("Products"),
               bottom: TabBar(
                 tabs: <Widget>[
                   Tab(
