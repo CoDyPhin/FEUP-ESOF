@@ -53,11 +53,22 @@ Most conferences have a common problem: products promoted by the hosts are often
 ### Use case diagram
 
 ![Use case diagram](./docs/img/usecase.png)
+
+#### Book Products
+**Actor**: Attendee
+**Description**: By selecting a product from a given conference they can apply for the given product. Additionally, they can also fill out a small text, explaining the reason why they think they are a good match for the product.
+**Normal flow**:  The attendee the product and then writes a small text with the reason behind applying for the given product.
+
+#### Promote Products
+**Actor:** Host  
+**Description:** The hosts can choose to promote products on their own talks as well as choosing the receivers of such products.
+**Normal flow:** The host selects the product we wants to promote/chooses an attendee to receive the product.
+
 ---
 
 ### User Stories
 
-#### **Story #1**
+#### **Story #1 - Promote Products**
 
 As a host I want to be able to promote and recommend products I find relevant to the conference.
 
@@ -83,7 +94,7 @@ Effort: XL
 
 ---
 
-#### **Story #2**
+#### **Story #2 - Giveaway Prodcuts**
 
 As a host I want to be able to choose which attendees I wish to giveaway the products to.
 
@@ -107,7 +118,7 @@ Value: Must have
 Effort: XL
 
 ---
-#### **Story #3**
+#### **Story #3 - Apply For Products**
 
 As an attendee I want to be able to apply for products.
 
@@ -131,7 +142,7 @@ Value: Must have
 Effort: XL
 
 ---
-#### **Story #4**
+#### **Story #4 - Book Room**
 
 As a host I want to be able to book a room to host my conference.
 
@@ -154,10 +165,10 @@ _Value/Effort_
 
 Value: Must Have
 
-Effort: XL
+Effort: S
 
 ---
-#### **Story #5**
+#### **Story #5 - Book Seat**
 
 As an attendee I want to be able to book a seat for conferences that I wish to attend.
 
@@ -178,7 +189,7 @@ _Value/Effort_
 
 Value: Must Have
 
-Effort: XL
+Effort: M
 
 ---
 ## Architecture and Design
