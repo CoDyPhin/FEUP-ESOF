@@ -26,18 +26,146 @@ class talkDescription extends StatefulWidget {
 
 class talkPromotedProducts extends StatefulWidget {
   List<Product> products;
-
-  talkPromotedProducts(this.products);
+  Talk talk;
+  talkPromotedProducts(this.products, this.talk);
 
   @override
   _talkPromotedProductsState createState() =>
-      _talkPromotedProductsState(this.products);
+      _talkPromotedProductsState(this.products, this.talk);
 }
 
 class _talkPromotedProductsState extends State<talkPromotedProducts> {
   List<Product> products;
+  Talk talk;
 
-  _talkPromotedProductsState(this.products);
+  List<Product> productList = [
+    Product(
+        "Paysafes roubados",
+        0,
+        "Paysafes scammados pelo mitico #vski no Metin. Não garantimos que ainda tenham saldo, provavelmente foram totalmente depositados em apostas no CS ou em FIFA Points.",
+        0,
+        "assets/paysafe.jpg",
+        "For Students",
+        Talk(
+            0,
+            "Paysafes as Global Currency",
+            Profile(
+                1,
+                "Tiago Saramago",
+                "Youtuber",
+                "Digital Influencer",
+                "Porto",
+                "Portugal",
+                "assets/tiago.jpg",
+                "Goods people you already know who is talking, here is Tiagovski blowing the scale"),
+            "Dedicated to PaysafeCards, I will show you how to scam people on the mythical Metin and if you want to buy coins, sell or even trade, FifaCoinsBuy has the best prices and quickness. Use code Tiagovski for an extra 8% coins.",
+            25,
+            new List<int>(),
+            "assets/tiago.jpg")),
+    Product(
+        "Mochila da W33D",
+        5,
+        "Mochila W33D on the bankz #VSKI, mas manos, W33D é só nome da marca, não é para fumar manos",
+        0,
+        "assets/mochila.jpg",
+        "For Vskizinhos",
+        Talk(
+            0,
+            "Paysafes as Global Currency",
+            Profile(
+                1,
+                "Tiago Saramago",
+                "Youtuber",
+                "Digital Influencer",
+                "Porto",
+                "Portugal",
+                "assets/tiago.jpg",
+                "Goods people you already know who is talking, here is Tiagovski blowing the scale"),
+            "Dedicated to PaysafeCards, I will show you how to scam people on the mythical Metin and if you want to buy coins, sell or even trade, FifaCoinsBuy has the best prices and quickness. Use code Tiagovski for an extra 8% coins.",
+            25,
+            new List<int>(),
+            "assets/tiago.jpg")),
+    Product(
+        "FIFA 21",
+        1,
+        "Conta do Caio de FIFA visto que ele aziou tanto que partiu o PC e não pode jogar mais. Para ajudar a EA a fazer o mesmo jogo todos os anos, preço especial de 120€",
+        120,
+        "assets/fifa.jpg",
+        "For Pepegas",
+        Talk(
+            2,
+            "Ben Yedder, Guida FC Legend",
+            Profile(
+                3,
+                "Caio Nogueira",
+                "Student",
+                "FEUP",
+                "Aveiro",
+                "Portugal",
+                "assets/caio.png",
+                "ESTE JA ESTA PERDIDO NAO NAO NAO DEIXA ME SAIR POR FAVOR"),
+            "AAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH OH MEU DEUSSSSSSSSSSSS O QUEEEEEEEEEE NAO DEIXA ME SAIR POR FAVOR ESTE JA ESTA PERDIDO",
+            35,
+            new List<int>(),
+            "assets/caio.png")),
+    Product(
+        "Microfone do Queiros",
+        2,
+        "Apenas funciona na perfeição no Ubuntu. Melhor microfone de ear rape alguma vez visto. CAAAAAAAAAAAARLOOOOOOOOOS TAS ME A OUVIIIIIIIIIIIIIIIIIR",
+        50,
+        "assets/microfone.jpg",
+        "For Big Kings",
+        Talk(
+            3,
+            "CAARLOS TAS ME A OUBIR",
+            Profile(4, "Pedro Queirós", "Student", "FEUP", "Penafiel",
+                "Portugal", "assets/queiros.png", "Fds mén"),
+            "Join me as I tell carlos if he can listen to me. Not Recommended for non deaf humans",
+            12,
+            new List<int>(),
+            "assets/queiros.png")),
+    Product(
+        "Improviso pos meus subs 2",
+        3,
+        "Após o grande sucesso do primeiro improviso, Tiagovski volta a dar cartas com o seu mais recente single. Dedicado especialmente aos àters, mas os subs continuam no coração. Video exclusivo",
+        25,
+        "assets/videovski.jpg",
+        "For researchers",
+        Talk(
+            1,
+            "How To Protect Your Data",
+            Profile(
+                2,
+                "Ricardo Fazeres",
+                "Youtuber",
+                "Digital Influencer",
+                "Odivelas",
+                "Portugal",
+                "assets/ricardo.jpg",
+                "How is it little people, here with you is RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRIC THE FEIZERSSSSSSSSSS"),
+            "Dedicated to PaysafeCards, I will show you how to scam people on the mythical Metin and if you want to buy coins, sell or even trade, FifaCoinsBuy has the best prices and quickness. Use code Tiagovski for an extra 8% coins.",
+            80,
+            new List<int>(),
+            "assets/ricardo.jpg")),
+    Product(
+        "Patanisks The Cat",
+        4,
+        "Patanisks, what are you doing here? No, Patanisks, go play, don't jump on top of my computer",
+        25,
+        "assets/cat.jpg",
+        "For researchers",
+        Talk(
+            3,
+            "CAARLOS TAS ME A OUBIR",
+            Profile(4, "Pedro Queirós", "Student", "FEUP", "Penafiel",
+                "Portugal", "assets/queiros.png", "Fds mén"),
+            "Join me as I tell carlos if he can listen to me. Not Recommended for non deaf humans",
+            12,
+            new List<int>(),
+            "assets/queiros.png")),
+  ];
+
+  _talkPromotedProductsState(this.products, this.talk);
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +185,87 @@ class _talkPromotedProductsState extends State<talkPromotedProducts> {
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Column(
-        children: <Widget>[],
+        children: <Widget>[
+          Stack(alignment: Alignment.topLeft, children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(top: size.height * 0.17),
+              height: 550,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(22),
+                      topRight: Radius.circular(22))),
+            ),
+            Positioned(
+              top: 10.0,
+              left: 2.0,
+              child: Container(
+                  height: 160.0,
+                  width: 160.0,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.blue, width: 2),
+                      borderRadius: BorderRadius.circular(200.0),
+                      image: DecorationImage(
+                          alignment: Alignment.topLeft,
+                          image: AssetImage(this.talk.photo),
+                          fit: BoxFit.cover))),
+            ),
+            Positioned(
+                right: 50.0,
+                top: 50.0,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: new Text(
+                    this.talk.host.name,
+                    style: TextStyle(
+                        fontFamily: 'nunito',
+                        fontSize: 23.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
+                )),
+            Positioned(
+              width: 300.0,
+              height: 40.0,
+              top: 190.0,
+              left: 50.0,
+              child: RaisedButton(
+                  onPressed: null,
+                  textColor: Colors.grey,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.shopping_cart_rounded,
+                        color: Colors.black,
+                      ),
+                      new Text(
+                        "Promoted Products",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontFamily: 'nunito',
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      ),
+                    ],
+                  )),
+            ),
+            Positioned(
+                top: 260.0,
+                left: 20.0,
+                child: Container(
+                  height: 150.0,
+                  width: 150.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25.0),
+                    color: Colors.lightBlue,
+                  ),
+                )),
+          ])
+        ],
       ),
     );
   }
@@ -204,7 +412,7 @@ class _talkDescriptionState extends State<talkDescription> {
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              talkPromotedProducts(products)));
+                              talkPromotedProducts(products, talk)));
                 },
                 textColor: Colors.grey,
                 shape: RoundedRectangleBorder(
