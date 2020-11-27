@@ -2,12 +2,16 @@ import 'package:confmate/Profile.dart';
 import 'package:confmate/pages/productsPage.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+//import 'package:mango/firebase.dart';
 
 import 'pages/profilePage.dart';
 import 'pages/homePage.dart';
 import 'pages/talksPage.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(startApp());
 }
 
