@@ -1,4 +1,4 @@
-package com.fiveheaders.confmate
+package com.example.confmate
 
 import io.flutter.embedding.android.FlutterActivity
 

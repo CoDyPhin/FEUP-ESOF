@@ -1,4 +1,3 @@
-import 'package:confmate/pages/talksPage.dart';
 import 'package:flutter/material.dart';
 
 import '../Product.dart';
@@ -142,14 +141,6 @@ class _HomePageState extends State<HomePage> {
         talksList[3])
   ];
 
-  int _currentIndex = 0;
-  PageController _pageController = PageController();
-  List<Widget> _screens = [TalksPage(), ProductsPage()];
-
-  void _onPageChanged(int index) {
-    _pageController.jumpToPage(index);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -205,17 +196,18 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
+          SizedBox(height: 15.0),
           Container(
-              height: 335.0,
+              height: 350.0,
               child: ListView(scrollDirection: Axis.horizontal, children: [
                 for (Talk x in talksList) _talkListCard(x),
               ])),
-          SizedBox(height: 40.0),
+          SizedBox(height: 25.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                'Featured Products',
+                'Featured Talks',
                 style: TextStyle(
                     fontFamily: 'varela',
                     fontSize: 17.0,
@@ -223,14 +215,12 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
+          SizedBox(height: 15.0),
           Container(
-              height: 335.0,
+              height: 350.0,
               child: ListView(scrollDirection: Axis.horizontal, children: [
                 for (Product x in productList) _productListCard(x),
               ])),
-          SizedBox(
-            height: 40,
-          )
         ]));
   }
 
@@ -238,8 +228,8 @@ class _HomePageState extends State<HomePage> {
     return Padding(
         padding: EdgeInsets.only(left: 15.0, right: 15.0),
         child: Container(
-            height: 200.0,
-            width: 230.0,
+            height: 300.0,
+            width: 225.0,
             child: Column(
               children: <Widget>[
                 Stack(children: [
@@ -311,8 +301,8 @@ class _HomePageState extends State<HomePage> {
     return Padding(
         padding: EdgeInsets.only(left: 15.0, right: 15.0),
         child: Container(
-            height: 200.0,
-            width: 230.0,
+            height: 300.0,
+            width: 225.0,
             child: Column(
               children: <Widget>[
                 Stack(children: [

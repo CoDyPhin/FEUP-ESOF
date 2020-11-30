@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../Profile.dart';
+
+final profiles = FirebaseFirestore.instance.collection('profile').doc('1');
+String profileName = "",
+    profileJob = "",
+    profileArea = "",
+    profileCity = "",
+    profileCountry = "",
+    profilePhoto = "assets/confmate.png",
+    profileDescription = "";
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key key}) : super(key: key);
@@ -11,7 +21,35 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Profile profile = Profile(
+  getProfiles() {
+    profiles.get().then((snapshot) {
+      setState(() {
+        profileName = snapshot.data()['name'];
+        profileJob = snapshot.data()['job'];
+        profileArea = snapshot.data()['area'];
+        profileCity = snapshot.data()['city'];
+        profileCountry = snapshot.data()['country'];
+        profilePhoto = snapshot.data()['photo'];
+        profileDescription = snapshot.data()['description'];
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getProfiles();
+  }
+
+  /* getProfiles() {
+    profiles.get().then((snapshot) {
+      snapshot.docs.forEach((DocumentSnapshot doc) {
+        print(doc.data()['name']);
+      });
+    });
+  } */
+
+  /* Profile profile = Profile(
       0,
       "Wissam Ben Yedder",
       "Player at AS Monaco",
@@ -20,8 +58,10 @@ class _ProfilePageState extends State<ProfilePage> {
       "France",
       "assets/wissam.jpg",
       "Since debuting in FIFA, I have become one the most horrific terrors to face during FUT Champions. I love destroying the opponent team with my magnific moustache");
+   */
   @override
   Widget build(BuildContext context) {
+    getProfiles();
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Column(children: <Widget>[
@@ -54,7 +94,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderRadius: BorderRadius.circular(200.0),
                       image: DecorationImage(
                           alignment: Alignment.center,
-                          image: AssetImage(this.profile.photo),
+                          image: AssetImage(profilePhoto),
                           fit: BoxFit.cover)))),
           Positioned(
               top: 100.0,
@@ -71,7 +111,7 @@ class _ProfilePageState extends State<ProfilePage> {
               top: 270.0,
               child: Container(
                 child: Text(
-                  this.profile.name,
+                  profileName,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 25.0,
@@ -83,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
               top: 305.0,
               child: Container(
                 child: Text(
-                  profile.job,
+                  profileJob,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 20.0,
@@ -99,7 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 height: 260.0,
                 width: 225.0,
                 child: Text(
-                  profile.description,
+                  profileDescription,
                   style: TextStyle(fontSize: 20),
                   textAlign: TextAlign.center,
                 ),
@@ -118,7 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         color: Colors.grey[400],
                       ),
                       Text(
-                        profile.city + ", " + profile.country,
+                        profileCity + ", " + profileCountry,
                         style: TextStyle(fontSize: 17, color: Colors.grey[400]),
                         textAlign: TextAlign.center,
                       ),
@@ -133,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         color: Colors.grey[400],
                       ),
                       Text(
-                        profile.area,
+                        profileArea,
                         style: TextStyle(fontSize: 17, color: Colors.grey[400]),
                         textAlign: TextAlign.center,
                       ),

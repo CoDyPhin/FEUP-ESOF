@@ -5,7 +5,7 @@ import '../Talk.dart';
 
 class TalksPage extends StatefulWidget {
   Profile profile;
-  TalksPage();
+  TalksPage(this.profile);
 
   @override
   _TalksPageState createState() => _TalksPageState();
