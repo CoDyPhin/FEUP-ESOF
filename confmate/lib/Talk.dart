@@ -250,7 +250,7 @@ class _talkDescriptionState extends State<talkDescription> {
     );
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("AlertDialog"),
+      title: Text("Booking Seat"),
       content: Text((() {
         if (bookSeat == "Book Seat") {
           return "You're about to book a seat in this talk!";

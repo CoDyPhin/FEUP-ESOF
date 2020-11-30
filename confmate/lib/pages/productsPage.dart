@@ -36,6 +36,29 @@ List<Profile> profilesList = [
       "assets/queiros.png", "Fds mén")
 ];
 
+List<Profile> candidates = [
+  Profile(
+      2,
+      "Ricardo Fazeres",
+      "Youtuber",
+      "Digital Influencer",
+      "Odivelas",
+      "Portugal",
+      "assets/ricardo.jpg",
+      "How is it little people, here with you is RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRIC THE FEIZERSSSSSSSSSS"),
+  Profile(
+      3,
+      "Caio Nogueira",
+      "Student",
+      "FEUP",
+      "Aveiro",
+      "Portugal",
+      "assets/caio.png",
+      "ESTE JA ESTA PERDIDO NAO NAO NAO DEIXA ME SAIR POR FAVOR"),
+  Profile(4, "Pedro Queirós", "Student", "FEUP", "Penafiel", "Portugal",
+      "assets/queiros.png", "Fds mén")
+];
+
 List<Talk> talksList = [
   Talk(
       0,
@@ -182,14 +205,14 @@ class _ProductsPageState extends State<ProductsPage>
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-              title: Text("Talks"),
+              title: Text("Products"),
               bottom: TabBar(
                 tabs: <Widget>[
                   Tab(
                     text: 'Featured',
                   ),
                   Tab(
-                    text: 'All',
+                    text: 'Applied For',
                   ),
                   Tab(
                     text: 'My Products',
@@ -212,17 +235,6 @@ class _ProductsPageState extends State<ProductsPage>
               Container(
                   height: 500.0,
                   child: GridView.builder(
-                    itemCount: productList.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.75,
-                    ),
-                    itemBuilder: (context, index) =>
-                        _productDisplay(productList, index),
-                  )),
-              Container(
-                  height: 500.0,
-                  child: GridView.builder(
                     itemCount: myProducts.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
@@ -231,9 +243,86 @@ class _ProductsPageState extends State<ProductsPage>
                     itemBuilder: (context, index) =>
                         _productDisplay(myProducts, index),
                   )),
+              Container(
+                  height: 500.0,
+                  child: GridView.builder(
+                    itemCount: productList.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemBuilder: (context, index) =>
+                        _checkWhoApplied(productList, index),
+                  )),
             ],
           ),
         ));
+  }
+
+  _checkWhoApplied(List<Product> list, int index) {
+    return Container(
+        child: Column(
+      children: <Widget>[
+        Stack(
+          children: [
+            Container(height: 230.0, width: 230.0),
+            Positioned(
+                top: 30.0,
+                right: 18.5,
+                child: Container(
+                  height: 160.0,
+                  width: 160.0,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.blue[200]),
+                )),
+            Positioned(
+                right: 19.0,
+                top: 50.0,
+                child: new SizedBox(
+                    width: 162.5,
+                    child: FlatButton(
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      productWhoApplied(list[index])));
+                        },
+                        child: Container(
+                            height: 125.0,
+                            width: 125.0,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20.0),
+                                image: DecorationImage(
+                                    image: AssetImage(list[index].picture),
+                                    fit: BoxFit.cover)))))),
+            Positioned(
+                left: 20.0,
+                top: 195.0,
+                child: Text(
+                  list[index].name,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
+                )),
+            Positioned(
+                left: 20.0,
+                top: 212,
+                child: Text(
+                  productList[index].audience,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black38),
+                )),
+          ],
+        ),
+      ],
+    ));
   }
 
   _productDisplay(List<Product> list, int index) {
@@ -265,15 +354,6 @@ class _ProductsPageState extends State<ProductsPage>
                               MaterialPageRoute(
                                   builder: (context) =>
                                       productDescription(list[index])));
-                          if (result != null) {
-                            if (!list[index].appliedFor) {
-                              myProducts.add(list[index]);
-                              list[index].appliedFor = true;
-                            } else if (list[index].appliedFor) {
-                              myProducts.remove(list[index]);
-                              list[index].appliedFor = false;
-                            }
-                          }
                         },
                         child: Container(
                             height: 125.0,
@@ -325,6 +405,59 @@ class productDescription extends StatefulWidget {
 class _productDescriptionState extends State<productDescription> {
   Product product;
   _productDescriptionState(this.product);
+
+  String bookSeat = "Apply For";
+  void bookingUnbooking() {
+    setState(() {
+      if (bookSeat == "Apply For") {
+        product.appliedFor = true;
+        myProducts.add(product);
+        bookSeat = "Unapply For";
+      } else {
+        product.appliedFor = false;
+        bookSeat = "Apply For";
+        myProducts.remove(product);
+      }
+    });
+  }
+
+  bookingUnbookingAlert(BuildContext context) {
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Continue"),
+      onPressed: () {
+        bookingUnbooking();
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Booking Seat"),
+      content: TextField(
+        autofocus: true,
+        maxLines: 8,
+        keyboardType: TextInputType.multiline,
+        decoration: new InputDecoration(hintText: 'State your reasons here'),
+      ),
+      //Text("You're about to book a seat in this talk!"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -493,7 +626,12 @@ class _productDescriptionState extends State<productDescription> {
             top: 600.0,
             child: RaisedButton(
                 onPressed: () {
-                  Navigator.pop(context, true);
+                  print(bookSeat);
+                  if (!product.appliedFor) {
+                    bookingUnbookingAlert(context);
+                  } else {
+                    bookingUnbooking();
+                  }
                 },
                 textColor: Colors.white,
                 shape: RoundedRectangleBorder(
@@ -520,6 +658,358 @@ class _productDescriptionState extends State<productDescription> {
           ),
         ]),
       ]),
+    );
+  }
+}
+
+_showDialog(BuildContext context) async {
+  TextEditingController customController = TextEditingController();
+
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          contentPadding: const EdgeInsets.all(16.0),
+          title: Text("Reasons for Applying"),
+          content: TextField(
+            autofocus: true,
+            maxLines: 8,
+            controller: customController,
+            keyboardType: TextInputType.multiline,
+            decoration:
+                new InputDecoration(hintText: 'State your reasons here'),
+          ),
+          actions: <Widget>[
+            MaterialButton(
+              child: Text('submit'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      });
+  /*await showDialog<String>(
+      context: context,
+      child: new AlertDialog(
+        contentPadding: const EdgeInsets.all(16.0),
+        content: new Row(
+          children: <Widget>[
+            new Expanded(
+              child: new TextField(
+                autofocus: true,
+                maxLines: 8,
+                keyboardType: TextInputType.multiline,
+                decoration: new InputDecoration(
+                    labelText: 'Reasons for Applying',
+                    hintText: 'State your reasons here'),
+              ),
+            )
+          ],
+        ),
+        actions: <Widget>[
+          new FlatButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context, false);
+              }),
+          new FlatButton(
+              child: const Text('Apply'),
+              onPressed: () {
+                Navigator.pop(context, true);
+              })
+        ],
+      ),
+    );*/
+}
+
+class productWhoApplied extends StatefulWidget {
+  Product product;
+
+  productWhoApplied(this.product);
+
+  @override
+  _productWhoAppliedState createState() =>
+      _productWhoAppliedState(this.product);
+}
+
+class _productWhoAppliedState extends State<productWhoApplied> {
+  Product product;
+  _productWhoAppliedState(this.product);
+
+  String bookSeat = "Apply For";
+  void bookingUnbooking() {
+    setState(() {
+      if (bookSeat == "Apply For") {
+        product.appliedFor = true;
+        myProducts.add(product);
+        bookSeat = "Unapply For";
+      } else {
+        product.appliedFor = false;
+        bookSeat = "Apply For";
+        myProducts.remove(product);
+      }
+    });
+  }
+
+  bookingUnbookingAlert(BuildContext context) {
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Continue"),
+      onPressed: () {
+        bookingUnbooking();
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Booking Seat"),
+      content: TextField(
+        autofocus: true,
+        maxLines: 8,
+        keyboardType: TextInputType.multiline,
+        decoration: new InputDecoration(hintText: 'State your reasons here'),
+      ),
+      //Text("You're about to book a seat in this talk!"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.blue[700],
+      appBar: AppBar(backgroundColor: Colors.blue[700], elevation: 0),
+      body: buildBody(context),
+    );
+  }
+
+  buildBody(context) => Body(context);
+
+  AppBar buildAppBar() => AppBar(
+        backgroundColor: Colors.blue[700],
+        elevation: 0,
+      );
+
+  Body(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return SingleChildScrollView(
+      child: Column(children: <Widget>[
+        Stack(alignment: Alignment.topCenter, children: <Widget>[
+          Container(
+              margin: EdgeInsets.only(top: size.height * 0.275),
+              height: 475,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24)))),
+          Positioned(
+              right: 30.0,
+              top: 70.0,
+              child: Container(
+                  height: 200.0,
+                  width: 200.0,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                      image: DecorationImage(
+                          alignment: Alignment.center,
+                          image: AssetImage(this.product.picture),
+                          fit: BoxFit.cover)))),
+          Positioned(
+              left: 20.0,
+              top: 20.0,
+              child: Container(
+                child: Text(
+                  this.product.name,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              )),
+          Positioned(
+              left: 20.0,
+              child: Container(
+                child: Text(
+                  this.product.audience,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              )),
+          Positioned(
+              top: 300.0,
+              child: Container(
+                child: Text(
+                  "Candidates",
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black38),
+                ),
+              )),
+          Padding(
+              padding: EdgeInsets.only(top: 350),
+              child: Container(
+                  height: 300.0,
+                  child: ListView(
+                      scrollDirection: Axis.vertical,
+                      padding: EdgeInsets.only(left: 20.0, top: 10.0),
+                      children: [
+                        for (Profile x in candidates) _candidateCard(x),
+                      ]))),
+          Positioned(
+              top: 170.0,
+              left: 20.0,
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    "Units: 10",
+                    style: TextStyle(
+                        fontFamily: 'nunito',
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  )
+                ],
+              )),
+        ]),
+      ]),
+    );
+  }
+
+  _candidateCard(Profile profile) {
+    return Padding(
+        padding: EdgeInsets.only(right: 15.0),
+        child: FlatButton(
+            onPressed: () {
+              giveawayProduct(context, profile.name);
+            },
+            child: Container(
+                height: 150.0,
+                width: 325.0,
+                child: Column(
+                  children: <Widget>[
+                    Stack(children: [
+                      Container(height: 150.0),
+                      Positioned(
+                          top: 0.0,
+                          child: Container(
+                            padding: EdgeInsets.only(left: 10.0, right: 0.0),
+                            height: 125.0,
+                            width: 325.0,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(25.0),
+                                color: Colors.blue[200]),
+                          )),
+                      Positioned(
+                          top: 15.0,
+                          left: 20.0,
+                          child: Text(
+                            profile.name,
+                            style: TextStyle(
+                                fontFamily: 'varela',
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                      Positioned(
+                          left: 20.0,
+                          top: 50.0,
+                          child: Container(
+                              height: 60.0,
+                              width: 60.0,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(200.0),
+                                  image: DecorationImage(
+                                      image: AssetImage(profile.photo),
+                                      fit: BoxFit.cover)))),
+                      Positioned(
+                          left: 95.0,
+                          top: 52.5,
+                          child: Text(
+                            profile.job,
+                            style: TextStyle(
+                                fontFamily: 'nunito',
+                                fontSize: 17.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                      Positioned(
+                          left: 95.0,
+                          top: 75.0,
+                          child: Text(
+                            profile.area,
+                            style: TextStyle(
+                                fontFamily: 'nunito',
+                                fontSize: 17.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                      Positioned(
+                        right: 20.0,
+                        bottom: 65.0,
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 40,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ]),
+                  ],
+                ))));
+  }
+
+  giveawayProduct(BuildContext context, String name) {
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Yes"),
+      onPressed: () {
+        bookingUnbooking();
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Warning"),
+      content: Text("Do you wish to give this product to " + name + "?"),
+      //Text("You're about to book a seat in this talk!"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }
