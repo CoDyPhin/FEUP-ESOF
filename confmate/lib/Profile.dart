@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'Product.dart';
 
+final bool alignLabelWithHint = true;
+
 class Profile {
   int id;
   String name;
