@@ -20,8 +20,58 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
+//----------------------------------------------------
+/* class profileData extends StatefulWidget {
+  @override
+  _profileDataState createState() => _profileDataState();
+}
+
+class _profileDataState extends State<profileData> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.blue[700],
+      appBar: buildAppBar(),
+      body: buildBody(context),
+    );
+  }
+
+  buildBody(context) => Body(context);
+
+  AppBar buildAppBar() =>
+      AppBar(backgroundColor: Colors.blue[700], elevation: 0);
+
+  Body(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return SingleChildScrollView(
+      child: Column(children: <Widget>[
+        Stack(
+          alignment: Alignment.topCenter,
+          children: <Widget>[
+            Container(
+                margin: EdgeInsets.only(top: size.height * 0.025),
+                height: 650,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24)))),
+            /* style: TextStyle(
+                          fontFamily: 'nunito',
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ), */
+          ],
+        )
+      ]),
+    );
+  }
+} */
+//************************************** */
+
 class _ProfilePageState extends State<ProfilePage> {
-  getProfiles() {
+  getProfile() {
     profiles.get().then((snapshot) {
       setState(() {
         profileName = snapshot.data()['name'];
@@ -38,16 +88,8 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    getProfiles();
+    getProfile();
   }
-
-  /* getProfiles() {
-    profiles.get().then((snapshot) {
-      snapshot.docs.forEach((DocumentSnapshot doc) {
-        print(doc.data()['name']);
-      });
-    });
-  } */
 
   /* Profile profile = Profile(
       0,
@@ -56,12 +98,12 @@ class _ProfilePageState extends State<ProfilePage> {
       "Football",
       "Monaco",
       "France",
-      "assets/wissam.jpg",
-      "Since debuting in FIFA, I have become one the most horrific terrors to face during FUT Champions. I love destroying the opponent team with my magnific moustache");
+      "assets/wissam.jpg",Since debuting in FIFA, I have become one the most horrific terrors to face during FUT Champions. I love destroying the opponent team with my magnific moustache
+      "");
    */
   @override
   Widget build(BuildContext context) {
-    getProfiles();
+    //getProfile();
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Column(children: <Widget>[
@@ -102,7 +144,16 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Container(
                   height: 40.0,
                   width: 40.0,
-                  child: Icon(Icons.edit),
+                  child: IconButton(
+                    icon: Icon(Icons.edit),
+                    tooltip: 'Edit profile',
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => editProfileData()));
+                    },
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(200.0),
                     color: Colors.white,
