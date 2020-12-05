@@ -5,7 +5,7 @@ import '../Talk.dart';
 
 class TalksPage extends StatefulWidget {
   Profile profile;
-  TalksPage(this.profile);
+  TalksPage();
 
   @override
   _TalksPageState createState() => _TalksPageState();
@@ -15,9 +15,8 @@ class _TalksPageState extends State<TalksPage>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
 
-  static List<Profile> profilesList = [
+  /*static List<Profile> profilesList = [
     Profile(
-        1,
         "Tiago Saramago",
         "Youtuber",
         "Digital Influencer",
@@ -48,7 +47,7 @@ class _TalksPageState extends State<TalksPage>
   ];
 
   List<Talk> talksList = [
-    Talk(
+    /*Talk(
         0,
         "Paysafes as Global Currency",
         profilesList[0],
@@ -79,8 +78,8 @@ class _TalksPageState extends State<TalksPage>
         "Join me as I tell carlos if he can listen to me. Not Recommended for non deaf humans",
         12,
         new List<int>(),
-        "assets/queiros.png")
-  ];
+        "assets/queiros.png")*/
+  ];*/
 
   @override
   void initState() {
@@ -90,7 +89,7 @@ class _TalksPageState extends State<TalksPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    /*return Scaffold(
         backgroundColor: Colors.white,
         body: ListView(
             padding: EdgeInsets.only(left: 20.0, top: 50.0),
@@ -169,7 +168,7 @@ class _TalksPageState extends State<TalksPage>
                             fontWeight: FontWeight.bold,
                             color: Colors.white),
                       )),
-                  Positioned(
+                  /*Positioned(
                       left: 20.0,
                       top: 50.0,
                       child: Container(
@@ -179,12 +178,12 @@ class _TalksPageState extends State<TalksPage>
                               borderRadius: BorderRadius.circular(200.0),
                               image: DecorationImage(
                                   image: AssetImage(talk.host.photo),
-                                  fit: BoxFit.cover)))),
+                                  fit: BoxFit.cover)))),*/
                   Positioned(
                       left: 95.0,
                       top: 52.5,
                       child: Text(
-                        talk.host.name,
+                        "ric",
                         style: TextStyle(
                             fontFamily: 'nunito',
                             fontSize: 17.0,
@@ -195,7 +194,7 @@ class _TalksPageState extends State<TalksPage>
                       left: 95.0,
                       top: 75.0,
                       child: Text(
-                        talk.host.job,
+                        "ric",
                         style: TextStyle(
                             fontFamily: 'nunito',
                             fontSize: 17.0,
@@ -219,6 +218,6 @@ class _TalksPageState extends State<TalksPage>
                       )),
                 ]),
               ],
-            )));
+            )));*/
   }
 }

@@ -3,40 +3,47 @@ import 'package:confmate/pages/productsPage.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 //import 'package:mango/firebase.dart';
 
+import 'FirestoreController.dart';
 import 'pages/profilePage.dart';
 import 'pages/homePage.dart';
 import 'pages/talksPage.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   runApp(startApp());
 }
 
 class startApp extends StatelessWidget {
+  // Create the initialization Future outside of `build`:
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ConfMate',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: ConfMate(),
+    return FutureBuilder(
+      // Initialize FlutterFire:
+      future: _initialization,
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          return Container(
+            decoration: BoxDecoration(color: Colors.red),
+          );
+        }
+
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          return ConfMate();
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return Container(
+          decoration: BoxDecoration(color: Colors.deepPurple),
+        );
+      },
     );
   }
 }
@@ -44,38 +51,121 @@ class startApp extends StatelessWidget {
 class ConfMate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ConfMate',
-      home: Home(),
+    return MultiProvider(
+      providers: [
+        Provider<AuthenticationService>(
+          create: (_) => AuthenticationService(FirebaseAuth.instance),
+        ),
+        StreamProvider(
+          create: (context) =>
+              context.read<AuthenticationService>().authStateChanges,
+        ),
+      ],
+      child: MaterialApp(title: "ConfMate", home: AuthenticationWrapper()),
+    );
+  }
+}
+
+class AuthenticationWrapper extends StatelessWidget {
+  const AuthenticationWrapper({
+    Key key,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    FirestoreController controller;
+    final firebaseUser = context.watch<User>();
+    if (firebaseUser != null) {
+      Future<Profile> profile = controller.getUser(firebaseUser.email);
+      return Home();
+    }
+    return SignInPage();
+  }
+}
+
+class AuthenticationService {
+  final FirebaseAuth _firebaseAuth;
+  AuthenticationService(this._firebaseAuth);
+  Stream<User> get authStateChanges => _firebaseAuth.authStateChanges();
+  Future<String> signIn({String email, String password}) async {
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
+      return "Signed In";
+    } on FirebaseAuthException catch (e) {
+      return e.message;
+    }
+  }
+
+  Future<String> signUp({String email, String password}) async {
+    try {
+      await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      return "Signed Up";
+    } on FirebaseAuthException catch (e) {}
+  }
+}
+
+class SignInPage extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Sign In'),
+      ),
+      body: Column(
+        children: <Widget>[
+          TextField(
+            controller: emailController,
+            /*validator: (input) {
+                if (input.isEmpty) {
+                  return 'Please insert your email';
+                }
+              },
+              onSaved: (input) => _email = input,*/
+            decoration: InputDecoration(labelText: 'Email'),
+          ),
+          TextField(
+            /*validator: (input) {
+                if (input.length < 6) {
+                  return 'Your password is too short! (Must have at least 6 characters)';
+                }
+              },
+              onSaved: (input) => _password = input,*/
+            decoration: InputDecoration(labelText: 'Password'),
+            obscureText: true,
+          ),
+          RaisedButton(
+            onPressed: () {
+              context.read<AuthenticationService>().signIn(
+                  email: emailController.text.trim(),
+                  password: passwordController.text.trim());
+            },
+            child: Text('Sign In'),
+          )
+        ],
+      ),
     );
   }
 }
 
 class Home extends StatefulWidget {
-  Profile profile = Profile(
-      0,
-      "Wissam Ben Yedder",
-      "Player at AS Monaco",
-      "Football",
-      "Monaco",
-      "France",
-      "assets/wissam.jpg",
-      "Since debuting in FIFA, I have become one the most horrific terrors to face during FUT Champions. I love destroying the opponent team with my magnific moustache");
   @override
-  _HomeState createState() => _HomeState(profile);
+  _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  Profile profile;
-  _HomeState(this.profile);
+  _HomeState();
+  final FirestoreController firestore = FirestoreController();
 
   @override
   Widget build(BuildContext context) {
     int _currentIndex = 0;
     PageController _pageController = PageController();
     List<Widget> _screens = [
-      HomePage(this.profile),
-      TalksPage(this.profile),
+      HomePage(firestore),
+      TalksPage(),
       ProductsPage(),
       ProfilePage()
     ];
