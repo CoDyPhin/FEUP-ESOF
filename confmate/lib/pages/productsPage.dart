@@ -5,7 +5,7 @@ import 'package:confmate/Talk.dart';
 import 'package:confmate/Profile.dart';
 
 List<Profile> profilesList = [
-  Profile(
+  /*Profile(
       1,
       "Tiago Saramago",
       "Youtuber",
@@ -34,9 +34,9 @@ List<Profile> profilesList = [
       "ESTE JA ESTA PERDIDO NAO NAO NAO DEIXA ME SAIR POR FAVOR"),
   Profile(4, "Pedro Queirós", "Student", "FEUP", "Penafiel", "Portugal",
       "assets/queiros.png", "Fds mén")
-];
+];*/
 
-List<Talk> talksList = [
+/*List<Talk> talksList = [
   Talk(
       0,
       "Paysafes as Global Currency",
@@ -68,11 +68,11 @@ List<Talk> talksList = [
       "Join me as I tell carlos if he can listen to me. Not Recommended for non deaf humans",
       12,
       new List<int>(),
-      "assets/queiros.png")
+      "assets/queiros.png")*/
 ];
 
 List<Product> productList = [
-  Product(
+  /*Product(
       "Paysafes roubados",
       0,
       "Paysafes scammados pelo mitico #vski no Metin. Não garantimos que ainda tenham saldo, provavelmente foram totalmente depositados em apostas no CS ou em FIFA Points.",
@@ -119,11 +119,11 @@ List<Product> productList = [
       25,
       "assets/cat.jpg",
       "For researchers",
-      talksList[3])
+      talksList[3])*/
 ];
 
 List<Product> featuredList = [
-  Product(
+  /*Product(
       "Mochila da W33D",
       5,
       "Mochila W33D on the bankz #VSKI, mas manos, W33D é só nome da marca, não é para fumar manos",
@@ -154,7 +154,7 @@ List<Product> featuredList = [
       25,
       "assets/cat.jpg",
       "For researchers",
-      talksList[3])
+      talksList[3])*/
 ];
 
 List<Product> myProducts = [];
@@ -182,7 +182,7 @@ class _ProductsPageState extends State<ProductsPage>
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-              title: Text("Talks Products"),
+              title: Text("Products"),
               bottom: TabBar(
                 tabs: <Widget>[
                   Tab(
@@ -265,7 +265,7 @@ class _ProductsPageState extends State<ProductsPage>
                               MaterialPageRoute(
                                   builder: (context) =>
                                       productDescription(list[index])));
-                          if (result != null) {
+                          /*if (result != null) {
                             if (!list[index].appliedFor) {
                               myProducts.add(list[index]);
                               list[index].appliedFor = true;
@@ -273,7 +273,7 @@ class _ProductsPageState extends State<ProductsPage>
                               myProducts.remove(list[index]);
                               list[index].appliedFor = false;
                             }
-                          }
+                          }*/
                         },
                         child: Container(
                             height: 125.0,
@@ -366,7 +366,7 @@ class _productDescriptionState extends State<productDescription> {
                       borderRadius: BorderRadius.circular(20.0),
                       image: DecorationImage(
                           alignment: Alignment.center,
-                          image: AssetImage(this.product.picture),
+                          image: AssetImage("assets/paysafe.jpg"),
                           fit: BoxFit.cover)))),
           Positioned(
               left: 20.0,
@@ -437,7 +437,7 @@ class _productDescriptionState extends State<productDescription> {
               top: 390.0,
               child: Container(
                 child: Text(
-                  this.product.talk.host.name,
+                  product.talk.host.name,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 22.0,
@@ -498,7 +498,8 @@ class _productDescriptionState extends State<productDescription> {
                 textColor: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0)),
-                child: product.appliedFor
+                child: Text(
+                    "ola") /*product.appliedFor
                     ? Text(
                         "Unapply For",
                         style: TextStyle(
@@ -516,7 +517,8 @@ class _productDescriptionState extends State<productDescription> {
                             fontWeight: FontWeight.bold,
                             color: Colors.black),
                         textAlign: TextAlign.center,
-                      )),
+                      )*/
+                ),
           ),
         ]),
       ]),

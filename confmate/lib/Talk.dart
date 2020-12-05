@@ -1,19 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'Product.dart';
-
 import 'Profile.dart';
 
 class Talk {
-  int id;
-  String name;
-  Profile host;
-  String description;
-  int seats;
-  List<int> people;
-  String photo;
+  final String name;
+  final Profile host;
+  final String description;
+  final int seats;
+  //List<int> people;
+  //final photo;
+  final DocumentReference reference;
 
-  Talk(this.id, this.name, this.host, this.description, this.seats, this.people,
-      this.photo);
+  Talk(this.name, this.description, this.seats, this.host, this.reference);
+
+  Talk.fromMap(Map<String, dynamic> map, {this.reference})
+      : assert(map['name'] != null),
+        name = map['name'],
+        host = map['hostID'],
+        description = map['description'],
+        seats = map['seats'];
+
+  Talk.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data(), reference: snapshot.reference);
 }
 
 class talkDescription extends StatefulWidget {
@@ -72,25 +81,25 @@ class _talkDescriptionState extends State<talkDescription> {
   //Check if the seat is already booked
   void checkBooked() {
     setState(() {
-      for (int i = 0; i < this.talk.people.length; i++)
+      /*for (int i = 0; i < this.talk.people.length; i++)
         if (this.talk.people.elementAt(i) == 0) {
           bookSeat = "Unbook Seat";
         } else {
           bookSeat = "Book Seat";
-        }
+        }*/
     });
   }
 
   //Booking/unbooking seat
   void bookingUnbooking() {
     setState(() {
-      if (bookSeat == "Book Seat") {
+      /*if (bookSeat == "Book Seat") {
         bookSeat = "Unbook Seat";
         this.talk.people.add(0);
       } else {
         bookSeat = "Book Seat";
         this.talk.people.remove(0);
-      }
+      }*/
     });
   }
 
@@ -132,7 +141,7 @@ class _talkDescriptionState extends State<talkDescription> {
                       borderRadius: BorderRadius.circular(200.0),
                       image: DecorationImage(
                           alignment: Alignment.center,
-                          image: AssetImage(this.talk.photo),
+                          image: AssetImage(talk.host.photo),
                           fit: BoxFit.cover)))),
           Positioned(
               top: 220.0,
@@ -150,7 +159,7 @@ class _talkDescriptionState extends State<talkDescription> {
               top: 260.0,
               child: Container(
                 child: Text(
-                  this.talk.host.name,
+                  talk.host.name,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 25.0,
@@ -250,13 +259,13 @@ class _talkDescriptionState extends State<talkDescription> {
     );
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Attention!"),
+      title: Text("AlertDialog"),
       content: Text((() {
         if (bookSeat == "Book Seat") {
-          return "You're about to book a seat in this talk.";
+          return "You're about to book a seat in this talk!";
         }
 
-        return "You're about to unbook a seat in this talk.";
+        return "You're about to unbook a seat in this talk!";
       })()),
       //Text("You're about to book a seat in this talk!"),
       actions: [

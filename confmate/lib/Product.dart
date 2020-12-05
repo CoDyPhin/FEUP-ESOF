@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:confmate/Profile.dart';
 import 'package:flutter/material.dart';
 
 import 'Talk.dart';
@@ -8,10 +10,10 @@ class Product {
   String picture;
   String audience;
   Talk talk;
-  int price, id;
-  bool appliedFor = false;
-  bool featured = false;
+  bool applied;
+  bool featured;
+  DocumentReference reference;
 
-  Product(this.name, this.id, this.description, this.price, this.picture,
-      this.audience, this.talk);
+  Product(this.name, this.description, this.audience, this.applied,
+      this.featured, this.talk, this.reference);
 }
