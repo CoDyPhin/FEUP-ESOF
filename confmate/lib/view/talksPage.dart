@@ -1,11 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:confmate/Product.dart';
-import 'package:confmate/Talk.dart';
+import 'package:confmate/model/Product.dart';
+import 'package:confmate/model/Talk.dart';
 import 'package:confmate/controller/FirestoreController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
-import '../Profile.dart';
 
 class TalksPage extends StatefulWidget {
   final FirestoreController _firestore;
@@ -60,7 +57,7 @@ class _TalksPageState extends State<TalksPage>
             child: Scaffold(
               backgroundColor: Colors.white,
               appBar: AppBar(
-                  title: Text("Products"),
+                  title: Text("Talks"),
                   bottom: TabBar(
                     tabs: <Widget>[
                       Tab(

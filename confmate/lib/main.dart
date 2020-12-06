@@ -1,13 +1,14 @@
-import 'package:confmate/Profile.dart';
-import 'package:confmate/authentication.dart';
-import 'package:confmate/pages/homePage.dart';
-import 'package:confmate/pages/productsPage.dart';
-import 'package:confmate/pages/profilePage.dart';
-import 'package:confmate/pages/talksPage.dart';
-import 'package:confmate/signin.dart';
+import 'package:confmate/controller/authentication.dart';
+import 'package:confmate/view/homePage.dart';
+import 'package:confmate/view/navigatorPage.dart';
+import 'package:confmate/view/productsPage.dart';
+import 'package:confmate/view/profilePage.dart';
+import 'package:confmate/view/talksPage.dart';
+import 'package:confmate/view/SignInPage.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'controller/FirestoreController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,62 +75,38 @@ class ConfMate extends StatelessWidget {
   }
 }
 
-class Home extends StatefulWidget {
-  final FirestoreController _firestore = FirestoreController();
-  final firebaseUser;
-
-  Home(this.firebaseUser);
+class Redirecting extends StatelessWidget {
   @override
-  _HomeState createState() => _HomeState(this.firebaseUser, this._firestore);
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        Provider<AuthenticationService>(
+          create: (_) => AuthenticationService(FirebaseAuth.instance),
+        ),
+        StreamProvider(
+          create: (context) =>
+              context.read<AuthenticationService>().authStateChanges,
+        ),
+      ],
+      child: MaterialApp(
+          title: "ConfMate", home: AuthenticationWrapperRedirected()),
+    );
+  }
 }
 
-class _HomeState extends State<Home> {
-  final firebaseUser;
-  final FirestoreController _firestore;
-  _HomeState(this.firebaseUser, this._firestore);
-  bool showLoadingIndicator = false;
-  ScrollController scrollController;
-
+class AuthenticationWrapperRedirected extends StatelessWidget {
+  final FirestoreController firestore = FirestoreController();
+  @override
   Widget build(BuildContext context) {
-    int _currentIndex = 0;
-    PageController _pageController = PageController();
-    List<Widget> _screens = [
-      HomePage(_firestore, firebaseUser),
-      TalksPage(_firestore),
-      ProductsPage(_firestore),
-      ProfilePage(_firestore, firebaseUser),
-    ];
+    final firebaseUser = context.watch<User>();
 
-    void _onPageChanged(int index) {
-      _pageController.jumpToPage(index);
+    if (firebaseUser != null) {
+      return Home(firebaseUser);
     }
-
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        children: _screens,
-        onPageChanged: _onPageChanged,
-      ),
-      backgroundColor: Colors.white,
-      bottomNavigationBar: CurvedNavigationBar(
-        color: Colors.blue,
         backgroundColor: Colors.white,
-        buttonBackgroundColor: Colors.white,
-        animationDuration: Duration(milliseconds: 200),
-        animationCurve: Curves.bounceInOut,
-        onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-            _pageController.jumpToPage(_currentIndex);
-          });
-        },
-        items: <Widget>[
-          Icon(Icons.home, size: 30),
-          Icon(Icons.chat_bubble_outline, size: 30),
-          Icon(Icons.shopping_bag_outlined, size: 30),
-          Icon(Icons.person_outlined, size: 30)
-        ],
-      ),
-    );
+        body: SpinKitRing(
+          color: Colors.blue,
+        ));
   }
 }

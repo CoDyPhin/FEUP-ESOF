@@ -12,8 +12,9 @@ class Profile {
   String country;
   String photo;
   String description;
+  bool host;
   DocumentReference reference;
 
   Profile(this.firstname, this.lastname, this.job, this.area, this.city,
-      this.country, this.photo, this.description, this.reference);
+      this.country, this.photo, this.description, this.host, this.reference);
 }

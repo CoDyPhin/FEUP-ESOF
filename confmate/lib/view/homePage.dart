@@ -1,12 +1,12 @@
 import 'package:confmate/controller/FirestoreController.dart';
-import 'package:confmate/pages/talksPage.dart';
+import 'package:confmate/view/talksPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import '../Product.dart';
-import '../Profile.dart';
-import '../Talk.dart';
-import '../pages/productsPage.dart';
+import '../model/Product.dart';
+import '../model/Profile.dart';
+import '../model/Talk.dart';
+import '../view/productsPage.dart';
 
 class HomePage extends StatefulWidget {
   final FirestoreController _firestore;
@@ -65,14 +65,12 @@ class _HomePageState extends State<HomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  _profile != null
-                      ? Text('Welcome, ' + _profile.firstname,
-                          style: TextStyle(
-                              fontFamily: 'varela',
-                              fontSize: 30.0,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF473D3A)))
-                      : Text("goods"),
+                  Text('Welcome, ' + _profile.firstname,
+                      style: TextStyle(
+                          fontFamily: 'varela',
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF473D3A))),
                   Padding(
                     padding: EdgeInsets.only(right: 30, top: 20),
                     child: Container(
@@ -137,6 +135,7 @@ class _HomePageState extends State<HomePage> {
                   child: ListView(scrollDirection: Axis.horizontal, children: [
                     for (Product x in _products) _productListCard(x),
                   ])),
+              SizedBox(height: 30.0),
             ]));
   }
 

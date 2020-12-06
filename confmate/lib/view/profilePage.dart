@@ -1,9 +1,10 @@
-import 'package:confmate/authentication.dart';
+import 'package:confmate/controller/authentication.dart';
 import 'package:confmate/controller/FirestoreController.dart';
+import 'package:confmate/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import '../Profile.dart';
+import '../model/Profile.dart';
 
 import 'package:provider/provider.dart';
 
@@ -183,6 +184,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: FloatingActionButton(
                       onPressed: () {
                         context.read<AuthenticationService>().signOut();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AuthenticationWrapper()));
                       },
                       child: Icon(Icons.exit_to_app),
                       backgroundColor: Colors.red,
