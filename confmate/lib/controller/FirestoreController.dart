@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:confmate/Product.dart';
-import 'package:confmate/Profile.dart';
-import 'package:confmate/Talk.dart';
+import 'package:confmate/model/Product.dart';
+import 'package:confmate/model/Profile.dart';
+import 'package:confmate/model/Talk.dart';
 
 class FirestoreController {
   static final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -13,6 +13,24 @@ class FirestoreController {
 
   void setCurrentUser(Profile user) {
     _currentUser = user;
+  }
+
+  void addUser(String firstname, String lastname, String username, String email,
+      String city, String country, bool isHost) {
+    firestore.collection("profile").add({
+      "area": "Add Your Area!",
+      "city": city,
+      "country": country,
+      "description":
+          "No Description yet! Add a Description to your profile on the Edit Menu!",
+      "email": email,
+      "firstname": firstname,
+      "lastname": lastname,
+      "job": "Add a Job!",
+      "photo": "assets/wissam.jpg",
+      "username": username,
+      "host": isHost
+    });
   }
 
   Future<Profile> getUser(String email) async {
@@ -69,10 +87,11 @@ class FirestoreController {
     String city = snapshot.get('city');
     String country = snapshot.get('country');
     String job = snapshot.get('job');
+    bool host = snapshot.get('host');
 
     DocumentReference reference = snapshot.reference;
     Profile user = Profile(firstname, lastname, job, area, city, country,
-        picture, description, reference);
+        picture, description, host, reference);
 
     return user;
   }
@@ -86,7 +105,6 @@ class FirestoreController {
     DocumentReference userRef = snapshot.get('talkID');
     Talk talk = await _makeTalkFromDoc(await userRef.get());
     DocumentReference reference = snapshot.reference;
-    return Product(
-        name, description, audience, featured, talk, reference);
+    return Product(name, description, audience, featured, talk, reference);
   }
 }

@@ -1,50 +1,7 @@
-/*import 'package:confmate/authentication.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-class SignInPage extends StatelessWidget {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          TextField(
-            controller: emailController,
-            decoration: InputDecoration(
-              labelText: "Email",
-            ),
-          ),
-          TextField(
-            obscureText: true,
-            controller: passwordController,
-            decoration: InputDecoration(
-              labelText: "Password",
-            ),
-          ),
-          RaisedButton(
-            onPressed: () {
-              context.read<AuthenticationService>().signIn(
-                    email: emailController.text.trim(),
-                    password: passwordController.text.trim(),
-                  );
-            },
-            child: Text("Sign in"),
-          )
-        ],
-      ),
-    );
-  }
-}*/
-
-import 'package:confmate/authentication.dart';
 import 'package:confmate/controller/FirestoreController.dart';
-import 'package:confmate/signup.dart';
+import 'package:confmate/view/FinishSignUp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
 final kHintTextStyle = TextStyle(
   color: Colors.white54,
@@ -69,19 +26,56 @@ final kBoxDecorationStyle = BoxDecoration(
   ],
 );
 
-class LoginScreen extends StatefulWidget {
+class SignUpPage extends StatefulWidget {
   final FirestoreController _firestore;
 
-  LoginScreen(this._firestore);
+  SignUpPage(this._firestore);
   @override
-  _LoginScreenState createState() => _LoginScreenState(_firestore);
+  _SignUpPageState createState() => _SignUpPageState(_firestore);
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpPageState extends State<SignUpPage> {
   final FirestoreController _firestore;
-  _LoginScreenState(this._firestore);
+  _SignUpPageState(this._firestore);
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  Widget _buildUsernameTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Username',
+          style: kLabelStyle,
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 60.0,
+          child: TextField(
+            keyboardType: TextInputType.emailAddress,
+            controller: usernameController,
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.person_outlined,
+                color: Colors.white,
+              ),
+              hintText: 'Enter your Username',
+              hintStyle: kHintTextStyle,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildEmailTF() {
     return Column(
@@ -162,10 +156,14 @@ class _LoginScreenState extends State<LoginScreen> {
       child: RaisedButton(
         elevation: 5.0,
         onPressed: () {
-          context.read<AuthenticationService>().signIn(
-                email: emailController.text.trim(),
-                password: passwordController.text.trim(),
-              );
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ChooseHostAttendee(
+                      this._firestore,
+                      usernameController.text.trim(),
+                      emailController.text.trim(),
+                      passwordController.text.trim())));
         },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
@@ -173,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         color: Colors.white,
         child: Text(
-          'LOGIN',
+          'SIGN UP',
           style: TextStyle(
             color: Color(0xFF527DAA),
             letterSpacing: 1.5,
@@ -208,39 +206,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-  }
-
-  Widget _buildSignupBtn() {
-    return Row(children: <Widget>[
-      Container(
-          padding: EdgeInsets.only(left: 15),
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Don\'t have an Account? ',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          )),
-      FlatButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => SignUpPage(this._firestore)));
-          },
-          child: Text(
-            'SIGN UP',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 17),
-          )),
-    ]);
   }
 
   @override
@@ -288,7 +253,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       SizedBox(
-                        height: 50.0,
+                        height: 40.0,
+                      ),
+                      _buildUsernameTF(),
+                      SizedBox(
+                        height: 30.0,
                       ),
                       _buildEmailTF(),
                       SizedBox(
@@ -298,8 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         height: 25.0,
                       ),
-                      _buildLoginBtn(context),
-                      _buildSignupBtn(),
+                      _buildLoginBtn(context)
                     ],
                   ),
                 ),
