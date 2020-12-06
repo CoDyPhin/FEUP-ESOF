@@ -1,15 +1,18 @@
 import 'package:confmate/Profile.dart';
+import 'package:confmate/authentication.dart';
+import 'package:confmate/pages/homePage.dart';
 import 'package:confmate/pages/productsPage.dart';
+import 'package:confmate/pages/profilePage.dart';
+import 'package:confmate/pages/talksPage.dart';
+import 'package:confmate/signin.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-//import 'package:mango/firebase.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'controller/FirestoreController.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-import 'pages/profilePage.dart';
-import 'pages/homePage.dart';
-import 'pages/talksPage.dart';
-
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(startApp());
@@ -18,66 +21,83 @@ void main() async {
 class startApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ConfMate',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return MultiProvider(
+      providers: [
+        Provider<AuthenticationService>(
+          create: (_) => AuthenticationService(FirebaseAuth.instance),
+        ),
+        StreamProvider(
+          create: (context) =>
+              context.read<AuthenticationService>().authStateChanges,
+        )
+      ],
+      child: MaterialApp(
+        title: 'ConfMate',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: AuthenticationWrapper(),
       ),
-      home: ConfMate(),
     );
+  }
+}
+
+class AuthenticationWrapper extends StatelessWidget {
+  final FirestoreController firestore = FirestoreController();
+  @override
+  Widget build(BuildContext context) {
+    final firebaseUser = context.watch<User>();
+
+    if (firebaseUser != null) {
+      return Home(firebaseUser);
+    }
+    return LoginScreen(firestore);
   }
 }
 
 class ConfMate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ConfMate',
-      home: Home(),
+    return MultiProvider(
+      providers: [
+        Provider<AuthenticationService>(
+          create: (_) => AuthenticationService(FirebaseAuth.instance),
+        ),
+        StreamProvider(
+          create: (context) =>
+              context.read<AuthenticationService>().authStateChanges,
+        ),
+      ],
+      child: MaterialApp(title: "ConfMate", home: AuthenticationWrapper()),
     );
   }
 }
 
 class Home extends StatefulWidget {
-  Profile profile = Profile(
-      0,
-      "Wissam Ben Yedder",
-      "Player at AS Monaco",
-      "Football",
-      "Monaco",
-      "France",
-      "assets/wissam.jpg",
-      "Since debuting in FIFA, I have become one the most horrific terrors to face during FUT Champions. I love destroying the opponent team with my magnific moustache");
+  final FirestoreController _firestore = FirestoreController();
+  final firebaseUser;
+
+  Home(this.firebaseUser);
   @override
-  _HomeState createState() => _HomeState(profile);
+  _HomeState createState() => _HomeState(this.firebaseUser, this._firestore);
 }
 
 class _HomeState extends State<Home> {
-  Profile profile;
-  _HomeState(this.profile);
+  final firebaseUser;
+  final FirestoreController _firestore;
+  _HomeState(this.firebaseUser, this._firestore);
+  bool showLoadingIndicator = false;
+  ScrollController scrollController;
 
-  @override
   Widget build(BuildContext context) {
     int _currentIndex = 0;
     PageController _pageController = PageController();
     List<Widget> _screens = [
-      HomePage(this.profile),
-      TalksPage(this.profile),
-      ProductsPage(),
-      ProfilePage()
+      HomePage(_firestore, firebaseUser),
+      TalksPage(_firestore),
+      ProductsPage(_firestore),
+      ProfilePage(_firestore, firebaseUser),
     ];
 
     void _onPageChanged(int index) {

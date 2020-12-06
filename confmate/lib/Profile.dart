@@ -1,20 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'Product.dart';
 
-final bool alignLabelWithHint = true;
-
 class Profile {
-  int id;
-  String name;
+  String firstname;
+  String lastname;
   String job;
   String area;
   String city;
   String country;
   String photo;
   String description;
-  List<Product> applied = [];
+  DocumentReference reference;
 
-  Profile(this.id, this.name, this.job, this.area, this.city, this.country,
-      this.photo, this.description);
+  Profile(this.firstname, this.lastname, this.job, this.area, this.city,
+      this.country, this.photo, this.description, this.reference);
 }
