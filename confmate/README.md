@@ -1,6 +1,6 @@
 # confmate
 
-A new Flutter project.
+OpenCx networking app
 
 ## Getting Started
 
