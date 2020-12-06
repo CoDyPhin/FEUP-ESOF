@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:confmate/controller/FirestoreController.dart';
 import 'package:confmate/pages/talksPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import '../FirestoreController.dart';
 import '../Product.dart';
 import '../Profile.dart';
 import '../Talk.dart';
@@ -10,18 +10,25 @@ import '../pages/productsPage.dart';
 
 class HomePage extends StatefulWidget {
   final FirestoreController _firestore;
+  final _firebaseUser;
 
-  HomePage(this._firestore);
+  HomePage(this._firestore, this._firebaseUser);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePageState createState() =>
+      _HomePageState(this._firestore, this._firebaseUser);
 }
 
 class _HomePageState extends State<HomePage> {
   List<Talk> _talks = new List();
   List<Product> _products = new List();
-  bool showLoadingIndicator = false;
+  bool showLoadingIndicator = true;
   ScrollController scrollController;
+  final _firebaseUser;
+  Profile _profile;
+  final FirestoreController _firestore;
+
+  _HomePageState(this._firestore, this._firebaseUser);
 
   @override
   void initState() {
@@ -36,7 +43,8 @@ class _HomePageState extends State<HomePage> {
     });
     _talks = await widget._firestore.getTalks();
     _products = await widget._firestore.getProducts();
-    print(_products.length);
+    _profile = await widget._firestore.getUser(this._firebaseUser.email);
+    _firestore.setCurrentUser(_profile);
     if (this.mounted)
       setState(() {
         showLoadingIndicator = false;
@@ -45,84 +53,91 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: ListView(padding: EdgeInsets.only(left: 15.0), children: <Widget>[
-          SizedBox(height: 50.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text('Welcome, Wissam',
-                  style: TextStyle(
-                      fontFamily: 'varela',
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF473D3A))),
+    return showLoadingIndicator
+        ? SpinKitRing(
+            color: Colors.blue,
+          )
+        : Scaffold(
+            backgroundColor: Colors.white,
+            body: ListView(padding: EdgeInsets.only(left: 15.0), children: <
+                Widget>[
+              SizedBox(height: 50.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  _profile != null
+                      ? Text('Welcome, ' + _profile.firstname,
+                          style: TextStyle(
+                              fontFamily: 'varela',
+                              fontSize: 30.0,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF473D3A)))
+                      : Text("goods"),
+                  Padding(
+                    padding: EdgeInsets.only(right: 30, top: 20),
+                    child: Container(
+                      height: 75.0,
+                      width: 75.0,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100.0),
+                          image: DecorationImage(
+                              image: AssetImage('assets/wissam.jpg'),
+                              fit: BoxFit.cover)),
+                    ),
+                  ),
+                ],
+              ),
               Padding(
-                padding: EdgeInsets.only(right: 30, top: 20),
+                padding: const EdgeInsets.only(right: 100.0),
                 child: Container(
-                  height: 75.0,
-                  width: 75.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100.0),
-                      image: DecorationImage(
-                          image: AssetImage('assets/wissam.jpg'),
-                          fit: BoxFit.cover)),
+                  child: Text(
+                    'Let\'s select the best talk for you!',
+                    style: TextStyle(
+                        fontFamily: 'nunito',
+                        fontSize: 17.0,
+                        fontWeight: FontWeight.w300,
+                        color: Color(0xFFB0AAA7)),
+                  ),
                 ),
               ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 100.0),
-            child: Container(
-              child: Text(
-                'Let\'s select the best talk for you!',
-                style: TextStyle(
-                    fontFamily: 'nunito',
-                    fontSize: 17.0,
-                    fontWeight: FontWeight.w300,
-                    color: Color(0xFFB0AAA7)),
+              SizedBox(height: 25.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    'Featured Talks',
+                    style: TextStyle(
+                        fontFamily: 'varela',
+                        fontSize: 17.0,
+                        color: Color(0xFF473D3A)),
+                  ),
+                ],
               ),
-            ),
-          ),
-          SizedBox(height: 25.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                'Featured Talks',
-                style: TextStyle(
-                    fontFamily: 'varela',
-                    fontSize: 17.0,
-                    color: Color(0xFF473D3A)),
+              Container(
+                  height: 350.0,
+                  child: ListView(scrollDirection: Axis.horizontal, children: [
+                    for (Talk x in _talks) _talkListCard(x),
+                  ])),
+              SizedBox(height: 25.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    'Featured Talks',
+                    style: TextStyle(
+                        fontFamily: 'varela',
+                        fontSize: 17.0,
+                        color: Color(0xFF473D3A)),
+                  ),
+                ],
               ),
-            ],
-          ),
-          Container(
-              height: 350.0,
-              child: ListView(scrollDirection: Axis.horizontal, children: [
-                for (Talk x in _talks) _talkListCard(x),
-              ])),
-          SizedBox(height: 25.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                'Featured Talks',
-                style: TextStyle(
-                    fontFamily: 'varela',
-                    fontSize: 17.0,
-                    color: Color(0xFF473D3A)),
-              ),
-            ],
-          ),
-          SizedBox(height: 15.0),
-          Container(
-              height: 350.0,
-              child: ListView(scrollDirection: Axis.horizontal, children: [
-                for (Product x in _products) _productListCard(x),
-              ])),
-        ]));
+              SizedBox(height: 15.0),
+              Container(
+                  height: 350.0,
+                  child: ListView(scrollDirection: Axis.horizontal, children: [
+                    for (Product x in _products) _productListCard(x),
+                  ])),
+            ]));
   }
 
   Widget _talkListCard(Talk talk) {
@@ -151,7 +166,9 @@ class _HomePageState extends State<HomePage> {
                                   height: 50.0,
                                 ),
                                 Text(
-                                  talk.host.name,
+                                  talk.host.firstname +
+                                      ' ' +
+                                      talk.host.lastname,
                                   style: TextStyle(
                                       fontFamily: 'nunito',
                                       fontSize: 14.0,
@@ -177,7 +194,8 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => talkDescription(talk)));
+                                  builder: (context) =>
+                                      talkDescription(talk, this._firestore)));
                         },
                         icon: Icon(Icons.arrow_forward_ios, size: 18),
                         label: Text("MORE DETAILS"),
@@ -199,7 +217,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   _productListCard(Product product) {
-    print(product.audience);
     return Padding(
         padding: EdgeInsets.only(left: 15.0, right: 15.0),
         child: Container(

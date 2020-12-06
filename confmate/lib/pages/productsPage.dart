@@ -1,8 +1,10 @@
+import 'package:confmate/controller/FirestoreController.dart';
 import 'package:flutter/material.dart';
 
 import 'package:confmate/Product.dart';
 import 'package:confmate/Talk.dart';
 import 'package:confmate/Profile.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 List<Profile> profilesList = [
   /*Profile(
@@ -160,6 +162,9 @@ List<Product> featuredList = [
 List<Product> myProducts = [];
 
 class ProductsPage extends StatefulWidget {
+  final FirestoreController _firestore;
+
+  ProductsPage(this._firestore);
   @override
   _ProductsPageState createState() => _ProductsPageState();
 }
@@ -167,73 +172,98 @@ class ProductsPage extends StatefulWidget {
 class _ProductsPageState extends State<ProductsPage>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
+  bool showLoadingIndicator = false;
+  ScrollController scrollController;
+  List<Product> _products = new List();
+  List<Product> _featuredproducts = new List();
 
   _ProductsPageState();
 
   @override
   void initState() {
     super.initState();
+    this.refreshModel(true);
     _tabController = TabController(length: 3, vsync: this);
   }
 
+  Future<void> refreshModel(bool showIndicator) async {
+    Stopwatch sw = Stopwatch()..start();
+    setState(() {
+      showLoadingIndicator = showIndicator;
+    });
+    _products = await widget._firestore.getProducts();
+    for (var x = 0; x < _products.length; x++) {
+      if (_products[x].featured) _featuredproducts.add(_products[x]);
+    }
+    if (this.mounted)
+      setState(() {
+        showLoadingIndicator = false;
+      });
+    print("Products fetch time: " + sw.elapsed.toString());
+  }
+
   Widget build(BuildContext context) {
-    return DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-              title: Text("Products"),
-              bottom: TabBar(
-                tabs: <Widget>[
-                  Tab(
-                    text: 'Featured',
-                  ),
-                  Tab(
-                    text: 'All',
-                  ),
-                  Tab(
-                    text: 'My Products',
-                  ),
+    return showLoadingIndicator
+        ? SpinKitRing(
+            color: Colors.blue,
+          )
+        : DefaultTabController(
+            length: 3,
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              appBar: AppBar(
+                  title: Text("Products"),
+                  bottom: TabBar(
+                    tabs: <Widget>[
+                      Tab(
+                        text: 'Featured',
+                      ),
+                      Tab(
+                        text: 'All',
+                      ),
+                      Tab(
+                        text: 'My Products',
+                      ),
+                    ],
+                  )),
+              body: TabBarView(
+                children: [
+                  Container(
+                      height: 500.0,
+                      child: GridView.builder(
+                        itemCount: _featuredproducts.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.75,
+                        ),
+                        itemBuilder: (context, index) =>
+                            _productDisplay(_featuredproducts, index),
+                      )),
+                  Container(
+                      height: 500.0,
+                      child: GridView.builder(
+                        itemCount: _products.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.75,
+                        ),
+                        itemBuilder: (context, index) =>
+                            _productDisplay(_products, index),
+                      )),
+                  Container(
+                      height: 500.0,
+                      child: GridView.builder(
+                        itemCount: myProducts.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.75,
+                        ),
+                        itemBuilder: (context, index) =>
+                            _productDisplay(myProducts, index),
+                      )),
                 ],
-              )),
-          body: TabBarView(
-            children: [
-              Container(
-                  height: 500.0,
-                  child: GridView.builder(
-                    itemCount: featuredList.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.75,
-                    ),
-                    itemBuilder: (context, index) =>
-                        _productDisplay(featuredList, index),
-                  )),
-              Container(
-                  height: 500.0,
-                  child: GridView.builder(
-                    itemCount: productList.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.75,
-                    ),
-                    itemBuilder: (context, index) =>
-                        _productDisplay(productList, index),
-                  )),
-              Container(
-                  height: 500.0,
-                  child: GridView.builder(
-                    itemCount: myProducts.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.75,
-                    ),
-                    itemBuilder: (context, index) =>
-                        _productDisplay(myProducts, index),
-                  )),
-            ],
-          ),
-        ));
+              ),
+            ));
   }
 
   _productDisplay(List<Product> list, int index) {
@@ -281,7 +311,7 @@ class _ProductsPageState extends State<ProductsPage>
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20.0),
                                 image: DecorationImage(
-                                    image: AssetImage(list[index].picture),
+                                    image: AssetImage("assets/fifa.jpg"),
                                     fit: BoxFit.cover)))))),
             Positioned(
                 left: 20.0,
@@ -298,7 +328,7 @@ class _ProductsPageState extends State<ProductsPage>
                 left: 20.0,
                 top: 212,
                 child: Text(
-                  productList[index].audience,
+                  list[index].audience,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 14.0,
@@ -340,7 +370,6 @@ class _productDescriptionState extends State<productDescription> {
   AppBar buildAppBar() => AppBar(
         backgroundColor: Colors.blue[700],
         elevation: 0,
-        title: Text("Goods"),
       );
 
   Body(BuildContext context) {
@@ -437,7 +466,7 @@ class _productDescriptionState extends State<productDescription> {
               top: 390.0,
               child: Container(
                 child: Text(
-                  product.talk.host.name,
+                  product.talk.host.firstname,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 22.0,
@@ -463,13 +492,15 @@ class _productDescriptionState extends State<productDescription> {
               width: 350.0,
               child: Column(
                 children: <Widget>[
-                  Text(
-                    product.description,
-                    style: TextStyle(
-                        fontFamily: 'nunito',
-                        fontSize: 15.0,
-                        color: Colors.black),
-                  )
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        product.description,
+                        style: TextStyle(
+                            fontFamily: 'nunito',
+                            fontSize: 15.0,
+                            color: Colors.black),
+                      ))
                 ],
               )),
           Positioned(

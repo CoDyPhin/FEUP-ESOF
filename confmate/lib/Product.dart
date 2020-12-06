@@ -10,10 +10,9 @@ class Product {
   String picture;
   String audience;
   Talk talk;
-  bool applied;
   bool featured;
   DocumentReference reference;
 
-  Product(this.name, this.description, this.audience, this.applied,
+  Product(this.name, this.description, this.audience,
       this.featured, this.talk, this.reference);
 }
