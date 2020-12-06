@@ -191,31 +191,40 @@ Value: Must Have
 
 Effort: M
 
+### Domain Model
+
+![enter image description here](https://raw.githubusercontent.com/FEUP-ESOF-2020-21/open-cx-t2g5-5headers/master/docs/img/domainModel.png)
+
+Our app concepts are easily understood, consisting of talks, products and profiles. 
+Every user profile can be connected to a talk as an attendee or host and can also apply for products, justifying his option on this subject. Furthermore, talks have limited seats and featured products that will be given away by the host to attendees that chose the products that he is promoting.
+
 ---
 ## Architecture and Design
 
-The architecture of a software system encompasses the set of key decisions about its overall organization.
-
-A well written architecture document is brief but reduces the amount of time it takes new programmers to a project to understand the code to feel able to make modifications and enhancements.
-
-To document the architecture requires describing the decomposition of the system in their parts (high-level components) and the key behaviors and collaborations between them.
-
-In this section you should start by briefly describing the overall components of the project and their interrelations. You should also describe how you solved typical problems you may have encountered, pointing to well-known architectural and design patterns, if applicable.
+The architecture of a software system encompasses the set of key decisions about its overall organization. This way, logical and physical architectures are two main themes that will be covered in this specific topic.
 
 ### Logical architecture
 
-The purpose of this subsection is to document the high-level logical structure of the code, using a UML diagram with logical packages, without the worry of allocating to components, processes or machines.
 
-It can be beneficial to present the system both in a horizontal or vertical decomposition:
+![enter image description here](https://raw.githubusercontent.com/FEUP-ESOF-2020-21/open-cx-t2g5-5headers/master/docs/img/logicalArchitecture.png)
 
-- horizontal decomposition may define layers and implementation concepts, such as the user interface, business logic and concepts;
-- vertical decomposition can define a hierarchy of subsystems that cover all layers of implementation.
+
+To structure our app on a high-level, we decided to implement the MVC architectural pattern, since it is a good standard for this type of project.
+
+Firstly, the Model contains all the application data: profiles, talks and products.
+
+Furthermore, the View component represents the concrete display of the app state (mainly composed by widgets).
+
+Finally, the Controller connects both previously referred components: the Model sends data for the View to display and the View sends user inputs for the Model to process. This process is completed using a set of objects that query the database (firestore), provide authentication functions, accept products, book seats, among other actions.
 
 ### Physical architecture
 
-The goal of this subsection is to document the high-level physical structure of the software system (machines, connections, software components installed, and their dependencies) using UML deployment diagrams or component diagrams (separate or integrated), showing the physical structure of the system.
 
-It should describe also the technologies considered and justify the selections made. Examples of technologies relevant for openCX are, for example, frameworks for mobile applications (Flutter vs ReactNative vs ...), languages to program with microbit, and communication with things (beacons, sensors, etc.).
+![enter image description here](https://raw.githubusercontent.com/FEUP-ESOF-2020-21/open-cx-t2g5-5headers/master/docs/img/physicalArchitecture.png)
+
+The user installs ConfMate on their smartphone and whenever they need to connect with our database (firestore), it communicates with it via HTTPS requests, storing and retrieving all the information needed.
+
+Discussing about the programming language we chose, Flutter was the best concrete option, because of two main issues: it was recommended by our teachers, while also seeming very appealing due to many provided built-in features.
 
 ### Prototype
 
@@ -293,4 +302,4 @@ Describe your contribution to open-cx (iteration 5), linking to the appropriate 
 - [API](https://docs.github.com/)
 - [Training](https://services.github.com/)
 - [Blog](https://github.blog/)
-- [About](
+- [About]
