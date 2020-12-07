@@ -54,7 +54,7 @@ class _HomeState extends State<Home> {
           });
         },
         items: <Widget>[
-          Icon(Icons.home, size: 30),
+          Icon(Icons.home_outlined, size: 30),
           Icon(Icons.chat_bubble_outline, size: 30),
           Icon(Icons.shopping_bag_outlined, size: 30),
           Icon(Icons.person_outlined, size: 30)
