@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:confmate/model/Comments.dart';
+import 'package:confmate/model/Notification.dart';
 import 'package:confmate/model/Product.dart';
 import 'package:confmate/model/Profile.dart';
 import 'package:confmate/model/Talk.dart';
@@ -14,6 +15,19 @@ class FirestoreController {
 
   void setCurrentUser(Profile user) {
     _currentUser = user;
+  }
+
+  Future<List<Notifications>> getMyNotifications() async {
+    QuerySnapshot snapshot = await firestore
+        .collection("notifications")
+        .where('attendee', isEqualTo: _currentUser.reference)
+        .get();
+    List<Future<Notifications>> notifications = new List();
+    for (DocumentSnapshot document in snapshot.docs) {
+      notifications.add(_makeNotificationsFromDoc(document));
+    }
+    if (snapshot.docs.length == 0) return [];
+    return await Future.wait(notifications);
   }
 
   Future<List<Comments>> getComments(Product product, Profile profile) async {
@@ -38,6 +52,14 @@ class FirestoreController {
     });
   }
 
+  void addNotification(Profile profile, Product product, bool seen) {
+    firestore.collection("notifications").add({
+      "attendee": profile.reference,
+      "product": product.reference,
+      "seen": seen,
+    });
+  }
+
   void addUser(String firstname, String lastname, String username, String email,
       String city, String country, bool isHost) {
     firestore.collection("profile").add({
@@ -54,6 +76,31 @@ class FirestoreController {
       "username": username,
       "host": isHost
     });
+  }
+
+  Future<List<Profile>> getUsers() async {
+    List<Future<Profile>> users = new List();
+    QuerySnapshot snapshot = await firestore.collection("profile").get();
+    for (DocumentSnapshot document in snapshot.docs) {
+      users.add(_makeUserFromSnapshot(document));
+    }
+    if (snapshot.docs.length == 0) return [];
+    return await Future.wait(users);
+  }
+
+  Future<List<Comments>> getCommentsForProduct(Product product) async {
+    List<Future<Comments>> comments = new List();
+    QuerySnapshot snapshot = await firestore
+        .collection("comments")
+        .where('product', isEqualTo: product.reference)
+        .get();
+
+    for (DocumentSnapshot document in snapshot.docs) {
+      comments.add(_makeCommentsFromDoc(document));
+    }
+
+    if (snapshot.docs.length == 0) return [];
+    return await Future.wait(comments);
   }
 
   Future<Profile> getUser(String email) async {
@@ -77,6 +124,19 @@ class FirestoreController {
     return await Future.wait(talks);
   }
 
+  Future<List<Talk>> getMyTalks() async {
+    List<Future<Talk>> talks = new List();
+    QuerySnapshot snapshot = await firestore
+        .collection("talks")
+        .where('hostID', isEqualTo: _currentUser.reference)
+        .get();
+    for (DocumentSnapshot document in snapshot.docs) {
+      talks.add(_makeTalkFromDoc(document));
+    }
+    if (snapshot.docs.length == 0) return [];
+    return await Future.wait(talks);
+  }
+
   Future<List<Product>> getProducts() async {
     List<Future<Product>> products = new List();
     QuerySnapshot snapshot = await firestore.collection("products").get();
@@ -93,6 +153,15 @@ class FirestoreController {
     DocumentReference product = snapshot.get('product');
     DocumentReference reference = snapshot.reference;
     return Comments(attendee, comment, product, reference);
+  }
+
+  Future<Notifications> _makeNotificationsFromDoc(
+      DocumentSnapshot snapshot) async {
+    DocumentReference attendee = snapshot.get('attendee');
+    DocumentReference product = snapshot.get('product');
+    bool seen = snapshot.get('seen');
+    DocumentReference reference = snapshot.reference;
+    return Notifications(attendee, product, seen, reference);
   }
 
   Future<Talk> _makeTalkFromDoc(DocumentSnapshot snapshot) async {
@@ -120,6 +189,8 @@ class FirestoreController {
     String job = snapshot.get('job');
     bool host = snapshot.get('host');
     String username = snapshot.get('username');
+
+    print("firstname" + firstname.toString());
 
     DocumentReference reference = snapshot.reference;
     Profile user = Profile(username, firstname, lastname, job, area, city,

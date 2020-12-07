@@ -1,6 +1,9 @@
 import 'package:confmate/controller/FirestoreController.dart';
 import 'package:confmate/model/Comments.dart';
+import 'package:confmate/model/Notification.dart';
 import 'package:confmate/model/Profile.dart';
+import 'package:confmate/model/Talk.dart';
+import 'package:confmate/view/notificationsPage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:confmate/model/Product.dart';
@@ -22,8 +25,13 @@ class _ProductsPageState extends State<ProductsPage>
   bool showLoadingIndicator = false;
   ScrollController scrollController;
   List<Product> _products = new List();
+  List<Product> _productstemp = new List();
   List<Product> _featuredproducts = new List();
+  List<Product> _myproducts = new List();
+  List<Notifications> _notifications = new List();
+  List<Talk> _mytalks = new List();
   Profile _profile;
+  bool noNewNotifications = true;
   final FirestoreController _firestore;
 
   _ProductsPageState(this._firestore);
@@ -40,12 +48,36 @@ class _ProductsPageState extends State<ProductsPage>
     setState(() {
       showLoadingIndicator = showIndicator;
     });
-    _products = await widget._firestore.getProducts();
+    _mytalks = await widget._firestore.getMyTalks();
+    _productstemp = await widget._firestore.getProducts();
     _profile = widget._firestore.getCurrentUser();
+    _notifications = await widget._firestore.getMyNotifications();
+
+    for (Notifications n in _notifications) {
+      if (!n.seen) noNewNotifications = false;
+    }
+
+    bool pass = true;
+    for (var x = 0; x < _productstemp.length; x++) {
+      for (var i = 0; i < _mytalks.length; i++) {
+        if (_mytalks[i].reference == _productstemp[x].talk.reference) {
+          pass = false;
+        }
+      }
+      if (pass) {
+        _products.add(_productstemp[x]);
+      } else {
+        _myproducts.add(_productstemp[x]);
+      }
+      pass = true;
+    }
+
+    if (_mytalks.isEmpty) _products = _productstemp;
 
     for (var x = 0; x < _products.length; x++) {
       if (_products[x].featured) _featuredproducts.add(_products[x]);
     }
+
     if (this.mounted)
       setState(() {
         showLoadingIndicator = false;
@@ -107,14 +139,14 @@ class _ProductsPageState extends State<ProductsPage>
                       Container(
                           height: 500.0,
                           child: GridView.builder(
-                            itemCount: myProducts.length,
+                            itemCount: _myproducts.length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               childAspectRatio: 0.75,
                             ),
                             itemBuilder: (context, index) =>
-                                _productDisplay(myProducts, index),
+                                _checkWhoApplied(_myproducts, index),
                           )),
                     ],
                   ),
@@ -124,17 +156,52 @@ class _ProductsPageState extends State<ProductsPage>
                 child: Scaffold(
                   backgroundColor: Colors.white,
                   appBar: AppBar(
-                      title: Text("Products"),
-                      bottom: TabBar(
-                        tabs: <Widget>[
-                          Tab(
-                            text: 'Featured',
-                          ),
-                          Tab(
-                            text: 'All',
-                          ),
-                        ],
-                      )),
+                    title: Text("Products"),
+                    bottom: TabBar(
+                      tabs: <Widget>[
+                        Tab(
+                          text: 'Featured',
+                        ),
+                        Tab(
+                          text: 'All',
+                        ),
+                      ],
+                    ),
+                    actions: noNewNotifications
+                        ? <Widget>[
+                            IconButton(
+                              icon: Icon(
+                                Icons.notifications,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  noNewNotifications = true;
+                                });
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => notificationsPage(
+                                            this._firestore)));
+                              },
+                            )
+                          ]
+                        : <Widget>[
+                            IconButton(
+                              icon: Icon(
+                                Icons.notification_important,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => notificationsPage(
+                                            this._firestore)));
+                              },
+                            )
+                          ],
+                  ),
                   body: TabBarView(
                     children: [
                       Container(
@@ -190,22 +257,13 @@ class _ProductsPageState extends State<ProductsPage>
                     width: 162.5,
                     child: FlatButton(
                         onPressed: () async {
-                          final result = await Navigator.push(
+                          await Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => productDescription(
                                       list[index],
                                       this._profile,
                                       this._firestore)));
-                          /*if (result != null) {
-                            if (!list[index].appliedFor) {
-                              myProducts.add(list[index]);
-                              list[index].appliedFor = true;
-                            } else if (list[index].appliedFor) {
-                              myProducts.remove(list[index]);
-                              list[index].appliedFor = false;
-                            }
-                          }*/
                         },
                         child: Container(
                             height: 125.0,
@@ -241,6 +299,345 @@ class _ProductsPageState extends State<ProductsPage>
         ),
       ],
     ));
+  }
+
+  _checkWhoApplied(List<Product> list, int index) {
+    return Container(
+        child: Column(
+      children: <Widget>[
+        Stack(
+          children: [
+            Container(height: 230.0, width: 230.0),
+            Positioned(
+                top: 30.0,
+                right: 18.5,
+                child: Container(
+                  height: 160.0,
+                  width: 160.0,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.blue[200]),
+                )),
+            Positioned(
+                right: 19.0,
+                top: 50.0,
+                child: new SizedBox(
+                    width: 162.5,
+                    child: FlatButton(
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => productWhoApplied(
+                                      list[index], this._firestore)));
+                        },
+                        child: Container(
+                            height: 125.0,
+                            width: 125.0,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20.0),
+                                image: DecorationImage(
+                                    image: AssetImage("assets/fifa.jpg"),
+                                    fit: BoxFit.cover)))))),
+            Positioned(
+                left: 20.0,
+                top: 195.0,
+                child: Text(
+                  list[index].name,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
+                )),
+            Positioned(
+                left: 20.0,
+                top: 212,
+                child: Text(
+                  list[index].audience,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black38),
+                )),
+          ],
+        ),
+      ],
+    ));
+  }
+}
+
+class productWhoApplied extends StatefulWidget {
+  Product product;
+  final FirestoreController _firestore;
+
+  productWhoApplied(this.product, this._firestore);
+
+  @override
+  _productWhoAppliedState createState() =>
+      _productWhoAppliedState(this.product, this._firestore);
+}
+
+class _productWhoAppliedState extends State<productWhoApplied> {
+  Product product;
+  List<Profile> _candidates = new List(), _users;
+  List<Comments> _comments;
+  final FirestoreController _firestore;
+  _productWhoAppliedState(this.product, this._firestore);
+  bool showLoadingIndicator = true;
+
+  @override
+  void initState() {
+    super.initState();
+    this.refreshModel(true);
+  }
+
+  Future<void> refreshModel(bool showIndicator) async {
+    _comments = await widget._firestore.getCommentsForProduct(this.product);
+    _users = await widget._firestore.getUsers();
+    for (int x = 0; x < _comments.length; x++) {
+      for (int i = 0; i < _users.length; i++) {
+        if (_comments[x].attendee == _users[i].reference)
+          _candidates.add(_users[i]);
+      }
+    }
+    setState(() {
+      this.showLoadingIndicator = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.blue[700],
+      appBar: AppBar(backgroundColor: Colors.blue[700], elevation: 0),
+      body: buildBody(context),
+    );
+  }
+
+  buildBody(context) => Body(context);
+
+  AppBar buildAppBar() => AppBar(
+        backgroundColor: Colors.blue[700],
+        elevation: 0,
+      );
+
+  Body(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return SingleChildScrollView(
+      child: Column(children: <Widget>[
+        Stack(alignment: Alignment.topCenter, children: <Widget>[
+          Container(
+              margin: EdgeInsets.only(top: size.height * 0.275),
+              height: 475,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24)))),
+          Positioned(
+              right: 30.0,
+              top: 70.0,
+              child: Container(
+                  height: 200.0,
+                  width: 200.0,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                      image: DecorationImage(
+                          alignment: Alignment.center,
+                          image: AssetImage("assets/fifa.jpg"),
+                          fit: BoxFit.cover)))),
+          Positioned(
+              left: 20.0,
+              top: 20.0,
+              child: Container(
+                child: Text(
+                  this.product.name,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              )),
+          Positioned(
+              left: 20.0,
+              child: Container(
+                child: Text(
+                  this.product.audience,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              )),
+          Positioned(
+              top: 300.0,
+              child: Container(
+                child: Text(
+                  "Candidates",
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black38),
+                ),
+              )),
+          Padding(
+              padding: EdgeInsets.only(top: 350),
+              child: Container(
+                  height: 300.0,
+                  child: showLoadingIndicator
+                      ? SpinKitRing(
+                          color: Colors.blue,
+                        )
+                      : ListView(
+                          scrollDirection: Axis.vertical,
+                          padding: EdgeInsets.only(left: 20.0, top: 10.0),
+                          children: [
+                              for (Profile x in _candidates) _candidateCard(x),
+                            ]))),
+        ]),
+      ]),
+    );
+  }
+
+  _candidateCard(Profile profile) {
+    return Padding(
+        padding: EdgeInsets.only(right: 15.0),
+        child: FlatButton(
+            onPressed: () {
+              giveawayProduct(context, profile);
+            },
+            child: Container(
+                height: 150.0,
+                width: 325.0,
+                child: Column(
+                  children: <Widget>[
+                    Stack(children: [
+                      Container(height: 150.0),
+                      Positioned(
+                          top: 0.0,
+                          child: Container(
+                            padding: EdgeInsets.only(left: 10.0, right: 0.0),
+                            height: 125.0,
+                            width: 325.0,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(25.0),
+                                color: Colors.blue[200]),
+                          )),
+                      Positioned(
+                          top: 15.0,
+                          left: 20.0,
+                          child: Text(
+                            profile.firstname + " " + profile.lastname,
+                            style: TextStyle(
+                                fontFamily: 'varela',
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                      Positioned(
+                          left: 20.0,
+                          top: 50.0,
+                          child: Container(
+                              height: 60.0,
+                              width: 60.0,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(200.0),
+                                  image: DecorationImage(
+                                      image: AssetImage(profile.photo),
+                                      fit: BoxFit.cover)))),
+                      Positioned(
+                          left: 95.0,
+                          top: 52.5,
+                          child: Text(
+                            profile.job,
+                            style: TextStyle(
+                                fontFamily: 'nunito',
+                                fontSize: 17.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                      Positioned(
+                          left: 95.0,
+                          top: 75.0,
+                          child: Text(
+                            profile.area,
+                            style: TextStyle(
+                                fontFamily: 'nunito',
+                                fontSize: 17.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                      Positioned(
+                        right: 20.0,
+                        bottom: 65.0,
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 40,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ]),
+                  ],
+                ))));
+  }
+
+  giveawayProduct(BuildContext context, Profile profile) {
+    Comments comment;
+    for (int x = 0; x < this._comments.length; x++) {
+      if (this._comments[x].attendee == profile.reference &&
+          this._comments[x].product == product.reference) {
+        comment = this._comments[x];
+      }
+    }
+
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Yes"),
+      onPressed: () {
+        for (int x = 0; x < this._comments.length; x++) {
+          if (this._comments[x].attendee == profile.reference &&
+              this._comments[x].product == product.reference) {
+            comment.reference.delete();
+            setState(() {
+              this._firestore.addNotification(profile, product, false);
+              this.refreshModel(false);
+            });
+          }
+        }
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Warning"),
+      content: Text("Do you wish to give this product to " +
+          profile.firstname +
+          " " +
+          profile.lastname +
+          "?\n\nText Submitted:\n\n" +
+          comment.comment),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
 
@@ -280,8 +677,6 @@ class _productDescriptionState extends State<productDescription> {
       else
         this.appliedFor = true;
     });
-
-    print("tamanho" + appliedFor.toString());
   }
 
   @override

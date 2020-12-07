@@ -9,6 +9,7 @@ class Product {
   String audience;
   Talk talk;
   bool featured;
+  int units;
   DocumentReference reference;
 
   Product(this.name, this.description, this.audience, this.featured, this.talk,
