@@ -8,6 +8,8 @@ import '../model/Profile.dart';
 
 import 'package:provider/provider.dart';
 
+Profile profile;
+
 class ProfilePage extends StatefulWidget {
   final FirestoreController _firestore;
   final _profile;
@@ -18,7 +20,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Profile profile;
   bool showLoadingIndicator = true;
   ScrollController scrollController;
   final _firebaseUser;
@@ -106,7 +107,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     top: 270.0,
                     child: Container(
                       child: Text(
-                        this.profile.firstname + ' ' + this.profile.lastname,
+                        profile.firstname + ' ' + profile.lastname,
                         style: TextStyle(
                             fontFamily: 'nunito',
                             fontSize: 25.0,
@@ -184,6 +185,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: FloatingActionButton(
                       onPressed: () {
                         context.read<AuthenticationService>().signOut();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AuthenticationWrapper()));
                       },
                       child: Icon(Icons.exit_to_app),
                       backgroundColor: Colors.red,
@@ -200,6 +205,14 @@ class editProfileData extends StatefulWidget {
 }
 
 class _editProfileDataState extends State<editProfileData> {
+  String _name, _city, _country, _job, _area, _description;
+  final nameEditingController = TextEditingController();
+  final cityEditingController = TextEditingController();
+  final countryEditingController = TextEditingController();
+  final jobEditingController = TextEditingController();
+  final areaEditingController = TextEditingController();
+  final descriptionEditingController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -301,8 +314,15 @@ class _editProfileDataState extends State<editProfileData> {
               height: 40.0,
               top: 260.0,
               child: TextField(
+                controller: nameEditingController,
+                onChanged: (text) {
+                  this.setState(() {
+                    _name = text;
+                  });
+                },
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: 'Wissam Ben Yedder'),
+                    border: InputBorder.none,
+                    hintText: profile.firstname + ' ' + profile.lastname),
               ),
             ),
             //City
@@ -336,7 +356,7 @@ class _editProfileDataState extends State<editProfileData> {
               top: 330.0,
               child: TextField(
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: 'Monaco'),
+                    border: InputBorder.none, hintText: profile.city),
               ),
             ),
             //Country
@@ -370,7 +390,7 @@ class _editProfileDataState extends State<editProfileData> {
               top: 330.0,
               child: TextField(
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: 'France'),
+                    border: InputBorder.none, hintText: profile.country),
               ),
             ),
             //Job
@@ -404,7 +424,7 @@ class _editProfileDataState extends State<editProfileData> {
               top: 400.0,
               child: TextField(
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: 'Player at AS Monaco'),
+                    border: InputBorder.none, hintText: profile.job),
               ),
             ),
             //Area
@@ -438,7 +458,7 @@ class _editProfileDataState extends State<editProfileData> {
               top: 470.0,
               child: TextField(
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: 'Football'),
+                    border: InputBorder.none, hintText: profile.area),
               ),
             ),
             //Description
@@ -479,8 +499,7 @@ class _editProfileDataState extends State<editProfileData> {
                     border: InputBorder.none,
                     //hintMaxLines: 5,
                     //alignLabelWithHint: true,
-                    hintText:
-                        'Since debuting in FIFA, I have become one the most horrific terrors to face during FUT Champions. I love destroying the opponent team with my magnific moustache'),
+                    hintText: profile.description),
               ),
             ),
             Positioned(
