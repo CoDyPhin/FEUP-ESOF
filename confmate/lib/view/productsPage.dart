@@ -1,4 +1,6 @@
 import 'package:confmate/controller/FirestoreController.dart';
+import 'package:confmate/model/Comments.dart';
+import 'package:confmate/model/Profile.dart';
 import 'package:flutter/material.dart';
 
 import 'package:confmate/model/Product.dart';
@@ -11,7 +13,7 @@ class ProductsPage extends StatefulWidget {
 
   ProductsPage(this._firestore);
   @override
-  _ProductsPageState createState() => _ProductsPageState();
+  _ProductsPageState createState() => _ProductsPageState(this._firestore);
 }
 
 class _ProductsPageState extends State<ProductsPage>
@@ -21,8 +23,10 @@ class _ProductsPageState extends State<ProductsPage>
   ScrollController scrollController;
   List<Product> _products = new List();
   List<Product> _featuredproducts = new List();
+  Profile _profile;
+  final FirestoreController _firestore;
 
-  _ProductsPageState();
+  _ProductsPageState(this._firestore);
 
   @override
   void initState() {
@@ -37,6 +41,8 @@ class _ProductsPageState extends State<ProductsPage>
       showLoadingIndicator = showIndicator;
     });
     _products = await widget._firestore.getProducts();
+    _profile = widget._firestore.getCurrentUser();
+
     for (var x = 0; x < _products.length; x++) {
       if (_products[x].featured) _featuredproducts.add(_products[x]);
     }
@@ -52,63 +58,112 @@ class _ProductsPageState extends State<ProductsPage>
         ? SpinKitRing(
             color: Colors.blue,
           )
-        : DefaultTabController(
-            length: 3,
-            child: Scaffold(
-              backgroundColor: Colors.white,
-              appBar: AppBar(
-                  title: Text("Products"),
-                  bottom: TabBar(
-                    tabs: <Widget>[
-                      Tab(
-                        text: 'Featured',
-                      ),
-                      Tab(
-                        text: 'All',
-                      ),
-                      Tab(
-                        text: 'My Products',
-                      ),
+        : _profile.isHost
+            ? DefaultTabController(
+                length: 3,
+                child: Scaffold(
+                  backgroundColor: Colors.white,
+                  appBar: AppBar(
+                      title: Text("Products"),
+                      bottom: TabBar(
+                        tabs: <Widget>[
+                          Tab(
+                            text: 'Featured',
+                          ),
+                          Tab(
+                            text: 'All',
+                          ),
+                          Tab(
+                            text: 'My Products',
+                          ),
+                        ],
+                      )),
+                  body: TabBarView(
+                    children: [
+                      Container(
+                          height: 500.0,
+                          child: GridView.builder(
+                            itemCount: _featuredproducts.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.75,
+                            ),
+                            itemBuilder: (context, index) =>
+                                _productDisplay(_featuredproducts, index),
+                          )),
+                      Container(
+                          height: 500.0,
+                          child: GridView.builder(
+                            itemCount: _products.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.75,
+                            ),
+                            itemBuilder: (context, index) =>
+                                _productDisplay(_products, index),
+                          )),
+                      Container(
+                          height: 500.0,
+                          child: GridView.builder(
+                            itemCount: myProducts.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.75,
+                            ),
+                            itemBuilder: (context, index) =>
+                                _productDisplay(myProducts, index),
+                          )),
                     ],
-                  )),
-              body: TabBarView(
-                children: [
-                  Container(
-                      height: 500.0,
-                      child: GridView.builder(
-                        itemCount: _featuredproducts.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.75,
-                        ),
-                        itemBuilder: (context, index) =>
-                            _productDisplay(_featuredproducts, index),
+                  ),
+                ))
+            : DefaultTabController(
+                length: 2,
+                child: Scaffold(
+                  backgroundColor: Colors.white,
+                  appBar: AppBar(
+                      title: Text("Products"),
+                      bottom: TabBar(
+                        tabs: <Widget>[
+                          Tab(
+                            text: 'Featured',
+                          ),
+                          Tab(
+                            text: 'All',
+                          ),
+                        ],
                       )),
-                  Container(
-                      height: 500.0,
-                      child: GridView.builder(
-                        itemCount: _products.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.75,
-                        ),
-                        itemBuilder: (context, index) =>
-                            _productDisplay(_products, index),
-                      )),
-                  Container(
-                      height: 500.0,
-                      child: GridView.builder(
-                        itemCount: myProducts.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.75,
-                        ),
-                        itemBuilder: (context, index) =>
-                            _productDisplay(myProducts, index),
-                      )),
-                ],
-              ),
-            ));
+                  body: TabBarView(
+                    children: [
+                      Container(
+                          height: 500.0,
+                          child: GridView.builder(
+                            itemCount: _featuredproducts.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.75,
+                            ),
+                            itemBuilder: (context, index) =>
+                                _productDisplay(_featuredproducts, index),
+                          )),
+                      Container(
+                          height: 500.0,
+                          child: GridView.builder(
+                            itemCount: _products.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.75,
+                            ),
+                            itemBuilder: (context, index) =>
+                                _productDisplay(_products, index),
+                          )),
+                    ],
+                  ),
+                ));
   }
 
   _productDisplay(List<Product> list, int index) {
@@ -138,8 +193,10 @@ class _ProductsPageState extends State<ProductsPage>
                           final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      productDescription(list[index])));
+                                  builder: (context) => productDescription(
+                                      list[index],
+                                      this._profile,
+                                      this._firestore)));
                           /*if (result != null) {
                             if (!list[index].appliedFor) {
                               myProducts.add(list[index]);
@@ -189,17 +246,43 @@ class _ProductsPageState extends State<ProductsPage>
 
 class productDescription extends StatefulWidget {
   Product product;
+  Profile _profile;
+  final FirestoreController _firestore;
 
-  productDescription(this.product);
+  productDescription(this.product, this._profile, this._firestore);
 
   @override
   _productDescriptionState createState() =>
-      _productDescriptionState(this.product);
+      _productDescriptionState(this.product, this._profile, this._firestore);
 }
 
 class _productDescriptionState extends State<productDescription> {
   Product product;
-  _productDescriptionState(this.product);
+  Profile _profile;
+  List<Comments> _comments;
+  final FirestoreController _firestore;
+  bool appliedFor = false;
+
+  _productDescriptionState(this.product, this._profile, this._firestore);
+
+  @override
+  void initState() {
+    super.initState();
+    this.refreshModel(true);
+  }
+
+  Future<void> refreshModel(bool showIndicator) async {
+    _comments =
+        await widget._firestore.getComments(this.product, this._profile);
+    setState(() {
+      if (_comments.length == 0)
+        this.appliedFor = false;
+      else
+        this.appliedFor = true;
+    });
+
+    print("tamanho" + appliedFor.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +394,9 @@ class _productDescriptionState extends State<productDescription> {
               top: 390.0,
               child: Container(
                 child: Text(
-                  product.talk.host.firstname,
+                  product.talk.host.firstname +
+                      ' ' +
+                      product.talk.host.lastname,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 22.0,
@@ -349,33 +434,24 @@ class _productDescriptionState extends State<productDescription> {
                 ],
               )),
           Positioned(
-              top: 170.0,
-              left: 20.0,
-              child: Column(
-                children: <Widget>[
-                  Text(
-                    "Units: 10",
-                    style: TextStyle(
-                        fontFamily: 'nunito',
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  )
-                ],
-              )),
-          Positioned(
             width: 300.0,
             height: 50.0,
             top: 600.0,
             child: RaisedButton(
                 onPressed: () {
-                  Navigator.pop(context, true);
+                  if (!this.appliedFor)
+                    bookingUnbookingAlert(context);
+                  else {
+                    setState(() {
+                      this._comments[0].reference.delete();
+                      this.refreshModel(false);
+                    });
+                  }
                 },
                 textColor: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0)),
-                child: Text(
-                    "ola") /*product.appliedFor
+                child: this.appliedFor
                     ? Text(
                         "Unapply For",
                         style: TextStyle(
@@ -393,11 +469,55 @@ class _productDescriptionState extends State<productDescription> {
                             fontWeight: FontWeight.bold,
                             color: Colors.black),
                         textAlign: TextAlign.center,
-                      )*/
-                ),
+                      )),
           ),
         ]),
       ]),
+    );
+  }
+
+  void bookingUnbookingAlert(BuildContext context) {
+    final TextEditingController textController = TextEditingController();
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Continue"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+        setState(() {
+          this._firestore.addComment(
+              this._profile, textController.text.trim(), this.product);
+          this.refreshModel(false);
+        });
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Booking Seat"),
+      content: TextField(
+        autofocus: true,
+        maxLines: 8,
+        controller: textController,
+        keyboardType: TextInputType.multiline,
+        decoration: new InputDecoration(hintText: 'State your reasons here'),
+      ),
+      //Text("You're about to book a seat in this talk!"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

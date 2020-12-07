@@ -1,4 +1,5 @@
 import 'package:confmate/model/Product.dart';
+import 'package:confmate/model/Profile.dart';
 import 'package:confmate/model/Talk.dart';
 import 'package:confmate/controller/FirestoreController.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +19,11 @@ class _TalksPageState extends State<TalksPage>
   bool showLoadingIndicator = false;
   ScrollController scrollController;
   List<Talk> _talks = new List();
+  List<Talk> _myTalks = new List();
+  List<Talk> _talkstemp = new List();
   List<Talk> _featuredtalks = new List();
   final FirestoreController _firestore;
+  Profile _profile;
 
   _TalksPageState(this._firestore);
 
@@ -35,9 +39,14 @@ class _TalksPageState extends State<TalksPage>
     setState(() {
       showLoadingIndicator = showIndicator;
     });
-    _talks = await widget._firestore.getTalks();
-    for (var x = 0; x < _talks.length; x++) {
-      if (_talks[x].featured) _featuredtalks.add(_talks[x]);
+    _profile = widget._firestore.getCurrentUser();
+    _talkstemp = await widget._firestore.getTalks();
+    for (var x = 0; x < _talkstemp.length; x++) {
+      if (_talkstemp[x].host.username != _profile.username) {
+        if (_talkstemp[x].featured) _featuredtalks.add(_talkstemp[x]);
+        _talks.add(_talkstemp[x]);
+      } else
+        _myTalks.add(_talkstemp[x]);
     }
     if (this.mounted)
       setState(() {
@@ -52,37 +61,67 @@ class _TalksPageState extends State<TalksPage>
         ? SpinKitRing(
             color: Colors.blue,
           )
-        : DefaultTabController(
-            length: 3,
-            child: Scaffold(
-              backgroundColor: Colors.white,
-              appBar: AppBar(
-                  title: Text("Talks"),
-                  bottom: TabBar(
-                    tabs: <Widget>[
-                      Tab(
-                        text: 'Featured',
-                      ),
-                      Tab(
-                        text: 'All',
-                      ),
-                      Tab(
-                        text: 'My Talks',
-                      ),
+        : _profile.isHost
+            ? DefaultTabController(
+                length: 3,
+                child: Scaffold(
+                  backgroundColor: Colors.white,
+                  appBar: AppBar(
+                      title: Text("Talks"),
+                      bottom: TabBar(
+                        tabs: <Widget>[
+                          Tab(
+                            text: 'Featured',
+                          ),
+                          Tab(
+                            text: 'All',
+                          ),
+                          Tab(
+                            text: 'My Talks',
+                          ),
+                        ],
+                      )),
+                  body: TabBarView(
+                    children: [
+                      ListView(scrollDirection: Axis.vertical, children: [
+                        for (Talk x in _featuredtalks) _talkCard(x),
+                      ]),
+                      ListView(scrollDirection: Axis.vertical, children: [
+                        for (Talk x in _talks) _talkCard(x),
+                      ]),
+                      ListView(scrollDirection: Axis.vertical, children: [
+                        for (Talk x in _myTalks) _talkCard(x),
+                      ]),
                     ],
-                  )),
-              body: TabBarView(
-                children: [
-                  ListView(scrollDirection: Axis.vertical, children: [
-                    for (Talk x in _featuredtalks) _talkCard(x),
-                  ]),
-                  ListView(scrollDirection: Axis.vertical, children: [
-                    for (Talk x in _talks) _talkCard(x),
-                  ]),
-                  Container(height: 500.0, child: Text("To Be Done")),
-                ],
-              ),
-            ));
+                  ),
+                ))
+            : DefaultTabController(
+                length: 2,
+                child: Scaffold(
+                  backgroundColor: Colors.white,
+                  appBar: AppBar(
+                      title: Text("Talks"),
+                      bottom: TabBar(
+                        tabs: <Widget>[
+                          Tab(
+                            text: 'Featured',
+                          ),
+                          Tab(
+                            text: 'All',
+                          ),
+                        ],
+                      )),
+                  body: TabBarView(
+                    children: [
+                      ListView(scrollDirection: Axis.vertical, children: [
+                        for (Talk x in _featuredtalks) _talkCard(x),
+                      ]),
+                      ListView(scrollDirection: Axis.vertical, children: [
+                        for (Talk x in _talks) _talkCard(x),
+                      ]),
+                    ],
+                  ),
+                ));
   }
 
   _talkCard(Talk talk) {
@@ -226,32 +265,6 @@ class _talkDescriptionState extends State<talkDescription> {
   final FirestoreController _firestore;
 
   _talkDescriptionState(this.talk, this._firestore);
-  String bookSeat = "Book Seat";
-
-  //Check if the seat is already booked
-  void checkBooked() {
-    setState(() {
-      /*for (int i = 0; i < this.talk.people.length; i++)
-        if (this.talk.people.elementAt(i) == 0) {
-          bookSeat = "Unbook Seat";
-        } else {
-          bookSeat = "Book Seat";
-        }*/
-    });
-  }
-
-  //Booking/unbooking seat
-  void bookingUnbooking() {
-    setState(() {
-      /*if (bookSeat == "Book Seat") {
-        bookSeat = "Unbook Seat";
-        this.talk.people.add(0);
-      } else {
-        bookSeat = "Book Seat";
-        this.talk.people.remove(0);
-      }*/
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -268,7 +281,6 @@ class _talkDescriptionState extends State<talkDescription> {
       AppBar(backgroundColor: Colors.blue[700], elevation: 0);
 
   Body(BuildContext context) {
-    checkBooked();
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Column(children: <Widget>[

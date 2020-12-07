@@ -184,10 +184,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: FloatingActionButton(
                       onPressed: () {
                         context.read<AuthenticationService>().signOut();
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AuthenticationWrapper()));
                       },
                       child: Icon(Icons.exit_to_app),
                       backgroundColor: Colors.red,

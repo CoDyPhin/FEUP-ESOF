@@ -35,15 +35,10 @@ class _HomeState extends State<Home> {
       ProfilePage(_firestore, firebaseUser),
     ];
 
-    void _onPageChanged(int index) {
-      _pageController.jumpToPage(index);
-    }
-
     return Scaffold(
       body: PageView(
         controller: _pageController,
         children: _screens,
-        onPageChanged: _onPageChanged,
       ),
       backgroundColor: Colors.white,
       bottomNavigationBar: CurvedNavigationBar(

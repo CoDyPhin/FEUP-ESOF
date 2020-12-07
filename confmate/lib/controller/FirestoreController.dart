@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:confmate/model/Comments.dart';
 import 'package:confmate/model/Product.dart';
 import 'package:confmate/model/Profile.dart';
 import 'package:confmate/model/Talk.dart';
@@ -13,6 +14,28 @@ class FirestoreController {
 
   void setCurrentUser(Profile user) {
     _currentUser = user;
+  }
+
+  Future<List<Comments>> getComments(Product product, Profile profile) async {
+    QuerySnapshot snapshot = await firestore
+        .collection("comments")
+        .where('attendee', isEqualTo: profile.reference)
+        .where('product', isEqualTo: product.reference)
+        .get();
+    List<Future<Comments>> comments = new List();
+    for (DocumentSnapshot document in snapshot.docs) {
+      comments.add(_makeCommentsFromDoc(document));
+    }
+    if (snapshot.docs.length == 0) return [];
+    return await Future.wait(comments);
+  }
+
+  void addComment(Profile profile, String comment, Product product) {
+    firestore.collection("comments").add({
+      "attendee": profile.reference,
+      "comment": comment,
+      "product": product.reference,
+    });
   }
 
   void addUser(String firstname, String lastname, String username, String email,
@@ -64,6 +87,14 @@ class FirestoreController {
     return await Future.wait(products);
   }
 
+  Future<Comments> _makeCommentsFromDoc(DocumentSnapshot snapshot) async {
+    String comment = snapshot.get('comment');
+    DocumentReference attendee = snapshot.get('attendee');
+    DocumentReference product = snapshot.get('product');
+    DocumentReference reference = snapshot.reference;
+    return Comments(attendee, comment, product, reference);
+  }
+
   Future<Talk> _makeTalkFromDoc(DocumentSnapshot snapshot) async {
     String name = snapshot.get('name');
     String description = snapshot.get('description');
@@ -88,10 +119,11 @@ class FirestoreController {
     String country = snapshot.get('country');
     String job = snapshot.get('job');
     bool host = snapshot.get('host');
+    String username = snapshot.get('username');
 
     DocumentReference reference = snapshot.reference;
-    Profile user = Profile(firstname, lastname, job, area, city, country,
-        picture, description, host, reference);
+    Profile user = Profile(username, firstname, lastname, job, area, city,
+        country, picture, description, host, reference);
 
     return user;
   }
@@ -99,7 +131,6 @@ class FirestoreController {
   Future<Product> _makeProductFromDoc(DocumentSnapshot snapshot) async {
     String name = snapshot.get('name');
     String description = snapshot.get('description');
-    bool applied = snapshot.get('appliedFor');
     bool featured = snapshot.get('featured');
     String audience = snapshot.get('audience');
     DocumentReference userRef = snapshot.get('talkID');
