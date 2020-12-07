@@ -45,6 +45,7 @@ class _HomePageState extends State<HomePage> {
     _products = await widget._firestore.getProducts();
     _profile = await widget._firestore.getUser(this._firebaseUser.email);
     _firestore.setCurrentUser(_profile);
+
     if (this.mounted)
       setState(() {
         showLoadingIndicator = false;
@@ -121,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    'Featured Talks',
+                    'Featured Products',
                     style: TextStyle(
                         fontFamily: 'varela',
                         fontSize: 17.0,
