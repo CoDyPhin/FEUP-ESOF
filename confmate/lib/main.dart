@@ -1,11 +1,6 @@
 import 'package:confmate/controller/authentication.dart';
-import 'package:confmate/view/homePage.dart';
 import 'package:confmate/view/navigatorPage.dart';
-import 'package:confmate/view/productsPage.dart';
-import 'package:confmate/view/profilePage.dart';
-import 'package:confmate/view/talksPage.dart';
 import 'package:confmate/view/SignInPage.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -19,6 +14,7 @@ Future<void> main() async {
   runApp(startApp());
 }
 
+// ignore: camel_case_types
 class startApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

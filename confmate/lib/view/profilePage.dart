@@ -1,6 +1,5 @@
 import 'package:confmate/controller/authentication.dart';
 import 'package:confmate/controller/FirestoreController.dart';
-import 'package:confmate/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 

@@ -1,7 +1,6 @@
 import 'package:confmate/controller/authentication.dart';
 import 'package:confmate/controller/FirestoreController.dart';
 import 'package:confmate/main.dart';
-import 'package:confmate/view/SignInPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +28,7 @@ final kBoxDecorationStyle = BoxDecoration(
   ],
 );
 
+// ignore: must_be_immutable
 class FinishSignUpPage extends StatefulWidget {
   final FirestoreController _firestore;
   String username;
@@ -220,8 +220,11 @@ class _FinishSignUpPageState extends State<FinishSignUpPage> {
                   cityController.text.trim(),
                   countryController.text.trim(),
                   this.isHost));
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => Redirecting()));
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Redirecting()),
+            (Route<dynamic> route) => false,
+          );
         },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
@@ -326,6 +329,7 @@ class _FinishSignUpPageState extends State<FinishSignUpPage> {
   }
 }
 
+// ignore: must_be_immutable
 class ChooseHostAttendee extends StatefulWidget {
   final FirestoreController _firestore;
   String username;

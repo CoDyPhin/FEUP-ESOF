@@ -52,6 +52,27 @@ class FirestoreController {
     });
   }
 
+  void addProduct(Talk talk, String name, String description, String audience) {
+    firestore.collection("products").add({
+      "audience": audience,
+      "description": description,
+      "name": name,
+      "talkID": talk.reference,
+      "featured": true,
+    });
+  }
+
+  void addTalk(String name, String description) {
+    firestore.collection("talks").add({
+      "attendees": [],
+      "description": description,
+      "featured": false,
+      "hostID": _currentUser.reference,
+      "name": name,
+      "seats": 50
+    });
+  }
+
   void addNotification(Profile profile, Product product, bool seen) {
     firestore.collection("notifications").add({
       "attendee": profile.reference,
@@ -63,15 +84,14 @@ class FirestoreController {
   void addUser(String firstname, String lastname, String username, String email,
       String city, String country, bool isHost) {
     firestore.collection("profile").add({
-      "area": "Add Your Area!",
+      "area": "Area Not Specified",
       "city": city,
       "country": country,
-      "description":
-          "No Description yet! Add a Description to your profile on the Edit Menu!",
+      "description": "Description Not Specified",
       "email": email,
       "firstname": firstname,
       "lastname": lastname,
-      "job": "Add a Job!",
+      "job": "Job Not Specified",
       "photo": "assets/wissam.jpg",
       "username": username,
       "host": isHost
@@ -189,9 +209,6 @@ class FirestoreController {
     String job = snapshot.get('job');
     bool host = snapshot.get('host');
     String username = snapshot.get('username');
-
-    print("firstname" + firstname.toString());
-
     DocumentReference reference = snapshot.reference;
     Profile user = Profile(username, firstname, lastname, job, area, city,
         country, picture, description, host, reference);

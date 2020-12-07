@@ -4,6 +4,7 @@ import 'package:confmate/model/Notification.dart';
 import 'package:confmate/model/Profile.dart';
 import 'package:confmate/model/Talk.dart';
 import 'package:confmate/view/notificationsPage.dart';
+import 'package:confmate/view/addProductPage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:confmate/model/Product.dart';
@@ -21,7 +22,6 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage>
     with SingleTickerProviderStateMixin {
-  TabController _tabController;
   bool showLoadingIndicator = false;
   ScrollController scrollController;
   List<Product> _products = new List();
@@ -40,7 +40,6 @@ class _ProductsPageState extends State<ProductsPage>
   void initState() {
     super.initState();
     this.refreshModel(true);
-    _tabController = TabController(length: 3, vsync: this);
   }
 
   Future<void> refreshModel(bool showIndicator) async {
@@ -48,6 +47,12 @@ class _ProductsPageState extends State<ProductsPage>
     setState(() {
       showLoadingIndicator = showIndicator;
     });
+    _products.clear();
+    _productstemp.clear();
+    _featuredproducts.clear();
+    _myproducts.clear();
+    _notifications.clear();
+    _mytalks.clear();
     _mytalks = await widget._firestore.getMyTalks();
     _productstemp = await widget._firestore.getProducts();
     _profile = widget._firestore.getCurrentUser();
@@ -97,6 +102,66 @@ class _ProductsPageState extends State<ProductsPage>
                   backgroundColor: Colors.white,
                   appBar: AppBar(
                       title: Text("Products"),
+                      actions: noNewNotifications
+                          ? <Widget>[
+                              IconButton(
+                                icon: Icon(
+                                  Icons.notifications,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    this.refreshModel(false);
+                                  });
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              notificationsPage(
+                                                  this._firestore)));
+                                  this.refreshModel(false);
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    this.refreshModel(false);
+                                  });
+                                  Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  addProductPage(
+                                                      this._firestore)))
+                                      .then((value) => this.refreshModel(true));
+                                },
+                              )
+                            ]
+                          : <Widget>[
+                              IconButton(
+                                icon: Icon(
+                                  Icons.notification_important,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    noNewNotifications = true;
+                                    this.refreshModel(false);
+                                  });
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              notificationsPage(
+                                                  this._firestore)));
+                                  this.refreshModel(false);
+                                },
+                              )
+                            ],
                       bottom: TabBar(
                         tabs: <Widget>[
                           Tab(
@@ -325,7 +390,7 @@ class _ProductsPageState extends State<ProductsPage>
                     width: 162.5,
                     child: FlatButton(
                         onPressed: () async {
-                          final result = await Navigator.push(
+                          await Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => productWhoApplied(
@@ -368,6 +433,7 @@ class _ProductsPageState extends State<ProductsPage>
   }
 }
 
+// ignore: camel_case_types
 class productWhoApplied extends StatefulWidget {
   Product product;
   final FirestoreController _firestore;
@@ -394,6 +460,7 @@ class _productWhoAppliedState extends State<productWhoApplied> {
   }
 
   Future<void> refreshModel(bool showIndicator) async {
+    _candidates.clear();
     _comments = await widget._firestore.getCommentsForProduct(this.product);
     _users = await widget._firestore.getUsers();
     for (int x = 0; x < _comments.length; x++) {
@@ -423,6 +490,7 @@ class _productWhoAppliedState extends State<productWhoApplied> {
         elevation: 0,
       );
 
+  // ignore: non_constant_identifier_names
   Body(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
@@ -493,12 +561,22 @@ class _productWhoAppliedState extends State<productWhoApplied> {
                       ? SpinKitRing(
                           color: Colors.blue,
                         )
-                      : ListView(
-                          scrollDirection: Axis.vertical,
-                          padding: EdgeInsets.only(left: 20.0, top: 10.0),
-                          children: [
-                              for (Profile x in _candidates) _candidateCard(x),
-                            ]))),
+                      : (_candidates.isEmpty
+                          ? Text(
+                              "No Candidates Yet!",
+                              style: TextStyle(
+                                  fontFamily: 'nunito',
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black38),
+                            )
+                          : ListView(
+                              scrollDirection: Axis.vertical,
+                              padding: EdgeInsets.only(left: 20.0, top: 10.0),
+                              children: [
+                                  for (Profile x in _candidates)
+                                    _candidateCard(x),
+                                ])))),
         ]),
       ]),
     );
@@ -510,6 +588,7 @@ class _productWhoAppliedState extends State<productWhoApplied> {
         child: FlatButton(
             onPressed: () {
               giveawayProduct(context, profile);
+              this.refreshModel(false);
             },
             child: Container(
                 height: 150.0,
@@ -641,6 +720,7 @@ class _productWhoAppliedState extends State<productWhoApplied> {
   }
 }
 
+// ignore: camel_case_types
 class productDescription extends StatefulWidget {
   Product product;
   Profile _profile;

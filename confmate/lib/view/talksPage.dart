@@ -1,6 +1,7 @@
 import 'package:confmate/model/Product.dart';
 import 'package:confmate/model/Profile.dart';
 import 'package:confmate/model/Talk.dart';
+import 'package:confmate/view/addTalkPage.dart';
 import 'package:confmate/controller/FirestoreController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -15,7 +16,6 @@ class TalksPage extends StatefulWidget {
 
 class _TalksPageState extends State<TalksPage>
     with SingleTickerProviderStateMixin {
-  TabController _tabController;
   bool showLoadingIndicator = false;
   ScrollController scrollController;
   List<Talk> _talks = new List();
@@ -31,10 +31,13 @@ class _TalksPageState extends State<TalksPage>
   void initState() {
     super.initState();
     this.refreshModel(true);
-    _tabController = TabController(length: 3, vsync: this);
   }
 
   Future<void> refreshModel(bool showIndicator) async {
+    _talks.clear();
+    _myTalks.clear();
+    _talkstemp.clear();
+    _featuredtalks.clear();
     Stopwatch sw = Stopwatch()..start();
     setState(() {
       showLoadingIndicator = showIndicator;
@@ -68,6 +71,22 @@ class _TalksPageState extends State<TalksPage>
                   backgroundColor: Colors.white,
                   appBar: AppBar(
                       title: Text("Talks"),
+                      actions: <Widget>[
+                        IconButton(
+                          icon: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            addTalkPage(this._firestore)))
+                                .then((value) => this.refreshModel(true));
+                          },
+                        )
+                      ],
                       bottom: TabBar(
                         tabs: <Widget>[
                           Tab(

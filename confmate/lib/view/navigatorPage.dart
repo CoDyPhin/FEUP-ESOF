@@ -4,10 +4,7 @@ import 'package:confmate/view/productsPage.dart';
 import 'package:confmate/view/profilePage.dart';
 import 'package:confmate/view/talksPage.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   final FirestoreController _firestore = FirestoreController();

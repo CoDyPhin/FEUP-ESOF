@@ -1,28 +1,28 @@
 import 'package:confmate/controller/FirestoreController.dart';
 import 'package:confmate/model/Notification.dart';
 import 'package:confmate/model/Product.dart';
-import 'package:confmate/model/Talk.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+// ignore: camel_case_types
 class notificationsPage extends StatefulWidget {
   final FirestoreController _firestore;
 
   notificationsPage(this._firestore);
 
   @override
-  _notificationsPageState createState() =>
-      _notificationsPageState(this._firestore);
+  _notificationsPageState createState() => _notificationsPageState();
 }
 
+// ignore: camel_case_types
 class _notificationsPageState extends State<notificationsPage> {
-  List<Notifications> _notifications;
+  List<Notifications> _notifications = new List();
+  List<Notifications> _reversednotifications = new List();
   List<Product> _products;
   bool showLoadingIndicator = true;
-  final FirestoreController _firestore;
 
-  _notificationsPageState(this._firestore);
+  _notificationsPageState();
 
   @override
   void initState() {
@@ -32,8 +32,9 @@ class _notificationsPageState extends State<notificationsPage> {
 
   Future<void> refreshModel(bool showIndicator) async {
     Stopwatch sw = Stopwatch()..start();
-    _notifications = await widget._firestore.getMyNotifications();
+    _reversednotifications = await widget._firestore.getMyNotifications();
     _products = await widget._firestore.getProducts();
+    _notifications = _reversednotifications.reversed.toList();
 
     setState(() {
       this.showLoadingIndicator = false;
@@ -58,6 +59,7 @@ class _notificationsPageState extends State<notificationsPage> {
       backgroundColor: Colors.blue[700],
       elevation: 0);
 
+  // ignore: non_constant_identifier_names
   Body(BuildContext context) {
     return showLoadingIndicator
         ? SpinKitRing(
