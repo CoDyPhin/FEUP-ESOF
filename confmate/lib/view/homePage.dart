@@ -267,8 +267,10 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      productDescription(product)));
+                                  builder: (context) => productDescription(
+                                      product,
+                                      this._profile,
+                                      this._firestore)));
                         },
                         icon: Icon(Icons.arrow_forward_ios, size: 18),
                         label: Text("MORE DETAILS"),

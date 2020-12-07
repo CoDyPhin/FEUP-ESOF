@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'Product.dart';
 
 class Profile {
+  String username;
   String firstname;
   String lastname;
   String job;
@@ -12,9 +13,19 @@ class Profile {
   String country;
   String photo;
   String description;
-  bool host;
+  bool isHost;
   DocumentReference reference;
 
-  Profile(this.firstname, this.lastname, this.job, this.area, this.city,
-      this.country, this.photo, this.description, this.host, this.reference);
+  Profile(
+      this.username,
+      this.firstname,
+      this.lastname,
+      this.job,
+      this.area,
+      this.city,
+      this.country,
+      this.photo,
+      this.description,
+      this.isHost,
+      this.reference);
 }
