@@ -167,6 +167,19 @@ class FirestoreController {
     return await Future.wait(products);
   }
 
+  Future<List<Product>> getTalkProducts(Talk talk) async {
+    List<Future<Product>> products = new List();
+    QuerySnapshot snapshot = await firestore
+        .collection("products")
+        .where('talkID', isEqualTo: talk.reference)
+        .get();
+    for (DocumentSnapshot document in snapshot.docs) {
+      products.add(_makeProductFromDoc(document));
+    }
+    if (snapshot.docs.length == 0) return [];
+    return await Future.wait(products);
+  }
+
   Future<Comments> _makeCommentsFromDoc(DocumentSnapshot snapshot) async {
     String comment = snapshot.get('comment');
     DocumentReference attendee = snapshot.get('attendee');
