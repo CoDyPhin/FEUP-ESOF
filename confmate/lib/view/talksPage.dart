@@ -3,6 +3,7 @@ import 'package:confmate/model/Profile.dart';
 import 'package:confmate/model/Talk.dart';
 import 'package:confmate/view/addTalkPage.dart';
 import 'package:confmate/controller/FirestoreController.dart';
+import 'package:confmate/view/productsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -229,27 +230,60 @@ class _TalksPageState extends State<TalksPage>
 }
 
 class talkPromotedProducts extends StatefulWidget {
-  List<Product> products;
+  Talk talk;
+  final FirestoreController firestore;
 
-  talkPromotedProducts(this.products);
+  talkPromotedProducts(this.talk, this.firestore);
 
   @override
   _talkPromotedProductsState createState() =>
-      _talkPromotedProductsState(this.products);
+      _talkPromotedProductsState(this.talk, this.firestore);
 }
 
 class _talkPromotedProductsState extends State<talkPromotedProducts> {
-  List<Product> products;
+  Talk talk;
+  final FirestoreController firestore;
+  List<Product> talkProducts = new List();
+  bool showLoadingIndicator = true;
 
-  _talkPromotedProductsState(this.products);
+  _talkPromotedProductsState(this.talk, this.firestore);
+
+  @override
+  void initState() {
+    super.initState();
+    this.refreshModel(true);
+  }
+
+  Future<void> refreshModel(bool showIndicator) async {
+    talkProducts.clear();
+
+    talkProducts = await widget.firestore.getTalkProducts(this.talk);
+
+    setState(() {
+      showLoadingIndicator = showIndicator;
+    });
+
+    if (this.mounted)
+      setState(() {
+        showLoadingIndicator = false;
+      });
+
+    for (var i = 0; i < talkProducts.length; i++) {
+      print(talkProducts[i].name);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blue[700],
-      appBar: buildAppBar(),
-      body: buildBody(context),
-    );
+    return showLoadingIndicator
+        ? SpinKitRing(
+            color: Colors.blue,
+          )
+        : Scaffold(
+            backgroundColor: Colors.blue[700],
+            appBar: buildAppBar(),
+            body: buildBody(context),
+          );
   }
 
   buildBody(context) => Body(context);
@@ -261,9 +295,112 @@ class _talkPromotedProductsState extends State<talkPromotedProducts> {
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Column(
-        children: <Widget>[],
+        children: <Widget>[
+          Stack(
+            alignment: Alignment.topCenter,
+            children: <Widget>[
+              Container(
+                  margin: EdgeInsets.only(top: size.height * 0.175),
+                  height: size.height * 0.7,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(24)))),
+              Positioned(
+                  top: size.height * 0.22,
+                  child: Container(
+                      height: size.height * 0.3,
+                      child: Text(
+                        "Products",
+                        style: TextStyle(
+                            fontFamily: 'nunito',
+                            fontSize: 25.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      ))),
+              Positioned(
+                top: size.height * 0.3,
+                //left: size.width * 0.075,
+                child: Container(
+                    height: size.height * 0.6,
+                    width: size.width * 0.95,
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          childAspectRatio: 0.75, crossAxisCount: 2),
+                      itemCount: talkProducts.length,
+                      itemBuilder: (context, index) =>
+                          _displayTalkProducts(talkProducts, index),
+                    )),
+              )
+            ],
+          )
+        ],
       ),
     );
+  }
+
+  _displayTalkProducts(List<Product> products, int index) {
+    Size size = MediaQuery.of(context).size;
+    return Container(
+        child: Column(
+      children: <Widget>[
+        Stack(
+          children: [
+            Positioned(
+                child: Container(
+              height: size.height * 0.2,
+              width: size.width * 0.38,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25.0),
+                  color: Colors.blue[200]),
+            )),
+            for (Product p in products) productCard(p)
+          ],
+        )
+      ],
+    ));
+  }
+
+  productCard(Product product) {
+    Size size = MediaQuery.of(context).size;
+    return Padding(
+        padding: EdgeInsets.only(left: 1.5, top: 3.0),
+        child: FlatButton(
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => productDescription(
+                        product, product.talk.host, firestore)));
+          },
+          child: Container(
+            height: size.height * 0.2,
+            width: size.width * 0.32,
+            child: Column(
+              children: <Widget>[
+                Stack(
+                  children: [
+                    Container(height: size.height * 0.18),
+                    Positioned(
+                        top: 10.0,
+                        child: Container(
+                            padding: EdgeInsets.only(top: 15.0),
+                            height: 140.0,
+                            width: 130.0,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20.0),
+                                color: Colors.black,
+                                image: DecorationImage(
+                                  image: AssetImage("assets/fifa.jpg"),
+                                  fit: BoxFit.cover,
+                                )))),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ));
   }
 }
 
@@ -280,7 +417,6 @@ class talkDescription extends StatefulWidget {
 
 class _talkDescriptionState extends State<talkDescription> {
   Talk talk;
-  List<Product> products;
   final FirestoreController _firestore;
 
   _talkDescriptionState(this.talk, this._firestore);
@@ -306,14 +442,14 @@ class _talkDescriptionState extends State<talkDescription> {
         Stack(alignment: Alignment.topCenter, children: <Widget>[
           Container(
               margin: EdgeInsets.only(top: size.height * 0.175),
-              height: 550,
+              height: size.height * 0.7,
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(24),
                       topRight: Radius.circular(24)))),
           Positioned(
-              top: 50.0,
+              top: size.height * 0.07,
               child: Container(
                   height: 150.0,
                   width: 150.0,
@@ -325,7 +461,7 @@ class _talkDescriptionState extends State<talkDescription> {
                           image: AssetImage(talk.host.photo),
                           fit: BoxFit.cover)))),
           Positioned(
-              top: 220.0,
+              top: size.height * 0.272,
               child: Container(
                 child: Text(
                   this.talk.name,
@@ -337,7 +473,7 @@ class _talkDescriptionState extends State<talkDescription> {
                 ),
               )),
           Positioned(
-              top: 260.0,
+              top: size.height * 0.323,
               child: Container(
                 child: Text(
                   talk.host.firstname + ' ' + talk.host.lastname,
@@ -349,12 +485,10 @@ class _talkDescriptionState extends State<talkDescription> {
                 ),
               )),
           Positioned(
-              top: 380.0,
-              width: 330.0,
+              top: size.height * 0.475,
+              width: size.width * 0.8,
               child: Container(
                 padding: EdgeInsets.only(left: 0.0, right: 0.0),
-                height: 260.0,
-                width: 225.0,
                 child: Text(
                   this.talk.description,
                   style: TextStyle(fontSize: 22),
@@ -362,9 +496,9 @@ class _talkDescriptionState extends State<talkDescription> {
                 ),
               )),
           Positioned(
-            width: 300.0,
-            height: 50.0,
-            top: 600.0,
+            width: size.width * 0.7,
+            height: size.height * 0.06,
+            top: size.height * 0.735,
             child: RaisedButton(
               onPressed: () {
                 bookingUnbookingAlert(context);
@@ -374,7 +508,7 @@ class _talkDescriptionState extends State<talkDescription> {
               },
               textColor: Colors.white,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0)),
+                  borderRadius: BorderRadius.circular(25.0)),
               child: new Text(
                 talk.attendees
                         .contains(this._firestore.getCurrentUser().reference)
@@ -390,16 +524,16 @@ class _talkDescriptionState extends State<talkDescription> {
             ),
           ),
           Positioned(
-            width: 300.0,
-            height: 40.0,
-            top: 310.0,
+            width: size.width * 0.7,
+            height: size.height * 0.05,
+            top: size.height * 0.385,
             child: RaisedButton(
                 onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              talkPromotedProducts(products)));
+                          builder: (context) => talkPromotedProducts(
+                              this.talk, this._firestore)));
                 },
                 textColor: Colors.grey,
                 shape: RoundedRectangleBorder(
@@ -432,12 +566,14 @@ class _talkDescriptionState extends State<talkDescription> {
     // set up the buttons
     Widget cancelButton = FlatButton(
       child: Text("Cancel"),
+      textColor: Colors.white,
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop('dialog');
       },
     );
     Widget continueButton = FlatButton(
-      child: Text("Continue"),
+      child: Text("Confirm"),
+      textColor: Colors.white,
       onPressed: () {
         if (talk.attendees.contains(this._firestore.getCurrentUser().reference))
           talk.attendees.remove(this._firestore.getCurrentUser().reference);
@@ -451,20 +587,21 @@ class _talkDescriptionState extends State<talkDescription> {
     );
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("AlertDialog"),
+      title: Text("Your Seat"),
       content: Text((() {
         if (talk.attendees
             .contains(this._firestore.getCurrentUser().reference)) {
-          return "You're about to book a seat in this talk!";
+          return "You're about to unbook a seat in this talk!";
         }
 
-        return "You're about to unbook a seat in this talk!";
+        return "You're about to book a seat in this talk!";
       })()),
       //Text("You're about to book a seat in this talk!"),
       actions: [
         cancelButton,
         continueButton,
       ],
+      backgroundColor: Colors.lightBlue[300],
     );
     // show the dialog
     showDialog(
