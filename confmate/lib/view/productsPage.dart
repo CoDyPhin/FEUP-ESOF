@@ -6,6 +6,7 @@ import 'package:confmate/model/Talk.dart';
 import 'package:confmate/view/notificationsPage.dart';
 import 'package:confmate/view/addProductPage.dart';
 import 'package:flutter/material.dart';
+import 'profilePage.dart';
 
 import 'package:confmate/model/Product.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -865,19 +866,27 @@ class _productDescriptionState extends State<productDescription> {
                 ),
               )),
           Positioned(
-              left: 20.0,
+              left: 5.0,
               top: 390.0,
               child: Container(
-                child: Text(
-                  product.talk.host.firstname +
-                      ' ' +
-                      product.talk.host.lastname,
-                  style: TextStyle(
-                      fontFamily: 'nunito',
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
-                ),
+                child: FlatButton(
+                    child: Text(
+                      product.talk.host.firstname +
+                          ' ' +
+                          product.talk.host.lastname,
+                      style: TextStyle(
+                          fontFamily: 'nunito',
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  UserPage(product.talk.host)));
+                    }),
               )),
           Positioned(
               left: 20.0,

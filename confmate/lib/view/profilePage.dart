@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../model/Profile.dart';
-
+import '../main.dart';
 import 'package:provider/provider.dart';
 
 Profile profile;
@@ -521,6 +521,185 @@ class _editProfileDataState extends State<editProfileData> {
             ),
           ],
         )
+      ]),
+    );
+  }
+}
+
+class UserPage extends StatefulWidget {
+  final _profile;
+  UserPage(this._profile);
+
+  @override
+  _UserPageState createState() => _UserPageState(this._profile);
+}
+
+class _UserPageState extends State<UserPage> {
+  bool showLoadingIndicator = true;
+  ScrollController scrollController;
+  final _firebaseUser;
+
+  _UserPageState(this._firebaseUser);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.blue[700],
+      appBar: buildAppBar(),
+      body: buildBody(context),
+    );
+  }
+
+  buildBody(context) => Body(context);
+
+  AppBar buildAppBar() =>
+      AppBar(backgroundColor: Colors.blue[700], elevation: 0);
+
+  Body(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return SingleChildScrollView(
+      child: Column(children: <Widget>[
+        Stack(alignment: Alignment.topCenter, children: <Widget>[
+          Positioned(
+              child: Container(
+                  height: 220.0,
+                  width: 400.0,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          alignment: Alignment.center,
+                          image: AssetImage("assets/background.jpg"),
+                          fit: BoxFit.cover)))),
+          Container(
+              margin: EdgeInsets.only(top: size.height * 0.25),
+              height: 450,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24)))),
+          Positioned(
+              top: 100.0,
+              child: Container(
+                  height: 150.0,
+                  width: 150.0,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.blue, width: 2),
+                      borderRadius: BorderRadius.circular(200.0),
+                      image: DecorationImage(
+                          alignment: Alignment.center,
+                          image: AssetImage(_firebaseUser.photo),
+                          fit: BoxFit.cover)))),
+          /*Positioned(
+                  top: 100.0,
+                  left: 120.0,
+                  child: Container(
+                        height: 40.0,
+                        width: 40.0,
+                        child: IconButton(
+                          icon: Icon(Icons.edit),
+                          tooltip: 'Edit profile',
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => editProfileData()));
+                          },
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(200.0),
+                          color: Colors.white,
+                        ))),
+                ),*/
+          Positioned(
+              top: 270.0,
+              child: Container(
+                child: Text(
+                  _firebaseUser.firstname + ' ' + _firebaseUser.lastname,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue),
+                ),
+              )),
+          Positioned(
+              top: 305.0,
+              child: Container(
+                child: Text(
+                  _firebaseUser.job,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[200]),
+                ),
+              )),
+          Positioned(
+              top: 400.0,
+              width: 330.0,
+              child: Container(
+                padding: EdgeInsets.only(left: 0.0, right: 0.0),
+                height: 260.0,
+                width: 225.0,
+                child: Text(
+                  _firebaseUser.description,
+                  style: TextStyle(fontSize: 20),
+                  textAlign: TextAlign.center,
+                ),
+              )),
+          Positioned(
+              top: 350.0,
+              left: 30.0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 30.0,
+                        color: Colors.grey[400],
+                      ),
+                      Text(
+                        _firebaseUser.city + ", " + _firebaseUser.country,
+                        style: TextStyle(fontSize: 17, color: Colors.grey[400]),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 30),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.business,
+                        size: 30.0,
+                        color: Colors.grey[400],
+                      ),
+                      Text(
+                        _firebaseUser.area,
+                        style: TextStyle(fontSize: 17, color: Colors.grey[400]),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  )
+                ],
+              )),
+          /*Positioned(
+                    top: 40.0,
+                    right: 25.0,
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        context.read<AuthenticationService>().signOut();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AuthenticationWrapper()));
+                      },
+                      child: Icon(Icons.exit_to_app),
+                      backgroundColor: Colors.red,
+                    )),*/
+        ]),
       ]),
     );
   }
