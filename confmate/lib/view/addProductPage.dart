@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:confmate/controller/FirestoreController.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:confmate/view/SignInPage.dart';
 import 'package:confmate/view/finishAddingProductPage.dart';
+import 'package:image_picker/image_picker.dart';
 
 // ignore: camel_case_types
 class addProductPage extends StatefulWidget {
@@ -22,6 +25,7 @@ class _addProductPageState extends State<addProductPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController audienceController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  File _image;
 
   _addProductPageState(this._firestore);
 
@@ -44,6 +48,7 @@ class _addProductPageState extends State<addProductPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.blue[700],
       appBar: buildAppBar(),
       body: buildBody(context),
@@ -57,6 +62,14 @@ class _addProductPageState extends State<addProductPage> {
       backgroundColor: Colors.blue[700],
       elevation: 0);
 
+  Future chooseFile() async {
+    await ImagePicker.pickImage(source: ImageSource.gallery).then((image) {
+      setState(() {
+        _image = image;
+      });
+    });
+  }
+
   // ignore: non_constant_identifier_names
   Body(BuildContext context) {
     return showLoadingIndicator
@@ -69,6 +82,21 @@ class _addProductPageState extends State<addProductPage> {
             _buildAudienceTF(),
             SizedBox(height: 15.0),
             _buildDescriptionTF(),
+            SizedBox(height: 25.0),
+            RaisedButton(
+              elevation: 5.0,
+              onPressed: chooseFile,
+              padding: EdgeInsets.all(15.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              color: Colors.white,
+              child: _image == null
+                  ? Text("ADD IMAGE")
+                  : Text(
+                      'IMAGE ADDED!',
+                    ),
+            ),
             SizedBox(height: 50.0),
             _buildLoginBtn(context),
           ]);
@@ -203,7 +231,8 @@ class _addProductPageState extends State<addProductPage> {
                       this._firestore,
                       this.nameController.text.trim(),
                       this.descriptionController.text.trim(),
-                      this.audienceController.text.trim())));
+                      this.audienceController.text.trim(),
+                      this._image)));
         },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(

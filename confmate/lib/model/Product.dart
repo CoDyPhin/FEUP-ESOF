@@ -10,8 +10,9 @@ class Product {
   Talk talk;
   bool featured;
   int units;
+  String image;
   DocumentReference reference;
 
   Product(this.name, this.description, this.audience, this.featured, this.talk,
-      this.reference);
+      this.image, this.reference);
 }

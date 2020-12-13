@@ -5,6 +5,7 @@ import 'package:confmate/model/Profile.dart';
 import 'package:confmate/model/Talk.dart';
 import 'package:confmate/view/notificationsPage.dart';
 import 'package:confmate/view/addProductPage.dart';
+import 'package:confmate/view/profilePage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:confmate/model/Product.dart';
@@ -330,14 +331,24 @@ class _ProductsPageState extends State<ProductsPage>
                                       this._profile,
                                       this._firestore)));
                         },
-                        child: Container(
-                            height: 125.0,
-                            width: 125.0,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20.0),
-                                image: DecorationImage(
-                                    image: AssetImage("assets/fifa.jpg"),
-                                    fit: BoxFit.cover)))))),
+                        child: FutureBuilder(
+                          future: this._firestore.getImgURL(list[index].image),
+                          builder: (context, url) {
+                            if (url.hasData) {
+                              return Container(
+                                  height: 125.0,
+                                  width: 125.0,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(url.data))));
+                            } else {
+                              return SizedBox(
+                                  child: CircularProgressIndicator());
+                            }
+                          },
+                        )))),
             Positioned(
                 left: 20.0,
                 top: 195.0,
@@ -396,14 +407,24 @@ class _ProductsPageState extends State<ProductsPage>
                                   builder: (context) => productWhoApplied(
                                       list[index], this._firestore)));
                         },
-                        child: Container(
-                            height: 125.0,
-                            width: 125.0,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20.0),
-                                image: DecorationImage(
-                                    image: AssetImage("assets/fifa.jpg"),
-                                    fit: BoxFit.cover)))))),
+                        child: FutureBuilder(
+                          future: this._firestore.getImgURL(list[index].image),
+                          builder: (context, url) {
+                            if (url.hasData) {
+                              return Container(
+                                  height: 125.0,
+                                  width: 125.0,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(url.data))));
+                            } else {
+                              return SizedBox(
+                                  child: CircularProgressIndicator());
+                            }
+                          },
+                        )))),
             Positioned(
                 left: 20.0,
                 top: 195.0,
@@ -507,15 +528,25 @@ class _productWhoAppliedState extends State<productWhoApplied> {
           Positioned(
               right: 30.0,
               top: 70.0,
-              child: Container(
-                  height: 200.0,
-                  width: 200.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
-                      image: DecorationImage(
-                          alignment: Alignment.center,
-                          image: AssetImage("assets/fifa.jpg"),
-                          fit: BoxFit.cover)))),
+              child: FutureBuilder(
+                future: this._firestore.getImgURL(product.image),
+                builder: (context, url) {
+                  if (url.hasData) {
+                    return Container(
+                        height: 200.0,
+                        width: 200.0,
+                        decoration: BoxDecoration(
+                            border:
+                                Border.all(width: 5, color: Colors.blue[700]),
+                            borderRadius: BorderRadius.circular(20.0),
+                            image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(url.data))));
+                  } else {
+                    return SizedBox(child: CircularProgressIndicator());
+                  }
+                },
+              )),
           Positioned(
               left: 20.0,
               top: 20.0,
@@ -621,14 +652,28 @@ class _productWhoAppliedState extends State<productWhoApplied> {
                       Positioned(
                           left: 20.0,
                           top: 50.0,
-                          child: Container(
-                              height: 60.0,
-                              width: 60.0,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(200.0),
-                                  image: DecorationImage(
-                                      image: AssetImage(profile.photo),
-                                      fit: BoxFit.cover)))),
+                          child: FutureBuilder(
+                            future: this._firestore.getImgURL(profile.photo),
+                            builder: (context, url) {
+                              if (url.hasData) {
+                                return Container(
+                                    height: 60.0,
+                                    width: 60.0,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 1.5,
+                                            color: Colors.blue[700]),
+                                        borderRadius:
+                                            BorderRadius.circular(200.0),
+                                        image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: NetworkImage(url.data))));
+                              } else {
+                                return SizedBox(
+                                    child: CircularProgressIndicator());
+                              }
+                            },
+                          )),
                       Positioned(
                           left: 95.0,
                           top: 52.5,
@@ -791,15 +836,25 @@ class _productDescriptionState extends State<productDescription> {
           Positioned(
               right: 30.0,
               top: 70.0,
-              child: Container(
-                  height: 200.0,
-                  width: 200.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
-                      image: DecorationImage(
-                          alignment: Alignment.center,
-                          image: AssetImage("assets/paysafe.jpg"),
-                          fit: BoxFit.cover)))),
+              child: FutureBuilder(
+                future: this._firestore.getImgURL(product.image),
+                builder: (context, url) {
+                  if (url.hasData) {
+                    return Container(
+                        height: 200.0,
+                        width: 200.0,
+                        decoration: BoxDecoration(
+                            border:
+                                Border.all(width: 2.5, color: Colors.blue[700]),
+                            borderRadius: BorderRadius.circular(20.0),
+                            image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(url.data))));
+                  } else {
+                    return SizedBox(child: CircularProgressIndicator());
+                  }
+                },
+              )),
           Positioned(
               left: 20.0,
               top: 20.0,
@@ -865,9 +920,16 @@ class _productDescriptionState extends State<productDescription> {
                 ),
               )),
           Positioned(
-              left: 20.0,
+              left: 5.0,
               top: 390.0,
               child: Container(
+                  child: FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => UserPage(product.talk.host)));
+                },
                 child: Text(
                   product.talk.host.firstname +
                       ' ' +
@@ -878,7 +940,7 @@ class _productDescriptionState extends State<productDescription> {
                       fontWeight: FontWeight.bold,
                       color: Colors.black),
                 ),
-              )),
+              ))),
           Positioned(
               left: 20.0,
               top: 440.0,

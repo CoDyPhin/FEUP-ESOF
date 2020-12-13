@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:confmate/controller/authentication.dart';
 import 'package:confmate/controller/FirestoreController.dart';
+import 'package:confmate/main.dart';
+import 'package:confmate/view/SignInPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../model/Profile.dart';
 
@@ -13,7 +18,8 @@ class ProfilePage extends StatefulWidget {
   ProfilePage(this._firestore, this._profile);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState(this._profile);
+  _ProfilePageState createState() =>
+      _ProfilePageState(this._profile, this._firestore);
 }
 
 class _ProfilePageState extends State<ProfilePage> {
@@ -21,14 +27,18 @@ class _ProfilePageState extends State<ProfilePage> {
   bool showLoadingIndicator = true;
   ScrollController scrollController;
   final _firebaseUser;
+  final FirestoreController _firestore;
 
-  _ProfilePageState(this._firebaseUser);
+  _ProfilePageState(this._firebaseUser, this._firestore);
 
   @override
   void initState() {
     super.initState();
     this.refreshModel(true);
   }
+
+  File _image;
+  String _uploadedFileURL;
 
   Future<void> refreshModel(bool showIndicator) async {
     setState(() {
@@ -70,17 +80,25 @@ class _ProfilePageState extends State<ProfilePage> {
                             topRight: Radius.circular(24)))),
                 Positioned(
                     top: 100.0,
-                    child: Container(
-                        height: 150.0,
-                        width: 150.0,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.blue, width: 2),
-                            borderRadius: BorderRadius.circular(200.0),
-                            image: DecorationImage(
-                                alignment: Alignment.center,
-                                image: AssetImage("assets/wissam.jpg"),
-                                fit: BoxFit.cover)))),
+                    child: FutureBuilder(
+                      future: this._firestore.getImgURL(this.profile.photo),
+                      builder: (context, url) {
+                        if (url.hasData) {
+                          return Container(
+                              height: 150.0,
+                              width: 150.0,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1.5, color: Colors.blue[700]),
+                                  borderRadius: BorderRadius.circular(200.0),
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(url.data))));
+                        } else {
+                          return SizedBox(child: CircularProgressIndicator());
+                        }
+                      },
+                    )),
                 Positioned(
                     top: 100.0,
                     left: 120.0,
@@ -183,6 +201,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: FloatingActionButton(
                       onPressed: () {
                         context.read<AuthenticationService>().signOut();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  LoginScreen(this._firestore)),
+                          (Route<dynamic> route) => false,
+                        );
                       },
                       child: Icon(Icons.exit_to_app),
                       backgroundColor: Colors.red,
@@ -502,6 +527,178 @@ class _editProfileDataState extends State<editProfileData> {
             ),
           ],
         )
+      ]),
+    );
+  }
+}
+
+class UserPage extends StatefulWidget {
+  final _profile;
+  UserPage(this._profile);
+
+  @override
+  _UserPageState createState() => _UserPageState(this._profile);
+}
+
+class _UserPageState extends State<UserPage> {
+  bool showLoadingIndicator = true;
+  ScrollController scrollController;
+  final _firebaseUser;
+  final FirestoreController firestore = FirestoreController();
+
+  _UserPageState(this._firebaseUser);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.blue[700],
+      body: buildBody(context),
+    );
+  }
+
+  buildBody(context) => Body(context);
+
+  Body(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return SingleChildScrollView(
+      child: Column(children: <Widget>[
+        Stack(alignment: Alignment.topCenter, children: <Widget>[
+          Positioned(
+              child: Container(
+                  height: 220.0,
+                  width: 400.0,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          alignment: Alignment.center,
+                          image: AssetImage("assets/background.jpg"),
+                          fit: BoxFit.cover)))),
+          Container(
+              margin: EdgeInsets.only(top: size.height * 0.25),
+              height: size.height * 0.75,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24)))),
+          Positioned(
+              right: size.width * 0.8,
+              top: size.height * 0.05,
+              child: FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Icon(Icons.arrow_back,
+                      color: Colors.white, size: size.width * 0.075))),
+          Positioned(
+              top: 100.0,
+              child: FutureBuilder(
+                future: this.firestore.getImgURL(_firebaseUser.photo),
+                builder: (context, url) {
+                  if (url.hasData) {
+                    return Container(
+                        height: 150.0,
+                        width: 150.0,
+                        decoration: BoxDecoration(
+                            border:
+                                Border.all(width: 1.5, color: Colors.blue[700]),
+                            borderRadius: BorderRadius.circular(200.0),
+                            image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(url.data))));
+                  } else {
+                    return SizedBox(child: CircularProgressIndicator());
+                  }
+                },
+              )),
+          Positioned(
+              top: 270.0,
+              child: Container(
+                child: Text(
+                  _firebaseUser.firstname + ' ' + _firebaseUser.lastname,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue),
+                ),
+              )),
+          Positioned(
+              top: 305.0,
+              child: Container(
+                child: Text(
+                  _firebaseUser.job,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[200]),
+                ),
+              )),
+          Positioned(
+              top: 400.0,
+              width: 330.0,
+              child: Container(
+                padding: EdgeInsets.only(left: 0.0, right: 0.0),
+                height: 260.0,
+                width: 225.0,
+                child: Text(
+                  _firebaseUser.description,
+                  style: TextStyle(fontSize: 20),
+                  textAlign: TextAlign.center,
+                ),
+              )),
+          Positioned(
+              top: 350.0,
+              left: 30.0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 30.0,
+                        color: Colors.grey[400],
+                      ),
+                      Text(
+                        _firebaseUser.city + ", " + _firebaseUser.country,
+                        style: TextStyle(fontSize: 17, color: Colors.grey[400]),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 30),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.business,
+                        size: 30.0,
+                        color: Colors.grey[400],
+                      ),
+                      Text(
+                        _firebaseUser.area,
+                        style: TextStyle(fontSize: 17, color: Colors.grey[400]),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  )
+                ],
+              )),
+          /*Positioned(
+                    top: 40.0,
+                    right: 25.0,
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        context.read<AuthenticationService>().signOut();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AuthenticationWrapper()));
+                      },
+                      child: Icon(Icons.exit_to_app),
+                      backgroundColor: Colors.red,
+                    )),*/
+        ]),
       ]),
     );
   }

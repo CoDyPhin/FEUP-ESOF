@@ -12,7 +12,8 @@ class notificationsPage extends StatefulWidget {
   notificationsPage(this._firestore);
 
   @override
-  _notificationsPageState createState() => _notificationsPageState();
+  _notificationsPageState createState() =>
+      _notificationsPageState(this._firestore);
 }
 
 // ignore: camel_case_types
@@ -21,8 +22,9 @@ class _notificationsPageState extends State<notificationsPage> {
   List<Notifications> _reversednotifications = new List();
   List<Product> _products;
   bool showLoadingIndicator = true;
+  final FirestoreController _firestore;
 
-  _notificationsPageState();
+  _notificationsPageState(this._firestore);
 
   @override
   void initState() {
@@ -72,9 +74,8 @@ class _notificationsPageState extends State<notificationsPage> {
 
   _notificationCard(Notifications notification) {
     Product product;
-    print(notification.seen);
     for (int i = 0; i < _products.length; i++) {
-      if (_notifications[i].product == _products[i].reference) {
+      if (notification.product == _products[i].reference) {
         product = _products[i];
         break;
       }
@@ -114,14 +115,25 @@ class _notificationsPageState extends State<notificationsPage> {
               Positioned(
                   left: 20.0,
                   top: 50.0,
-                  child: Container(
-                      height: 60.0,
-                      width: 60.0,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(200.0),
-                          image: DecorationImage(
-                              image: AssetImage("assets/tiago.jpg"),
-                              fit: BoxFit.cover)))),
+                  child: FutureBuilder(
+                    future: this._firestore.getImgURL(product.talk.host.photo),
+                    builder: (context, url) {
+                      if (url.hasData) {
+                        return Container(
+                            height: 60.0,
+                            width: 60.0,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    width: 1.5, color: Colors.blue[700]),
+                                borderRadius: BorderRadius.circular(200.0),
+                                image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(url.data))));
+                      } else {
+                        return SizedBox(child: CircularProgressIndicator());
+                      }
+                    },
+                  )),
               Positioned(
                   left: 95.0,
                   top: 55.5,

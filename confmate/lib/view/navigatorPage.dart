@@ -40,7 +40,7 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.white,
       bottomNavigationBar: CurvedNavigationBar(
         color: Colors.blue,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         buttonBackgroundColor: Colors.white,
         animationDuration: Duration(milliseconds: 200),
         animationCurve: Curves.bounceInOut,

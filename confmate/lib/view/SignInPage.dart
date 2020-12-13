@@ -1,5 +1,6 @@
 import 'package:confmate/controller/authentication.dart';
 import 'package:confmate/controller/FirestoreController.dart';
+import 'package:confmate/main.dart';
 import 'package:confmate/view/SignUpPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -120,11 +121,18 @@ class _LoginScreenState extends State<LoginScreen> {
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: () {
-          context.read<AuthenticationService>().signIn(
+        onPressed: () async {
+          String ola = await context.read<AuthenticationService>().signIn(
                 email: emailController.text.trim(),
                 password: passwordController.text.trim(),
               );
+          if (ola == "Signed in") {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => AuthenticationWrapper()),
+              (Route<dynamic> route) => false,
+            );
+          }
         },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
