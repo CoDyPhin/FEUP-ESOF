@@ -7,6 +7,7 @@ import '../model/Product.dart';
 import '../model/Profile.dart';
 import '../model/Talk.dart';
 import '../view/productsPage.dart';
+import 'profilePage.dart';
 
 class HomePage extends StatefulWidget {
   final FirestoreController _firestore;
@@ -204,6 +205,15 @@ class _HomePageState extends State<HomePage> {
                       left: 70.0,
                       top: 25.0,
                       child: Container(
+                          child: FlatButton(
+                              child: Text(''),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            UserPage(talk.host)));
+                              }),
                           height: 90.0,
                           width: 90.0,
                           decoration: BoxDecoration(

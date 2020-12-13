@@ -6,6 +6,7 @@ import 'package:confmate/controller/FirestoreController.dart';
 import 'package:confmate/view/productsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'profilePage.dart';
 
 class TalksPage extends StatefulWidget {
   final FirestoreController _firestore;
@@ -178,12 +179,20 @@ class _TalksPageState extends State<TalksPage>
                   left: 20.0,
                   top: 50.0,
                   child: Container(
+                      child: FlatButton(
+                          child: Text(''),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UserPage(talk.host)));
+                          }),
                       height: 60.0,
                       width: 60.0,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(200.0),
                           image: DecorationImage(
-                              image: AssetImage("assets/tiago.jpg"),
+                              image: AssetImage(talk.host.photo),
                               fit: BoxFit.cover)))),
               Positioned(
                   left: 95.0,
@@ -451,6 +460,14 @@ class _talkDescriptionState extends State<talkDescription> {
           Positioned(
               top: size.height * 0.07,
               child: Container(
+                  child: FlatButton(
+                      child: Text(''),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => UserPage(talk.host)));
+                      }),
                   height: 150.0,
                   width: 150.0,
                   decoration: BoxDecoration(
@@ -475,15 +492,33 @@ class _talkDescriptionState extends State<talkDescription> {
           Positioned(
               top: size.height * 0.323,
               child: Container(
-                child: Text(
+                  child: FlatButton.icon(
+                //textColor: Color(0xFF6200EE),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => UserPage(talk.host)));
+                },
+                icon: Text(
                   talk.host.firstname + ' ' + talk.host.lastname,
                   style: TextStyle(
                       fontFamily: 'nunito',
                       fontSize: 25.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.blue[200]),
-                ),
-              )),
+                ), //Icon(Icons.arrow_forward_ios, size: 15),
+                label: Text(''),
+              )
+                  /*Text(
+                  talk.host.firstname + ' ' + talk.host.lastname,
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[200]),
+                ),*/
+                  )),
           Positioned(
               top: size.height * 0.475,
               width: size.width * 0.8,
