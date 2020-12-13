@@ -1,14 +1,16 @@
+import 'dart:io';
+
 import 'package:confmate/controller/authentication.dart';
 import 'package:confmate/controller/FirestoreController.dart';
+import 'package:confmate/main.dart';
+import 'package:confmate/view/SignInPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../model/Profile.dart';
-import 'package:confmate/main.dart';
 
 import 'package:provider/provider.dart';
-
-Profile profile;
 
 class ProfilePage extends StatefulWidget {
   final FirestoreController _firestore;
@@ -16,21 +18,27 @@ class ProfilePage extends StatefulWidget {
   ProfilePage(this._firestore, this._profile);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState(this._profile);
+  _ProfilePageState createState() =>
+      _ProfilePageState(this._profile, this._firestore);
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  Profile profile;
   bool showLoadingIndicator = true;
   ScrollController scrollController;
   final _firebaseUser;
+  final FirestoreController _firestore;
 
-  _ProfilePageState(this._firebaseUser);
+  _ProfilePageState(this._firebaseUser, this._firestore);
 
   @override
   void initState() {
     super.initState();
     this.refreshModel(true);
   }
+
+  File _image;
+  String _uploadedFileURL;
 
   Future<void> refreshModel(bool showIndicator) async {
     setState(() {
@@ -72,17 +80,25 @@ class _ProfilePageState extends State<ProfilePage> {
                             topRight: Radius.circular(24)))),
                 Positioned(
                     top: 100.0,
-                    child: Container(
-                        height: 150.0,
-                        width: 150.0,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.blue, width: 2),
-                            borderRadius: BorderRadius.circular(200.0),
-                            image: DecorationImage(
-                                alignment: Alignment.center,
-                                image: AssetImage("assets/wissam.jpg"),
-                                fit: BoxFit.cover)))),
+                    child: FutureBuilder(
+                      future: this._firestore.getImgURL(this.profile.photo),
+                      builder: (context, url) {
+                        if (url.hasData) {
+                          return Container(
+                              height: 150.0,
+                              width: 150.0,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1.5, color: Colors.blue[700]),
+                                  borderRadius: BorderRadius.circular(200.0),
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(url.data))));
+                        } else {
+                          return SizedBox(child: CircularProgressIndicator());
+                        }
+                      },
+                    )),
                 Positioned(
                     top: 100.0,
                     left: 120.0,
@@ -107,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     top: 270.0,
                     child: Container(
                       child: Text(
-                        profile.firstname + ' ' + profile.lastname,
+                        this.profile.firstname + ' ' + this.profile.lastname,
                         style: TextStyle(
                             fontFamily: 'nunito',
                             fontSize: 25.0,
@@ -185,10 +201,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: FloatingActionButton(
                       onPressed: () {
                         context.read<AuthenticationService>().signOut();
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AuthenticationWrapper()));
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  LoginScreen(this._firestore)),
+                          (Route<dynamic> route) => false,
+                        );
                       },
                       child: Icon(Icons.exit_to_app),
                       backgroundColor: Colors.red,
@@ -205,14 +224,6 @@ class editProfileData extends StatefulWidget {
 }
 
 class _editProfileDataState extends State<editProfileData> {
-  String _name, _city, _country, _job, _area, _description;
-  final nameEditingController = TextEditingController();
-  final cityEditingController = TextEditingController();
-  final countryEditingController = TextEditingController();
-  final jobEditingController = TextEditingController();
-  final areaEditingController = TextEditingController();
-  final descriptionEditingController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -314,15 +325,8 @@ class _editProfileDataState extends State<editProfileData> {
               height: 40.0,
               top: 260.0,
               child: TextField(
-                controller: nameEditingController,
-                onChanged: (text) {
-                  this.setState(() {
-                    _name = text;
-                  });
-                },
                 decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: profile.firstname + ' ' + profile.lastname),
+                    border: InputBorder.none, hintText: 'Wissam Ben Yedder'),
               ),
             ),
             //City
@@ -356,7 +360,7 @@ class _editProfileDataState extends State<editProfileData> {
               top: 330.0,
               child: TextField(
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: profile.city),
+                    border: InputBorder.none, hintText: 'Monaco'),
               ),
             ),
             //Country
@@ -390,7 +394,7 @@ class _editProfileDataState extends State<editProfileData> {
               top: 330.0,
               child: TextField(
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: profile.country),
+                    border: InputBorder.none, hintText: 'France'),
               ),
             ),
             //Job
@@ -424,7 +428,7 @@ class _editProfileDataState extends State<editProfileData> {
               top: 400.0,
               child: TextField(
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: profile.job),
+                    border: InputBorder.none, hintText: 'Player at AS Monaco'),
               ),
             ),
             //Area
@@ -458,7 +462,7 @@ class _editProfileDataState extends State<editProfileData> {
               top: 470.0,
               child: TextField(
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: profile.area),
+                    border: InputBorder.none, hintText: 'Football'),
               ),
             ),
             //Description
@@ -499,7 +503,8 @@ class _editProfileDataState extends State<editProfileData> {
                     border: InputBorder.none,
                     //hintMaxLines: 5,
                     //alignLabelWithHint: true,
-                    hintText: profile.description),
+                    hintText:
+                        'Since debuting in FIFA, I have become one the most horrific terrors to face during FUT Champions. I love destroying the opponent team with my magnific moustache'),
               ),
             ),
             Positioned(
@@ -539,6 +544,7 @@ class _UserPageState extends State<UserPage> {
   bool showLoadingIndicator = true;
   ScrollController scrollController;
   final _firebaseUser;
+  final FirestoreController firestore = FirestoreController();
 
   _UserPageState(this._firebaseUser);
 
@@ -546,15 +552,11 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue[700],
-      appBar: buildAppBar(),
       body: buildBody(context),
     );
   }
 
   buildBody(context) => Body(context);
-
-  AppBar buildAppBar() =>
-      AppBar(backgroundColor: Colors.blue[700], elevation: 0);
 
   Body(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -572,46 +574,42 @@ class _UserPageState extends State<UserPage> {
                           fit: BoxFit.cover)))),
           Container(
               margin: EdgeInsets.only(top: size.height * 0.25),
-              height: 450,
+              height: size.height * 0.75,
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(24),
                       topRight: Radius.circular(24)))),
           Positioned(
+              right: size.width * 0.8,
+              top: size.height * 0.05,
+              child: FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Icon(Icons.arrow_back,
+                      color: Colors.white, size: size.width * 0.075))),
+          Positioned(
               top: 100.0,
-              child: Container(
-                  height: 150.0,
-                  width: 150.0,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.blue, width: 2),
-                      borderRadius: BorderRadius.circular(200.0),
-                      image: DecorationImage(
-                          alignment: Alignment.center,
-                          image: AssetImage(_firebaseUser.photo),
-                          fit: BoxFit.cover)))),
-          /*Positioned(
-                  top: 100.0,
-                  left: 120.0,
-                  child: Container(
-                        height: 40.0,
-                        width: 40.0,
-                        child: IconButton(
-                          icon: Icon(Icons.edit),
-                          tooltip: 'Edit profile',
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => editProfileData()));
-                          },
-                        ),
+              child: FutureBuilder(
+                future: this.firestore.getImgURL(_firebaseUser.photo),
+                builder: (context, url) {
+                  if (url.hasData) {
+                    return Container(
+                        height: 150.0,
+                        width: 150.0,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(200.0),
-                          color: Colors.white,
-                        ))),
-                ),*/
+                            border:
+                                Border.all(width: 1.5, color: Colors.blue[700]),
+                            borderRadius: BorderRadius.circular(200.0),
+                            image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(url.data))));
+                  } else {
+                    return SizedBox(child: CircularProgressIndicator());
+                  }
+                },
+              )),
           Positioned(
               top: 270.0,
               child: Container(

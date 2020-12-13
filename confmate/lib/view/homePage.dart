@@ -1,13 +1,18 @@
 import 'package:confmate/controller/FirestoreController.dart';
+import 'package:confmate/view/profilePage.dart';
 import 'package:confmate/view/talksPage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_picker/image_picker.dart';
+
+import 'dart:io';
+import 'dart:async';
 
 import '../model/Product.dart';
 import '../model/Profile.dart';
 import '../model/Talk.dart';
 import '../view/productsPage.dart';
-import 'profilePage.dart';
 
 class HomePage extends StatefulWidget {
   final FirestoreController _firestore;
@@ -28,8 +33,28 @@ class _HomePageState extends State<HomePage> {
   final _firebaseUser;
   Profile _profile;
   final FirestoreController _firestore;
+  final storage = FirebaseStorage.instance;
 
   _HomePageState(this._firestore, this._firebaseUser);
+
+  File _image;
+  String _uploadedFileURL;
+
+  Future chooseFile() async {
+    await ImagePicker.pickImage(source: ImageSource.gallery).then((image) {
+      setState(() {
+        _image = image;
+      });
+    });
+  }
+
+  Future uploadFile(String path, File file) async {
+    Future<String> uploadFile(String path, File file) async {
+      TaskSnapshot task = await storage.ref().child(path).putFile(file);
+
+      return task.ref.getDownloadURL();
+    }
+  }
 
   @override
   void initState() {
@@ -74,17 +99,24 @@ class _HomePageState extends State<HomePage> {
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF473D3A))),
                   Padding(
-                    padding: EdgeInsets.only(right: 30, top: 20),
-                    child: Container(
-                      height: 75.0,
-                      width: 75.0,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100.0),
-                          image: DecorationImage(
-                              image: AssetImage('assets/wissam.jpg'),
-                              fit: BoxFit.cover)),
-                    ),
-                  ),
+                      padding: EdgeInsets.only(right: 30, top: 20),
+                      child: FutureBuilder(
+                        future: this._firestore.getImgURL(_profile.photo),
+                        builder: (context, url) {
+                          if (url.hasData) {
+                            return Container(
+                                height: 75.0,
+                                width: 75.0,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(100.0),
+                                    image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: NetworkImage(url.data))));
+                          } else {
+                            return SizedBox(child: CircularProgressIndicator());
+                          }
+                        },
+                      )),
                 ],
               ),
               Padding(
@@ -202,25 +234,41 @@ class _HomePageState extends State<HomePage> {
                         label: Text("MORE DETAILS"),
                       )),
                   Positioned(
-                      left: 70.0,
+                      left: 55.0,
                       top: 25.0,
                       child: Container(
                           child: FlatButton(
-                              child: Text(''),
                               onPressed: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             UserPage(talk.host)));
-                              }),
-                          height: 90.0,
-                          width: 90.0,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(200.0),
-                              image: DecorationImage(
-                                  image: AssetImage(talk.host.photo),
-                                  fit: BoxFit.cover))))
+                              },
+                              child: FutureBuilder(
+                                future:
+                                    this._firestore.getImgURL(talk.host.photo),
+                                builder: (context, url) {
+                                  if (url.hasData) {
+                                    return Container(
+                                        height: 90.0,
+                                        width: 90.0,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                width: 1.5,
+                                                color: Colors.blue[700]),
+                                            borderRadius:
+                                                BorderRadius.circular(200.0),
+                                            image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image:
+                                                    NetworkImage(url.data))));
+                                  } else {
+                                    return SizedBox(
+                                        child: CircularProgressIndicator());
+                                  }
+                                },
+                              ))))
                 ]),
               ],
             )));
@@ -289,14 +337,25 @@ class _HomePageState extends State<HomePage> {
                   Positioned(
                       left: 70.0,
                       top: 25.0,
-                      child: Container(
-                          height: 90.0,
-                          width: 90.0,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(200.0),
-                              image: DecorationImage(
-                                  image: AssetImage("assets/paysafe.jpg"),
-                                  fit: BoxFit.cover))))
+                      child: FutureBuilder(
+                        future: this._firestore.getImgURL(product.image),
+                        builder: (context, url) {
+                          if (url.hasData) {
+                            return Container(
+                                height: 90.0,
+                                width: 90.0,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 1.5, color: Colors.blue[700]),
+                                    borderRadius: BorderRadius.circular(200.0),
+                                    image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: NetworkImage(url.data))));
+                          } else {
+                            return SizedBox(child: CircularProgressIndicator());
+                          }
+                        },
+                      ))
                 ]),
               ],
             )));

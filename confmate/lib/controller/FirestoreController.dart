@@ -1,12 +1,19 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:confmate/model/Comments.dart';
 import 'package:confmate/model/Notification.dart';
 import 'package:confmate/model/Product.dart';
 import 'package:confmate/model/Profile.dart';
 import 'package:confmate/model/Talk.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+
+import 'dart:async';
 
 class FirestoreController {
   static final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  static final storage = FirebaseStorage.instance;
   static Profile _currentUser;
 
   Profile getCurrentUser() {
@@ -15,6 +22,21 @@ class FirestoreController {
 
   void setCurrentUser(Profile user) {
     _currentUser = user;
+  }
+
+  Future<String> getImgURL(String path) async {
+    return await storage.ref(path).getDownloadURL();
+  }
+
+  uploadImage(File image, String filename) {
+    final Reference storageRef = storage.ref().child(filename);
+    final UploadTask task = storageRef.putFile(image);
+  }
+
+  Future<File> chooseFile() async {
+    File file = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    return file;
   }
 
   Future<List<Notifications>> getMyNotifications() async {
@@ -52,13 +74,15 @@ class FirestoreController {
     });
   }
 
-  void addProduct(Talk talk, String name, String description, String audience) {
+  void addProduct(Talk talk, String name, String description, String audience,
+      String image) {
     firestore.collection("products").add({
       "audience": audience,
       "description": description,
       "name": name,
       "talkID": talk.reference,
       "featured": true,
+      "image": image
     });
   }
 
@@ -82,7 +106,7 @@ class FirestoreController {
   }
 
   void addUser(String firstname, String lastname, String username, String email,
-      String city, String country, bool isHost) {
+      String city, String country, bool isHost, String photo) {
     firestore.collection("profile").add({
       "area": "Area Not Specified",
       "city": city,
@@ -92,9 +116,9 @@ class FirestoreController {
       "firstname": firstname,
       "lastname": lastname,
       "job": "Job Not Specified",
-      "photo": "assets/wissam.jpg",
+      "photo": photo,
       "username": username,
-      "host": isHost
+      "host": isHost,
     });
   }
 
@@ -234,9 +258,11 @@ class FirestoreController {
     String description = snapshot.get('description');
     bool featured = snapshot.get('featured');
     String audience = snapshot.get('audience');
+    String image = snapshot.get('image');
     DocumentReference userRef = snapshot.get('talkID');
     Talk talk = await _makeTalkFromDoc(await userRef.get());
     DocumentReference reference = snapshot.reference;
-    return Product(name, description, audience, featured, talk, reference);
+    return Product(
+        name, description, audience, featured, talk, image, reference);
   }
 }

@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:confmate/controller/FirestoreController.dart';
+import 'package:confmate/model/Product.dart';
 import 'package:confmate/model/Talk.dart';
 import 'package:confmate/view/productsPage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:confmate/view/SignInPage.dart';
+import 'package:image_picker/image_picker.dart';
 
 // ignore: camel_case_types
 class finishAddingProductPage extends StatefulWidget {
@@ -12,13 +17,14 @@ class finishAddingProductPage extends StatefulWidget {
   String name;
   String description;
   String audience;
+  File file;
 
   finishAddingProductPage(
-      this._firestore, this.name, this.description, this.audience);
+      this._firestore, this.name, this.description, this.audience, this.file);
 
   @override
   _finishAddingProductPageState createState() => _finishAddingProductPageState(
-      this._firestore, this.name, this.description, this.audience);
+      this._firestore, this.name, this.description, this.audience, this.file);
 }
 
 // ignore: camel_case_types
@@ -29,9 +35,14 @@ class _finishAddingProductPageState extends State<finishAddingProductPage> {
   String description;
   String audience;
   List<Talk> _mytalks = new List();
+  Product newProduct;
+  List<Product> _myproducts = new List();
+  List<Product> _mytempproducts = new List();
+  File file;
+  String fileName;
 
   _finishAddingProductPageState(
-      this._firestore, this.name, this.description, this.audience);
+      this._firestore, this.name, this.description, this.audience, this.file);
 
   @override
   void initState() {
@@ -44,6 +55,19 @@ class _finishAddingProductPageState extends State<finishAddingProductPage> {
 
     _mytalks.clear();
     _mytalks = await widget._firestore.getMyTalks();
+    _mytempproducts.clear();
+    _mytempproducts = await widget._firestore.getProducts();
+
+    if (_myproducts.length != 0) {
+      for (Product p in _myproducts) {
+        if (!_myproducts.contains(p)) newProduct = p;
+      }
+    }
+
+    _myproducts.clear();
+    _myproducts = _mytempproducts;
+
+    fileName = "products/" + (_myproducts.length + 1).toString();
 
     setState(() {
       this.showLoadingIndicator = false;
@@ -54,11 +78,6 @@ class _finishAddingProductPageState extends State<finishAddingProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    /*return Scaffold(
-      backgroundColor: Colors.blue[700],
-      appBar: buildAppBar(),
-      body: buildBody(context),
-    );*/
     return Scaffold(
       backgroundColor: Colors.blue[700],
       appBar: buildAppBar(),
@@ -171,9 +190,20 @@ class _finishAddingProductPageState extends State<finishAddingProductPage> {
               right: 30.0,
               bottom: 47.5,
               child: IconButton(
-                onPressed: () {
+                onPressed: () async {
                   this._firestore.addProduct(
-                      talk, this.name, this.description, this.audience);
+                      talk,
+                      this.name,
+                      this.description,
+                      this.audience,
+                      "products/" +
+                          talk.reference.id.toString() +
+                          this._myproducts.length.toString());
+                  this._firestore.uploadImage(
+                      this.file,
+                      "products/" +
+                          talk.reference.id.toString() +
+                          this._myproducts.length.toString());
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 icon: Icon(

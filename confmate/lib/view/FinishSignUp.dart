@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:confmate/controller/authentication.dart';
 import 'package:confmate/controller/FirestoreController.dart';
 import 'package:confmate/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 final kHintTextStyle = TextStyle(
@@ -199,6 +202,16 @@ class _FinishSignUpPageState extends State<FinishSignUpPage> {
     );
   }
 
+  File _image;
+
+  Future chooseFile() async {
+    await ImagePicker.pickImage(source: ImageSource.gallery).then((image) {
+      setState(() {
+        _image = image;
+      });
+    });
+  }
+
   Widget _buildLoginBtn(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
@@ -219,7 +232,11 @@ class _FinishSignUpPageState extends State<FinishSignUpPage> {
                   email,
                   cityController.text.trim(),
                   countryController.text.trim(),
-                  this.isHost));
+                  this.isHost,
+                  "users/" + this.username))
+              .then((value) => this
+                  ._firestore
+                  .uploadImage(this._image, "users/" + this.username));
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => Redirecting()),
@@ -314,7 +331,21 @@ class _FinishSignUpPageState extends State<FinishSignUpPage> {
                       ),
                       _buildCityTF(),
                       SizedBox(
-                        height: 10.0,
+                        height: 20.0,
+                      ),
+                      RaisedButton(
+                        elevation: 5.0,
+                        onPressed: chooseFile,
+                        padding: EdgeInsets.all(15.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        color: Colors.white,
+                        child: _image == null
+                            ? Text("ADD IMAGE")
+                            : Text(
+                                'IMAGE ADDED!',
+                              ),
                       ),
                       _buildLoginBtn(context)
                     ],
