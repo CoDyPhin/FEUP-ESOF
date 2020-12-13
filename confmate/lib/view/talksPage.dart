@@ -176,35 +176,58 @@ class _TalksPageState extends State<TalksPage>
                         color: Colors.white),
                   )),
               Positioned(
-                  left: 20.0,
+                  left: 12.0,
                   top: 50.0,
-                  child: Container(
-                      height: 60.0,
-                      width: 60.0,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(200.0),
-                          image: DecorationImage(
-                              image: AssetImage("assets/tiago.jpg"),
-                              fit: BoxFit.cover)))),
+                  child: FlatButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => UserPage(talk.host)));
+                      },
+                      child: FutureBuilder(
+                        future: this._firestore.getImgURL(talk.host.photo),
+                        builder: (context, url) {
+                          if (url.hasData) {
+                            return Container(
+                                height: 60.0,
+                                width: 60.0,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200.0),
+                                    image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: NetworkImage(url.data))));
+                          } else {
+                            return SizedBox(child: CircularProgressIndicator());
+                          }
+                        },
+                      ))),
               Positioned(
                   left: 95.0,
                   top: 55.5,
-                  child: Text(
-                    talk.host.firstname + ' ' + talk.host.lastname,
-                    style: TextStyle(
-                        fontFamily: 'nunito',
-                        fontSize: 17.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  )),
+                  child: FlatButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => UserPage(talk.host)));
+                      },
+                      child: Text(
+                        talk.host.firstname + ' ' + talk.host.lastname,
+                        style: TextStyle(
+                            fontFamily: 'nunito',
+                            fontSize: 17.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ))),
               Positioned(
-                  left: 95.0,
-                  top: 80.0,
+                  left: 105.0,
+                  top: 90.0,
                   child: Text(
                     talk.host.job,
                     style: TextStyle(
                         fontFamily: 'nunito',
-                        fontSize: 17.0,
+                        fontSize: 16.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
                   )),
@@ -307,31 +330,38 @@ class _talkPromotedProductsState extends State<talkPromotedProducts> {
                     Positioned(
                         top: size.height * 0.14,
                         right: size.width * 0.675,
-                        child: FutureBuilder(
-                          future: this.firestore.getImgURL(talk.host.photo),
-                          builder: (context, url) {
-                            if (url.hasData) {
-                              return Container(
-                                  height: size.height * 0.1,
-                                  width: size.height * 0.1,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.blue, width: 2.5),
-                                      borderRadius: BorderRadius.circular(
-                                          size.width * 0.2),
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: NetworkImage(url.data))));
-                            } else {
-                              return SizedBox(
-                                  child: CircularProgressIndicator());
-                            }
-                          },
-                        )),
+                        child: FlatButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          UserPage(talk.host)));
+                            },
+                            child: FutureBuilder(
+                              future: this.firestore.getImgURL(talk.host.photo),
+                              builder: (context, url) {
+                                if (url.hasData) {
+                                  return Container(
+                                      height: size.height * 0.1,
+                                      width: size.height * 0.1,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.blue, width: 2.5),
+                                          borderRadius: BorderRadius.circular(
+                                              size.width * 0.2),
+                                          image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(url.data))));
+                                } else {
+                                  return SizedBox(
+                                      child: CircularProgressIndicator());
+                                }
+                              },
+                            ))),
                     Positioned(
                         top: size.height * 0.03,
                         child: Container(
-                          height: size.height * 0.3,
                           width: size.width,
                           child: Text(
                             this.talk.name,
@@ -345,9 +375,16 @@ class _talkPromotedProductsState extends State<talkPromotedProducts> {
                           ),
                         )),
                     Positioned(
-                        left: size.width * 0.35,
-                        top: size.height * 0.165,
+                        left: size.width * 0.30,
+                        top: size.height * 0.155,
                         child: Container(
+                            child: FlatButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UserPage(talk.host)));
+                          },
                           child: Text(
                             this.talk.host.firstname +
                                 " " +
@@ -359,7 +396,7 @@ class _talkPromotedProductsState extends State<talkPromotedProducts> {
                               color: Colors.blue[200],
                             ),
                           ),
-                        )),
+                        ))),
                     Positioned(
                         top: size.height * 0.3,
                         child: Container(
@@ -553,8 +590,15 @@ class _talkDescriptionState extends State<talkDescription> {
                 ),
               )),
           Positioned(
-              top: size.height * 0.323,
+              top: size.height * 0.313,
               child: Container(
+                  child: FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => UserPage(talk.host)));
+                },
                 child: Text(
                   talk.host.firstname + ' ' + talk.host.lastname,
                   style: TextStyle(
@@ -563,7 +607,7 @@ class _talkDescriptionState extends State<talkDescription> {
                       fontWeight: FontWeight.bold,
                       color: Colors.blue[200]),
                 ),
-              )),
+              ))),
           Positioned(
               top: size.height * 0.475,
               width: size.width * 0.8,
