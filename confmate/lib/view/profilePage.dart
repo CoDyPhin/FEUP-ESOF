@@ -5,9 +5,11 @@ import 'package:confmate/controller/authentication.dart';
 import 'package:confmate/controller/FirestoreController.dart';
 import 'package:confmate/main.dart';
 import 'package:confmate/view/SignInPage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
 
 import '../model/Profile.dart';
 
@@ -128,10 +130,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           tooltip: 'Edit profile',
                           onPressed: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        editProfileData())).then((value) {
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            editProfileData(this._firestore)))
+                                .then((value) {
                               setState(() {});
                             });
                           },
@@ -237,8 +240,10 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 class editProfileData extends StatefulWidget {
+  final FirestoreController _firestore;
+  editProfileData(this._firestore);
   @override
-  _editProfileDataState createState() => _editProfileDataState();
+  _editProfileDataState createState() => _editProfileDataState(this._firestore);
 }
 
 class _editProfileDataState extends State<editProfileData> {
@@ -260,6 +265,13 @@ class _editProfileDataState extends State<editProfileData> {
     profile.reference.update({'description': _description});
   }
 
+  final FirestoreController _firestore;
+
+  _editProfileDataState(this._firestore);
+
+  File _image;
+  String _uploadedFileURL;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -267,6 +279,18 @@ class _editProfileDataState extends State<editProfileData> {
       appBar: buildAppBar(),
       body: buildBody(context),
     );
+  }
+
+  Future choosePhoto() async {
+    await ImagePicker.pickImage(source: ImageSource.camera).then((image) {
+      setState(() {
+        _image = image;
+        _uploadedFileURL = basename(image.path);
+      });
+    });
+
+    this._firestore.uploadImage(this._image, "users/" + _uploadedFileURL);
+    profile.reference.update({'photo': "users/" + _uploadedFileURL});
   }
 
   buildBody(context) => Body(context);
@@ -302,17 +326,26 @@ class _editProfileDataState extends State<editProfileData> {
                         topRight: Radius.circular(24)))),
             Positioned(
                 top: 50.0,
-                child: Container(
-                    height: 150.0,
-                    width: 150.0,
-                    decoration: BoxDecoration(
-                        border:
-                            Border.all(color: Colors.blueGrey[100], width: 2),
-                        borderRadius: BorderRadius.circular(200.0),
-                        image: DecorationImage(
-                            alignment: Alignment.center,
-                            image: AssetImage("assets/wissam.jpg"),
-                            fit: BoxFit.cover)))),
+                child: FutureBuilder(
+                  future: this._firestore.getImgURL(profile.photo),
+                  builder: (context, url) {
+                    if (url.hasData) {
+                      return Container(
+                          height: 150.0,
+                          width: 150.0,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Colors.blueGrey[100], width: 2),
+                              borderRadius: BorderRadius.circular(200.0),
+                              image: DecorationImage(
+                                  alignment: Alignment.center,
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(url.data))));
+                    } else {
+                      return SizedBox(child: CircularProgressIndicator());
+                    }
+                  },
+                )),
             Positioned(
                 top: 180.0,
                 left: 250,
@@ -327,6 +360,7 @@ class _editProfileDataState extends State<editProfileData> {
                               fit: BoxFit.cover))),
                   onTap: () {
                     //atualizar imagem
+                    choosePhoto();
                   },
                 )),
 
