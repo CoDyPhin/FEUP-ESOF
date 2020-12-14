@@ -1,16 +1,28 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:confmate/controller/authentication.dart';
 import 'package:confmate/controller/FirestoreController.dart';
 import 'package:confmate/main.dart';
 import 'package:confmate/view/SignInPage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
 
 import '../model/Profile.dart';
 
 import 'package:provider/provider.dart';
+
+Profile profile;
+String _firstname;
+String _lastname;
+String _city;
+String _country;
+String _job;
+String _area;
+String _description;
 
 class ProfilePage extends StatefulWidget {
   final FirestoreController _firestore;
@@ -23,7 +35,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Profile profile;
   bool showLoadingIndicator = true;
   ScrollController scrollController;
   final _firebaseUser;
@@ -45,6 +56,15 @@ class _ProfilePageState extends State<ProfilePage> {
       showLoadingIndicator = showIndicator;
     });
     profile = await widget._firestore.getUser(this._firebaseUser.email);
+
+    _firstname = profile.firstname;
+    _lastname = profile.lastname;
+    _city = profile.city;
+    _country = profile.country;
+    _job = profile.job;
+    _area = profile.area;
+    _description = profile.description;
+
     if (this.mounted)
       setState(() {
         showLoadingIndicator = false;
@@ -81,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Positioned(
                     top: 100.0,
                     child: FutureBuilder(
-                      future: this._firestore.getImgURL(this.profile.photo),
+                      future: this._firestore.getImgURL(profile.photo),
                       builder: (context, url) {
                         if (url.hasData) {
                           return Container(
@@ -110,9 +130,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           tooltip: 'Edit profile',
                           onPressed: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => editProfileData()));
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            editProfileData(this._firestore)))
+                                .then((value) {
+                              setState(() {});
+                            });
                           },
                         ),
                         decoration: BoxDecoration(
@@ -123,7 +147,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     top: 270.0,
                     child: Container(
                       child: Text(
-                        this.profile.firstname + ' ' + this.profile.lastname,
+                        _firstname + ' ' + _lastname,
                         style: TextStyle(
                             fontFamily: 'nunito',
                             fontSize: 25.0,
@@ -135,7 +159,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     top: 305.0,
                     child: Container(
                       child: Text(
-                        profile.job,
+                        _job,
                         style: TextStyle(
                             fontFamily: 'nunito',
                             fontSize: 20.0,
@@ -151,7 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       height: 260.0,
                       width: 225.0,
                       child: Text(
-                        profile.description,
+                        _description,
                         style: TextStyle(fontSize: 20),
                         textAlign: TextAlign.center,
                       ),
@@ -170,7 +194,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               color: Colors.grey[400],
                             ),
                             Text(
-                              profile.city + ", " + profile.country,
+                              _city + ", " + _country,
                               style: TextStyle(
                                   fontSize: 17, color: Colors.grey[400]),
                               textAlign: TextAlign.center,
@@ -186,7 +210,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               color: Colors.grey[400],
                             ),
                             Text(
-                              profile.area,
+                              _area,
                               style: TextStyle(
                                   fontSize: 17, color: Colors.grey[400]),
                               textAlign: TextAlign.center,
@@ -201,13 +225,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: FloatingActionButton(
                       onPressed: () {
                         context.read<AuthenticationService>().signOut();
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  LoginScreen(this._firestore)),
-                          (Route<dynamic> route) => false,
-                        );
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AuthenticationWrapper()));
                       },
                       child: Icon(Icons.exit_to_app),
                       backgroundColor: Colors.red,
@@ -219,11 +240,38 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 class editProfileData extends StatefulWidget {
+  final FirestoreController _firestore;
+  editProfileData(this._firestore);
   @override
-  _editProfileDataState createState() => _editProfileDataState();
+  _editProfileDataState createState() => _editProfileDataState(this._firestore);
 }
 
 class _editProfileDataState extends State<editProfileData> {
+  final firstnameEditingController = TextEditingController();
+  final lastnameEditingController = TextEditingController();
+  final cityEditingController = TextEditingController();
+  final countryEditingController = TextEditingController();
+  final jobEditingController = TextEditingController();
+  final areaEditingController = TextEditingController();
+  final descriptionEditingController = TextEditingController();
+
+  void saveData() {
+    profile.reference.update({"firstname": _firstname});
+    profile.reference.update({'lastname': _lastname});
+    profile.reference.update({'city': _city});
+    profile.reference.update({'country': _country});
+    profile.reference.update({'job': _job});
+    profile.reference.update({'area': _area});
+    profile.reference.update({'description': _description});
+  }
+
+  final FirestoreController _firestore;
+
+  _editProfileDataState(this._firestore);
+
+  File _image;
+  String _uploadedFileURL;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -231,6 +279,18 @@ class _editProfileDataState extends State<editProfileData> {
       appBar: buildAppBar(),
       body: buildBody(context),
     );
+  }
+
+  Future choosePhoto() async {
+    await ImagePicker.pickImage(source: ImageSource.camera).then((image) {
+      setState(() {
+        _image = image;
+        _uploadedFileURL = basename(image.path);
+      });
+    });
+
+    this._firestore.uploadImage(this._image, "users/" + _uploadedFileURL);
+    profile.reference.update({'photo': "users/" + _uploadedFileURL});
   }
 
   buildBody(context) => Body(context);
@@ -266,17 +326,26 @@ class _editProfileDataState extends State<editProfileData> {
                         topRight: Radius.circular(24)))),
             Positioned(
                 top: 50.0,
-                child: Container(
-                    height: 150.0,
-                    width: 150.0,
-                    decoration: BoxDecoration(
-                        border:
-                            Border.all(color: Colors.blueGrey[100], width: 2),
-                        borderRadius: BorderRadius.circular(200.0),
-                        image: DecorationImage(
-                            alignment: Alignment.center,
-                            image: AssetImage("assets/wissam.jpg"),
-                            fit: BoxFit.cover)))),
+                child: FutureBuilder(
+                  future: this._firestore.getImgURL(profile.photo),
+                  builder: (context, url) {
+                    if (url.hasData) {
+                      return Container(
+                          height: 150.0,
+                          width: 150.0,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Colors.blueGrey[100], width: 2),
+                              borderRadius: BorderRadius.circular(200.0),
+                              image: DecorationImage(
+                                  alignment: Alignment.center,
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(url.data))));
+                    } else {
+                      return SizedBox(child: CircularProgressIndicator());
+                    }
+                  },
+                )),
             Positioned(
                 top: 180.0,
                 left: 250,
@@ -291,15 +360,17 @@ class _editProfileDataState extends State<editProfileData> {
                               fit: BoxFit.cover))),
                   onTap: () {
                     //atualizar imagem
+                    choosePhoto();
                   },
                 )),
-            //Name
+
+            //First Name
             Positioned(
                 left: 45,
                 top: 246.0,
                 child: Container(
                     height: 48.0,
-                    width: 200.0,
+                    width: 120.0,
                     decoration: BoxDecoration(
                       color: Colors.blue[100],
                       border:
@@ -307,28 +378,73 @@ class _editProfileDataState extends State<editProfileData> {
                       borderRadius: BorderRadius.circular(10.0),
                     ))),
             Positioned(
-              left: 50,
-              top: 250.0,
-              child: Container(
-                  child: Text(
-                "Name:",
-                style: TextStyle(
-                    fontFamily: 'nunito',
-                    fontSize: 17.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueGrey[700]),
-              )),
-            ),
+                left: 50,
+                top: 250.0,
+                child: Text(
+                  "First Name:",
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 17.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueGrey[700]),
+                )),
             Positioned(
               left: 50,
-              width: 190.0,
+              width: 110.0,
               height: 40.0,
               top: 260.0,
               child: TextField(
+                controller: firstnameEditingController,
+                onChanged: (text) {
+                  this.setState(() {
+                    _firstname = text;
+                  });
+                },
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: 'Wissam Ben Yedder'),
+                    border: InputBorder.none, hintText: _firstname),
               ),
             ),
+            //Last Name
+            Positioned(
+                left: 185,
+                top: 246.0,
+                child: Container(
+                    height: 48.0,
+                    width: 120.0,
+                    decoration: BoxDecoration(
+                      color: Colors.blue[100],
+                      border:
+                          Border.all(color: Colors.lightBlue[100], width: 2),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ))),
+            Positioned(
+                left: 190,
+                top: 250.0,
+                child: Text(
+                  "Last Name:",
+                  style: TextStyle(
+                      fontFamily: 'nunito',
+                      fontSize: 17.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueGrey[700]),
+                )),
+            Positioned(
+              left: 190,
+              width: 110.0,
+              height: 40.0,
+              top: 260.0,
+              child: TextField(
+                controller: lastnameEditingController,
+                onChanged: (text) {
+                  this.setState(() {
+                    _lastname = text;
+                  });
+                },
+                decoration: InputDecoration(
+                    border: InputBorder.none, hintText: _lastname),
+              ),
+            ),
+
             //City
             Positioned(
                 left: 45,
@@ -359,8 +475,14 @@ class _editProfileDataState extends State<editProfileData> {
               height: 40.0,
               top: 330.0,
               child: TextField(
-                decoration: InputDecoration(
-                    border: InputBorder.none, hintText: 'Monaco'),
+                controller: cityEditingController,
+                onChanged: (text) {
+                  this.setState(() {
+                    _city = text;
+                  });
+                },
+                decoration:
+                    InputDecoration(border: InputBorder.none, hintText: _city),
               ),
             ),
             //Country
@@ -393,8 +515,14 @@ class _editProfileDataState extends State<editProfileData> {
               height: 40.0,
               top: 330.0,
               child: TextField(
+                controller: countryEditingController,
+                onChanged: (text) {
+                  this.setState(() {
+                    _country = text;
+                  });
+                },
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: 'France'),
+                    border: InputBorder.none, hintText: _country),
               ),
             ),
             //Job
@@ -427,8 +555,14 @@ class _editProfileDataState extends State<editProfileData> {
               height: 40.0,
               top: 400.0,
               child: TextField(
-                decoration: InputDecoration(
-                    border: InputBorder.none, hintText: 'Player at AS Monaco'),
+                controller: jobEditingController,
+                onChanged: (text) {
+                  this.setState(() {
+                    _job = text;
+                  });
+                },
+                decoration:
+                    InputDecoration(border: InputBorder.none, hintText: _job),
               ),
             ),
             //Area
@@ -461,8 +595,14 @@ class _editProfileDataState extends State<editProfileData> {
               height: 40.0,
               top: 470.0,
               child: TextField(
-                decoration: InputDecoration(
-                    border: InputBorder.none, hintText: 'Football'),
+                controller: areaEditingController,
+                onChanged: (text) {
+                  this.setState(() {
+                    _area = text;
+                  });
+                },
+                decoration:
+                    InputDecoration(border: InputBorder.none, hintText: _area),
               ),
             ),
             //Description
@@ -495,6 +635,12 @@ class _editProfileDataState extends State<editProfileData> {
               height: 100.0,
               top: 540.0,
               child: TextFormField(
+                controller: descriptionEditingController,
+                onChanged: (text) {
+                  this.setState(() {
+                    _description = text;
+                  });
+                },
                 //textAlignVertical: TextAlignVertical.top,
                 expands: true,
                 maxLines: null,
@@ -503,8 +649,7 @@ class _editProfileDataState extends State<editProfileData> {
                     border: InputBorder.none,
                     //hintMaxLines: 5,
                     //alignLabelWithHint: true,
-                    hintText:
-                        'Since debuting in FIFA, I have become one the most horrific terrors to face during FUT Champions. I love destroying the opponent team with my magnific moustache'),
+                    hintText: _description),
               ),
             ),
             Positioned(
@@ -516,7 +661,10 @@ class _editProfileDataState extends State<editProfileData> {
                 color: Colors.blue[700],
                 textColor: Colors.lightBlue[100],
                 padding: EdgeInsets.all(8.0),
-                onPressed: () {},
+                onPressed: () {
+                  saveData();
+                  Navigator.pop(context);
+                },
                 child: Text(
                   "SAVE",
                   style: TextStyle(
