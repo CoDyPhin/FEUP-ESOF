@@ -322,7 +322,7 @@ class _talkPromotedProductsState extends State<talkPromotedProducts> {
                             fit: BoxFit.cover)),
                   )),
               Positioned(
-                  top: size.height * 0.03,
+                  top: size.height * 0.028,
                   child: Container(
                     height: size.height * 0.3,
                     width: size.width,
