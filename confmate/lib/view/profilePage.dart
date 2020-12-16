@@ -100,25 +100,41 @@ class _ProfilePageState extends State<ProfilePage> {
                             topRight: Radius.circular(24)))),
                 Positioned(
                     top: 100.0,
-                    child: FutureBuilder(
-                      future: this._firestore.getImgURL(profile.photo),
-                      builder: (context, url) {
-                        if (url.hasData) {
-                          return Container(
-                              height: 150.0,
-                              width: 150.0,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 1.5, color: Colors.blue[700]),
-                                  borderRadius: BorderRadius.circular(200.0),
-                                  image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: NetworkImage(url.data))));
-                        } else {
-                          return SizedBox(child: CircularProgressIndicator());
-                        }
-                      },
-                    )),
+                    child: profile.photo == "assets/defaultpic.jpg"
+                        ? Container(
+                            height: 150.0,
+                            width: 150.0,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    width: 1.5, color: Colors.blue[700]),
+                                borderRadius: BorderRadius.circular(200.0),
+                                image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image:
+                                        AssetImage("assets/defaultpic.jpg"))),
+                          )
+                        : FutureBuilder(
+                            future: this._firestore.getImgURL(profile.photo),
+                            builder: (context, url) {
+                              if (url.hasData) {
+                                return Container(
+                                    height: 150.0,
+                                    width: 150.0,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 1.5,
+                                            color: Colors.blue[700]),
+                                        borderRadius:
+                                            BorderRadius.circular(200.0),
+                                        image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: NetworkImage(url.data))));
+                              } else {
+                                return SizedBox(
+                                    child: CircularProgressIndicator());
+                              }
+                            },
+                          )),
                 Positioned(
                     top: 100.0,
                     left: 120.0,
@@ -225,10 +241,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: FloatingActionButton(
                       onPressed: () {
                         context.read<AuthenticationService>().signOut();
-                        Navigator.push(
+                        /*Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => AuthenticationWrapper()));
+                                builder: (context) => AuthenticationWrapper()));*/
                       },
                       child: Icon(Icons.exit_to_app),
                       backgroundColor: Colors.red,
@@ -293,6 +309,18 @@ class _editProfileDataState extends State<editProfileData> {
     profile.reference.update({'photo': "users/" + _uploadedFileURL});
   }
 
+  Future choosePhotoFromGallery() async {
+    await ImagePicker.pickImage(source: ImageSource.gallery).then((image) {
+      setState(() {
+        _image = image;
+        _uploadedFileURL = basename(image.path);
+      });
+    });
+
+    this._firestore.uploadImage(this._image, "users/" + _uploadedFileURL);
+    profile.reference.update({'photo': "users/" + _uploadedFileURL});
+  }
+
   buildBody(context) => Body(context);
 
   AppBar buildAppBar() =>
@@ -326,26 +354,40 @@ class _editProfileDataState extends State<editProfileData> {
                         topRight: Radius.circular(24)))),
             Positioned(
                 top: 50.0,
-                child: FutureBuilder(
-                  future: this._firestore.getImgURL(profile.photo),
-                  builder: (context, url) {
-                    if (url.hasData) {
-                      return Container(
-                          height: 150.0,
-                          width: 150.0,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Colors.blueGrey[100], width: 2),
-                              borderRadius: BorderRadius.circular(200.0),
-                              image: DecorationImage(
-                                  alignment: Alignment.center,
-                                  fit: BoxFit.cover,
-                                  image: NetworkImage(url.data))));
-                    } else {
-                      return SizedBox(child: CircularProgressIndicator());
-                    }
-                  },
-                )),
+                child: profile.photo == "assets/profilepic.jpg"
+                    ? Container(
+                        alignment: Alignment.topCenter,
+                        child: SizedBox(
+                          child: Image.asset("assets/profilepic.jpg",
+                              width: 450, height: 150, fit: BoxFit.contain),
+                        ),
+                      )
+                    : FutureBuilder(
+                        future: this._firestore.getImgURL(profile.photo),
+                        builder: (context, url) {
+                          if (url.hasData) {
+                            return Container(
+                                height: 150.0,
+                                width: 150.0,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Colors.blueGrey[100], width: 2),
+                                    borderRadius: BorderRadius.circular(200.0),
+                                    image: DecorationImage(
+                                        alignment: Alignment.center,
+                                        fit: BoxFit.cover,
+                                        image: NetworkImage(url.data))));
+                          } else {
+                            return SizedBox(child: CircularProgressIndicator());
+                          }
+                        },
+                      )),
+            Positioned(
+                top: 175,
+                left: 270,
+                child: FlatButton(
+                    onPressed: choosePhotoFromGallery,
+                    child: Icon(Icons.panorama, size: 35.0))),
             Positioned(
                 top: 180.0,
                 left: 250,
@@ -739,25 +781,33 @@ class _UserPageState extends State<UserPage> {
                       color: Colors.white, size: size.width * 0.075))),
           Positioned(
               top: 100.0,
-              child: FutureBuilder(
-                future: this.firestore.getImgURL(_firebaseUser.photo),
-                builder: (context, url) {
-                  if (url.hasData) {
-                    return Container(
-                        height: 150.0,
-                        width: 150.0,
-                        decoration: BoxDecoration(
-                            border:
-                                Border.all(width: 1.5, color: Colors.blue[700]),
-                            borderRadius: BorderRadius.circular(200.0),
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(url.data))));
-                  } else {
-                    return SizedBox(child: CircularProgressIndicator());
-                  }
-                },
-              )),
+              child: _firebaseUser.photo == "assets/profilepic.jpg"
+                  ? Container(
+                      alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        child: Image.asset("assets/profilepic.jpg",
+                            width: 450, height: 150, fit: BoxFit.contain),
+                      ),
+                    )
+                  : FutureBuilder(
+                      future: this.firestore.getImgURL(_firebaseUser.photo),
+                      builder: (context, url) {
+                        if (url.hasData) {
+                          return Container(
+                              height: 150.0,
+                              width: 150.0,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1.5, color: Colors.blue[700]),
+                                  borderRadius: BorderRadius.circular(200.0),
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(url.data))));
+                        } else {
+                          return SizedBox(child: CircularProgressIndicator());
+                        }
+                      },
+                    )),
           Positioned(
               top: 270.0,
               child: Container(

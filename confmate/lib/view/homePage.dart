@@ -100,23 +100,38 @@ class _HomePageState extends State<HomePage> {
                           color: Color(0xFF473D3A))),
                   Padding(
                       padding: EdgeInsets.only(right: 30, top: 20),
-                      child: FutureBuilder(
-                        future: this._firestore.getImgURL(_profile.photo),
-                        builder: (context, url) {
-                          if (url.hasData) {
-                            return Container(
-                                height: 75.0,
-                                width: 75.0,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    image: DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: NetworkImage(url.data))));
-                          } else {
-                            return SizedBox(child: CircularProgressIndicator());
-                          }
-                        },
-                      )),
+                      child: _profile.photo == "assets/defaultpic.jpg"
+                          ? Container(
+                              height: 75.0,
+                              width: 75.0,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1.5, color: Colors.blue[700]),
+                                  borderRadius: BorderRadius.circular(200.0),
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image:
+                                          AssetImage("assets/defaultpic.jpg"))),
+                            )
+                          : FutureBuilder(
+                              future: this._firestore.getImgURL(_profile.photo),
+                              builder: (context, url) {
+                                if (url.hasData) {
+                                  return Container(
+                                      height: 75.0,
+                                      width: 75.0,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(100.0),
+                                          image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(url.data))));
+                                } else {
+                                  return SizedBox(
+                                      child: CircularProgressIndicator());
+                                }
+                              },
+                            )),
                 ],
               ),
               Padding(
@@ -148,7 +163,10 @@ class _HomePageState extends State<HomePage> {
               Container(
                   height: 350.0,
                   child: ListView(scrollDirection: Axis.horizontal, children: [
-                    for (Talk x in _talks) _talkListCard(x),
+                    for (Talk x in _talks)
+                      if (x.host.reference.id !=
+                          this._firestore.getCurrentUser().reference.id)
+                        _talkListCard(x),
                   ])),
               SizedBox(height: 25.0),
               Row(
@@ -167,7 +185,10 @@ class _HomePageState extends State<HomePage> {
               Container(
                   height: 350.0,
                   child: ListView(scrollDirection: Axis.horizontal, children: [
-                    for (Product x in _products) _productListCard(x),
+                    for (Product x in _products)
+                      if (x.talk.host.reference.id !=
+                          this._firestore.getCurrentUser().reference.id)
+                        _productListCard(x)
                   ])),
               SizedBox(height: 30.0),
             ]));
@@ -245,30 +266,48 @@ class _HomePageState extends State<HomePage> {
                                         builder: (context) =>
                                             UserPage(talk.host)));
                               },
-                              child: FutureBuilder(
-                                future:
-                                    this._firestore.getImgURL(talk.host.photo),
-                                builder: (context, url) {
-                                  if (url.hasData) {
-                                    return Container(
-                                        height: 90.0,
-                                        width: 90.0,
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                width: 1.5,
-                                                color: Colors.blue[700]),
-                                            borderRadius:
-                                                BorderRadius.circular(200.0),
-                                            image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image:
-                                                    NetworkImage(url.data))));
-                                  } else {
-                                    return SizedBox(
-                                        child: CircularProgressIndicator());
-                                  }
-                                },
-                              ))))
+                              child: talk.host.photo == "assets/defaultpic.jpg"
+                                  ? Container(
+                                      height: 90.0,
+                                      width: 90.0,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1.5,
+                                              color: Colors.blue[700]),
+                                          borderRadius:
+                                              BorderRadius.circular(200.0),
+                                          image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: AssetImage(
+                                                  "assets/defaultpic.jpg"))),
+                                    )
+                                  : FutureBuilder(
+                                      future: this
+                                          ._firestore
+                                          .getImgURL(talk.host.photo),
+                                      builder: (context, url) {
+                                        if (url.hasData) {
+                                          return Container(
+                                              height: 90.0,
+                                              width: 90.0,
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      width: 1.5,
+                                                      color: Colors.blue[700]),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          200.0),
+                                                  image: DecorationImage(
+                                                      fit: BoxFit.cover,
+                                                      image: NetworkImage(
+                                                          url.data))));
+                                        } else {
+                                          return SizedBox(
+                                              child:
+                                                  CircularProgressIndicator());
+                                        }
+                                      },
+                                    ))))
                 ]),
               ],
             )));

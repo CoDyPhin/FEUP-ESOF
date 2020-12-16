@@ -49,6 +49,7 @@ class FirestoreController {
       notifications.add(_makeNotificationsFromDoc(document));
     }
     if (snapshot.docs.length == 0) return [];
+    print("ola" + notifications.length.toString());
     return await Future.wait(notifications);
   }
 
