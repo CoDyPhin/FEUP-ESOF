@@ -233,10 +233,7 @@ class _FinishSignUpPageState extends State<FinishSignUpPage> {
                   cityController.text.trim(),
                   countryController.text.trim(),
                   this.isHost,
-                  "users/" + this.username))
-              .then((value) => this
-                  ._firestore
-                  .uploadImage(this._image, "users/" + this.username));
+                  "assets/defaultpic.jpg"));
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => Redirecting()),
@@ -332,20 +329,6 @@ class _FinishSignUpPageState extends State<FinishSignUpPage> {
                       _buildCityTF(),
                       SizedBox(
                         height: 20.0,
-                      ),
-                      RaisedButton(
-                        elevation: 5.0,
-                        onPressed: chooseFile,
-                        padding: EdgeInsets.all(15.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        color: Colors.white,
-                        child: _image == null
-                            ? Text("ADD IMAGE")
-                            : Text(
-                                'IMAGE ADDED!',
-                              ),
                       ),
                       _buildLoginBtn(context)
                     ],

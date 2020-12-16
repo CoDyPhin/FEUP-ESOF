@@ -120,7 +120,6 @@ class _ProductsPageState extends State<ProductsPage>
                                           builder: (context) =>
                                               notificationsPage(
                                                   this._firestore)));
-                                  this.refreshModel(false);
                                 },
                               ),
                               IconButton(
@@ -468,8 +467,8 @@ class productWhoApplied extends StatefulWidget {
 
 class _productWhoAppliedState extends State<productWhoApplied> {
   Product product;
-  List<Profile> _candidates = new List(), _users;
-  List<Comments> _comments;
+  List<Profile> _candidates = new List(), _users = new List();
+  List<Comments> _comments = new List();
   final FirestoreController _firestore;
   _productWhoAppliedState(this.product, this._firestore);
   bool showLoadingIndicator = true;
@@ -482,6 +481,8 @@ class _productWhoAppliedState extends State<productWhoApplied> {
 
   Future<void> refreshModel(bool showIndicator) async {
     _candidates.clear();
+    _comments.clear();
+    _users.clear();
     _comments = await widget._firestore.getCommentsForProduct(this.product);
     _users = await widget._firestore.getUsers();
     for (int x = 0; x < _comments.length; x++) {
@@ -794,8 +795,8 @@ class _productDescriptionState extends State<productDescription> {
   }
 
   Future<void> refreshModel(bool showIndicator) async {
-    _comments =
-        await widget._firestore.getComments(this.product, this._profile);
+    _comments = await widget._firestore
+        .getComments(this.product, this._firestore.getCurrentUser());
     setState(() {
       if (_comments.length == 0)
         this.appliedFor = false;
@@ -1027,8 +1028,8 @@ class _productDescriptionState extends State<productDescription> {
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop('dialog');
         setState(() {
-          this._firestore.addComment(
-              this._profile, textController.text.trim(), this.product);
+          this._firestore.addComment(this._firestore.getCurrentUser(),
+              textController.text.trim(), this.product);
           this.refreshModel(false);
         });
       },

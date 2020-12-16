@@ -34,9 +34,9 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       body: PageView(
-        controller: _pageController,
-        children: _screens,
-      ),
+          controller: _pageController,
+          children: _screens,
+          physics: new NeverScrollableScrollPhysics()),
       backgroundColor: Colors.white,
       bottomNavigationBar: CurvedNavigationBar(
         color: Colors.blue,

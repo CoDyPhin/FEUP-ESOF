@@ -156,14 +156,33 @@ class _finishAddingProductPageState extends State<finishAddingProductPage> {
           Positioned(
               left: 20.0,
               top: 50.0,
-              child: Container(
-                  height: 60.0,
-                  width: 60.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(200.0),
-                      image: DecorationImage(
-                          image: AssetImage("assets/tiago.jpg"),
-                          fit: BoxFit.cover)))),
+              child: talk.host.photo == "assets/profilepic.jpg"
+                  ? Container(
+                      alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        child: Image.asset("assets/profilepic.jpg",
+                            width: 450, height: 150, fit: BoxFit.contain),
+                      ),
+                    )
+                  : FutureBuilder(
+                      future: this._firestore.getImgURL(talk.host.photo),
+                      builder: (context, url) {
+                        if (url.hasData) {
+                          return Container(
+                              height: 60.0,
+                              width: 60.0,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1.5, color: Colors.blue[700]),
+                                  borderRadius: BorderRadius.circular(200.0),
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(url.data))));
+                        } else {
+                          return SizedBox(child: CircularProgressIndicator());
+                        }
+                      },
+                    )),
           Positioned(
               left: 95.0,
               top: 55.5,

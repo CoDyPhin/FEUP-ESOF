@@ -38,6 +38,8 @@ class _notificationsPageState extends State<notificationsPage> {
     _products = await widget._firestore.getProducts();
     _notifications = _reversednotifications.reversed.toList();
 
+    print(_reversednotifications.length);
+
     setState(() {
       this.showLoadingIndicator = false;
     });
@@ -81,6 +83,8 @@ class _notificationsPageState extends State<notificationsPage> {
       }
     }
 
+    print(product);
+
     notification.reference.update({'seen': true});
 
     return Container(
@@ -116,7 +120,7 @@ class _notificationsPageState extends State<notificationsPage> {
                   left: 20.0,
                   top: 50.0,
                   child: FutureBuilder(
-                    future: this._firestore.getImgURL(product.talk.host.photo),
+                    future: this._firestore.getImgURL(product.image),
                     builder: (context, url) {
                       if (url.hasData) {
                         return Container(
@@ -136,7 +140,7 @@ class _notificationsPageState extends State<notificationsPage> {
                   )),
               Positioned(
                   left: 95.0,
-                  top: 55.5,
+                  top: 50.5,
                   child: Text(
                     product.talk.name,
                     style: TextStyle(
@@ -147,11 +151,22 @@ class _notificationsPageState extends State<notificationsPage> {
                   )),
               Positioned(
                   left: 95.0,
-                  top: 80.0,
+                  top: 70.5,
                   child: Text(
                     product.talk.host.firstname +
                         " " +
                         product.talk.host.lastname,
+                    style: TextStyle(
+                        fontFamily: 'nunito',
+                        fontSize: 17.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  )),
+              Positioned(
+                  left: 95.0,
+                  top: 90.0,
+                  child: Text(
+                    "Collect it at the exit!",
                     style: TextStyle(
                         fontFamily: 'nunito',
                         fontSize: 17.0,

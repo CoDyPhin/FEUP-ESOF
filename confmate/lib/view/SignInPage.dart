@@ -122,17 +122,10 @@ class _LoginScreenState extends State<LoginScreen> {
       child: RaisedButton(
         elevation: 5.0,
         onPressed: () async {
-          String ola = await context.read<AuthenticationService>().signIn(
+          await context.read<AuthenticationService>().signIn(
                 email: emailController.text.trim(),
                 password: passwordController.text.trim(),
               );
-          if (ola == "Signed in") {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => AuthenticationWrapper()),
-              (Route<dynamic> route) => false,
-            );
-          }
         },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
