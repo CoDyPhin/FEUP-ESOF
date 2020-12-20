@@ -726,6 +726,22 @@ class _productWhoAppliedState extends State<productWhoApplied> {
         Navigator.of(context, rootNavigator: true).pop('dialog');
       },
     );
+    Widget noButton = FlatButton(
+      child: Text("No"),
+      onPressed: () {
+        for (int x = 0; x < this._comments.length; x++) {
+          if (this._comments[x].attendee == profile.reference &&
+              this._comments[x].product == product.reference) {
+            comment.reference.delete();
+            setState(() {
+              this._firestore.addNotificationRejected(profile, product, false);
+              this.refreshModel(false);
+            });
+          }
+        }
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
     Widget continueButton = FlatButton(
       child: Text("Yes"),
       onPressed: () {
@@ -734,7 +750,7 @@ class _productWhoAppliedState extends State<productWhoApplied> {
               this._comments[x].product == product.reference) {
             comment.reference.delete();
             setState(() {
-              this._firestore.addNotification(profile, product, false);
+              this._firestore.addNotificationAccepted(profile, product, false);
               this.refreshModel(false);
             });
           }
@@ -753,6 +769,7 @@ class _productWhoAppliedState extends State<productWhoApplied> {
           comment.comment),
       actions: [
         cancelButton,
+        noButton,
         continueButton,
       ],
     );

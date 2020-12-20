@@ -314,116 +314,183 @@ class _talkPromotedProductsState extends State<talkPromotedProducts> {
         : SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                Stack(
-                  alignment: Alignment.topCenter,
-                  children: <Widget>[
-                    Container(
-                        margin: EdgeInsets.only(top: size.height * 0.25),
-                        height: size.height * 0.7,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(24),
-                                topRight: Radius.circular(24)))),
-                    Positioned(
-                        top: size.height * 0.14,
-                        right: size.width * 0.675,
-                        child: talk.host.photo == "assets/profilepic.jpg"
-                            ? Container(
-                                alignment: Alignment.topCenter,
-                                child: SizedBox(
-                                  child: Image.asset("assets/profilepic.jpg",
+                Stack(alignment: Alignment.topCenter, children: <Widget>[
+                  Container(
+                      margin: EdgeInsets.only(top: size.height * 0.25),
+                      height: size.height * 0.7,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(24),
+                              topRight: Radius.circular(24)))),
+                  Positioned(
+                      top: size.height * 0.14,
+                      right: size.width * 0.675,
+                      child: talk.host.photo == "assets/profilepic.jpg"
+                          ? Container(
+                              alignment: Alignment.topCenter,
+                              child: SizedBox(
+                                child: Image.asset("assets/profilepic.jpg",
+                                    height: size.height * 0.1,
+                                    width: size.height * 0.1,
+                                    fit: BoxFit.contain),
+                              ),
+                            )
+                          : FutureBuilder(
+                              future: this.firestore.getImgURL(talk.host.photo),
+                              builder: (context, url) {
+                                if (url.hasData) {
+                                  return Container(
                                       height: size.height * 0.1,
                                       width: size.height * 0.1,
-                                      fit: BoxFit.contain),
-                                ),
-                              )
-                            : FutureBuilder(
-                                future:
-                                    this.firestore.getImgURL(talk.host.photo),
-                                builder: (context, url) {
-                                  if (url.hasData) {
-                                    return Container(
-                                        height: size.height * 0.1,
-                                        width: size.height * 0.1,
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.blue, width: 2.5),
-                                            borderRadius: BorderRadius.circular(
-                                                size.width * 0.2),
-                                            image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image:
-                                                    NetworkImage(url.data))));
-                                  } else {
-                                    return SizedBox(
-                                        child: CircularProgressIndicator());
-                                  }
-                                },
-                              )),
-                    Positioned(
-                        top: size.height * 0.03,
-                        child: Container(
-                          height: size.height * 0.3,
-                          width: size.width,
-                          child: Text(
-                            this.talk.name,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: 'nunito',
-                              fontSize: 35.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        )),
-                    Positioned(
-                        left: size.width * 0.35,
-                        top: size.height * 0.165,
-                        child: Container(
-                          child: Text(
-                            this.talk.host.firstname +
-                                " " +
-                                this.talk.host.lastname,
-                            style: TextStyle(
-                              fontFamily: 'nunito',
-                              fontSize: 25.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue[200],
-                            ),
-                          ),
-                        )),
-                    Positioned(
-                        top: size.height * 0.3,
-                        child: Container(
-                            height: size.height * 0.3,
-                            child: Text(
-                              "Products",
-                              style: TextStyle(
-                                  fontFamily: 'nunito',
-                                  fontSize: 25.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
-                            ))),
-                    Positioned(
-                      top: size.height * 0.375,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.blue, width: 2.5),
+                                          borderRadius: BorderRadius.circular(
+                                              size.width * 0.2),
+                                          image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(url.data))));
+                                } else {
+                                  return SizedBox(
+                                      child: CircularProgressIndicator());
+                                }
+                              },
+                            )),
+                  Positioned(
+                      top: size.height * 0.03,
                       child: Container(
-                          height: size.height * 0.6,
-                          width: size.width * 0.95,
+                        height: size.height * 0.3,
+                        width: size.width,
+                        child: Text(
+                          this.talk.name,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'nunito',
+                            fontSize: 35.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      )),
+                  Positioned(
+                      left: size.width * 0.35,
+                      top: size.height * 0.165,
+                      child: Container(
+                        child: Text(
+                          this.talk.host.firstname +
+                              " " +
+                              this.talk.host.lastname,
+                          style: TextStyle(
+                            fontFamily: 'nunito',
+                            fontSize: 25.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue[200],
+                          ),
+                        ),
+                      )),
+                  Positioned(
+                      top: size.height * 0.3,
+                      child: Container(
+                          height: size.height * 0.3,
+                          child: Text(
+                            "Products",
+                            style: TextStyle(
+                                fontFamily: 'nunito',
+                                fontSize: 25.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ))),
+                  /*Positioned(
+                    top: size.height * 0.375,
+                    child: Container(
+                        height: size.height * 0.6,
+                        width: size.width * 0.95,
+                        child: GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  childAspectRatio: 0.75, crossAxisCount: 2),
+                          itemCount: talkProducts.length,
+                          itemBuilder: (context, index) =>
+                              _displayTalkProducts(talkProducts, index),
+                        )),
+                  ),*/
+                  Positioned(
+                      top: size.height * 0.35,
+                      child: Container(
+                          height: size.height * 0.55,
+                          width: size.width,
                           child: GridView.builder(
+                            itemCount: talkProducts.length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                                    childAspectRatio: 0.75, crossAxisCount: 2),
-                            itemCount: talkProducts.length,
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.75,
+                            ),
                             itemBuilder: (context, index) =>
-                                _displayTalkProducts(talkProducts, index),
-                          )),
-                    )
-                  ],
-                )
+                                _productDisplay(talkProducts, index),
+                          ))),
+                ])
               ],
             ),
           );
+  }
+
+  _productDisplay(List<Product> list, int index) {
+    Size size = MediaQuery.of(context).size;
+    return Container(
+        child: Column(
+      children: <Widget>[
+        Stack(
+          children: [
+            Container(height: 230.0, width: 230.0),
+            Positioned(
+                top: 30.0,
+                right: 18.5,
+                child: Container(
+                  height: 160.0,
+                  width: 160.0,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.blue[200]),
+                )),
+            Positioned(
+                right: 19.0,
+                top: 50.0,
+                child: new SizedBox(
+                    width: 162.5,
+                    child: FlatButton(
+                        onPressed: () async {
+                          await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => productDescription(
+                                      list[index],
+                                      this.firestore.getCurrentUser(),
+                                      this.firestore)));
+                        },
+                        child: FutureBuilder(
+                          future: this.firestore.getImgURL(list[index].image),
+                          builder: (context, url) {
+                            if (url.hasData) {
+                              return Container(
+                                  height: 125.0,
+                                  width: 125.0,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(url.data))));
+                            } else {
+                              return SizedBox(
+                                  child: CircularProgressIndicator());
+                            }
+                          },
+                        )))),
+          ],
+        ),
+      ],
+    ));
   }
 
   _displayTalkProducts(List<Product> products, int index) {
@@ -441,14 +508,14 @@ class _talkPromotedProductsState extends State<talkPromotedProducts> {
                   borderRadius: BorderRadius.circular(25.0),
                   color: Colors.blue[200]),
             )),
-            for (Product p in products) productCard(p)
+            for (Product p in products) productPromotedCard(p)
           ],
         )
       ],
     ));
   }
 
-  productCard(Product product) {
+  productPromotedCard(Product product) {
     Size size = MediaQuery.of(context).size;
     return Padding(
         padding: EdgeInsets.only(top: 3.0),
