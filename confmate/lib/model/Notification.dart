@@ -5,6 +5,8 @@ class Notifications {
   DocumentReference product;
   DocumentReference reference;
   bool seen;
+  bool accepted;
 
-  Notifications(this.attendee, this.product, this.seen, this.reference);
+  Notifications(
+      this.attendee, this.product, this.seen, this.accepted, this.reference);
 }

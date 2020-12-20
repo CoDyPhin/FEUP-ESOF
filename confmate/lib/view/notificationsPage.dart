@@ -19,7 +19,6 @@ class notificationsPage extends StatefulWidget {
 // ignore: camel_case_types
 class _notificationsPageState extends State<notificationsPage> {
   List<Notifications> _notifications = new List();
-  List<Notifications> _reversednotifications = new List();
   List<Product> _products;
   bool showLoadingIndicator = true;
   final FirestoreController _firestore;
@@ -34,11 +33,8 @@ class _notificationsPageState extends State<notificationsPage> {
 
   Future<void> refreshModel(bool showIndicator) async {
     Stopwatch sw = Stopwatch()..start();
-    _reversednotifications = await widget._firestore.getMyNotifications();
+    _notifications = await widget._firestore.getMyNotifications();
     _products = await widget._firestore.getProducts();
-    _notifications = _reversednotifications.reversed.toList();
-
-    print(_reversednotifications.length);
 
     setState(() {
       this.showLoadingIndicator = false;
@@ -82,8 +78,6 @@ class _notificationsPageState extends State<notificationsPage> {
         break;
       }
     }
-
-    print(product);
 
     notification.reference.update({'seen': true});
 
@@ -165,14 +159,23 @@ class _notificationsPageState extends State<notificationsPage> {
               Positioned(
                   left: 95.0,
                   top: 90.0,
-                  child: Text(
-                    "Collect it at the exit!",
-                    style: TextStyle(
-                        fontFamily: 'nunito',
-                        fontSize: 17.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  )),
+                  child: notification.accepted
+                      ? Text(
+                          "You got it! Collect it at the exit!",
+                          style: TextStyle(
+                              fontFamily: 'nunito',
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        )
+                      : Text(
+                          "You didn't get the product!",
+                          style: TextStyle(
+                              fontFamily: 'nunito',
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        )),
               Container(
                   padding: EdgeInsets.only(right: 55, top: 15),
                   alignment: Alignment.bottomRight,

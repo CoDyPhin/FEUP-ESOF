@@ -49,7 +49,6 @@ class FirestoreController {
       notifications.add(_makeNotificationsFromDoc(document));
     }
     if (snapshot.docs.length == 0) return [];
-    print("ola" + notifications.length.toString());
     return await Future.wait(notifications);
   }
 
@@ -98,11 +97,21 @@ class FirestoreController {
     });
   }
 
-  void addNotification(Profile profile, Product product, bool seen) {
+  void addNotificationAccepted(Profile profile, Product product, bool seen) {
     firestore.collection("notifications").add({
       "attendee": profile.reference,
       "product": product.reference,
       "seen": seen,
+      "accepted": true,
+    });
+  }
+
+  void addNotificationRejected(Profile profile, Product product, bool seen) {
+    firestore.collection("notifications").add({
+      "attendee": profile.reference,
+      "product": product.reference,
+      "seen": seen,
+      "accepted": false,
     });
   }
 
@@ -218,8 +227,9 @@ class FirestoreController {
     DocumentReference attendee = snapshot.get('attendee');
     DocumentReference product = snapshot.get('product');
     bool seen = snapshot.get('seen');
+    bool accepted = snapshot.get('accepted');
     DocumentReference reference = snapshot.reference;
-    return Notifications(attendee, product, seen, reference);
+    return Notifications(attendee, product, seen, accepted, reference);
   }
 
   Future<Talk> _makeTalkFromDoc(DocumentSnapshot snapshot) async {
