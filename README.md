@@ -120,6 +120,8 @@
 
   ### User Stories
 
+    ![User Story Map](./docs/img/storymap.png)
+
   #### **Story #1 - Promote Products**
 
   As a host I want to be able to promote and recommend products I find relevant to the conference.
@@ -251,7 +253,7 @@
   
 _User interface mockups_
   
-  ![Mockup 6](./docs/img/mockup6.png)
+  ![Mockup 6](./docs/img/mockup7.png)
 
   _Acceptance Tests_
 
@@ -301,7 +303,7 @@ _User interface mockups_
 
   The user installs ConfMate on their smartphone and whenever they need to connect with our database (firestore), it communicates with it via HTTPS requests, storing and retrieving all the information needed.
 
-  Discussing about the programming language we chose, Flutter was the best concrete option, because of two main issues: it was recommended by our teachers, while also seeming very appealing due to many provided built-in features.
+  Discussing about the programming language we chose, Flutter was the best concrete option, because of two main issues: it was not only required but also very appealing due to many provided built-in features.
 
   ### Prototype
 
