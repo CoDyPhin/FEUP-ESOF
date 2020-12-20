@@ -243,18 +243,43 @@
 
   Effort: M
 
+  ---
+
+  #### **Story #6 - Get Notifications**
+
+  As an attendee I want to be able to receive a notification whenever i receive (or don't receive) a product.
+  
+_User interface mockups_
+  
+  ![Mockup 6](./docs/img/mockup6.png)
+
+  _Acceptance Tests_
+
+  ```gherkin
+  Scenario: Getting a Notification
+  	Given I want to get a product
+  	When the Hosts gives me the product
+  	Then the app sends me a notification
+  ```
+  
+  _Value/Effort_
+  
+  Value: Must Have
+  
+  Effort: M
+  
   ### Domain Model
-
+  
   ![enter image description here](https://raw.githubusercontent.com/FEUP-ESOF-2020-21/open-cx-t2g5-5headers/master/docs/img/domainModel.png)
-
+  
   Our app concepts are easily understood, consisting of talks, products and profiles. 
   Every user profile can be connected to a talk as an attendee or host and can also apply for products, justifying his option on this subject. Furthermore, talks have limited seats and featured products that will be given away by the host to attendees that chose the products that he is promoting.
-
+  
   ---
   ## Architecture and Design
-
+  
   The architecture of a software system encompasses the set of key decisions about its overall organization. This way, logical and physical architectures are two main themes that will be covered in this specific topic.
-
+  
   ### Logical architecture
 
 
@@ -284,7 +309,7 @@
 
   In this subsection please describe in more detail which, and how, user(s) story(ies) were implemented.
 
-  ------
+------
 
   ## Implementation
 
@@ -294,7 +319,7 @@
 
   Use cross-links to the code repository and only embed real fragments of code when strictly needed, since they tend to become outdated very soon.
 
-  ------
+------
 
   ## Test
 
@@ -307,7 +332,7 @@
 
   A good practice is to simplify this, avoiding repetitions, and automating the testing actions as much as possible.
 
-  ------
+------
 
   ## Configuration and change management
 
@@ -315,7 +340,7 @@
 
   For the purpose of ESOF, we will use a very simple approach, just to manage feature requests, bug fixes, and improvements, using GitHub issues and following the [GitHub flow](https://guides.github.com/introduction/flow/).
 
-  ------
+------
 
   ## Project management
 
@@ -332,7 +357,7 @@
 
   We recommend to use the simplest tool that can possibly work for the team.
 
-  ------
+------
 
   ## Evolution - contributions to open-cx
 
