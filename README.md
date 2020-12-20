@@ -251,7 +251,7 @@
 
   As an attendee I want to be able to receive a notification whenever i receive (or don't receive) a product.
   
-_User interface mockups_
+  _User interface mockups_
   
   ![Mockup 6](./docs/img/mockup7.png)
 
