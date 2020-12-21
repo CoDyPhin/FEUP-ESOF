@@ -469,24 +469,40 @@ class _talkPromotedProductsState extends State<talkPromotedProducts> {
                                       this.firestore.getCurrentUser(),
                                       this.firestore)));
                         },
-                        child: FutureBuilder(
-                          future: this.firestore.getImgURL(list[index].image),
-                          builder: (context, url) {
-                            if (url.hasData) {
-                              return Container(
-                                  height: 125.0,
-                                  width: 125.0,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: NetworkImage(url.data))));
-                            } else {
-                              return SizedBox(
-                                  child: CircularProgressIndicator());
-                            }
-                          },
-                        )))),
+                        child: list[index].image == "assets/bag.png"
+                            ? Container(
+                                height: 90.0,
+                                width: 90.0,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                        width: 1.5, color: Colors.blue[700]),
+                                    borderRadius: BorderRadius.circular(200.0),
+                                    image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: AssetImage("assets/bag.png"))),
+                              )
+                            : FutureBuilder(
+                                future:
+                                    this.firestore.getImgURL(list[index].image),
+                                builder: (context, url) {
+                                  if (url.hasData) {
+                                    return Container(
+                                        height: 125.0,
+                                        width: 125.0,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                            image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image:
+                                                    NetworkImage(url.data))));
+                                  } else {
+                                    return SizedBox(
+                                        child: CircularProgressIndicator());
+                                  }
+                                },
+                              )))),
           ],
         ),
       ],

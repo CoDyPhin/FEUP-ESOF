@@ -27,6 +27,7 @@ class _ProductsPageState extends State<ProductsPage>
   ScrollController scrollController;
   List<Product> _products = new List();
   List<Product> _productstemp = new List();
+  List<Product> _productstemp2 = new List();
   List<Product> _featuredproducts = new List();
   List<Product> _myproducts = new List();
   List<Notifications> _notifications = new List();
@@ -55,12 +56,20 @@ class _ProductsPageState extends State<ProductsPage>
     _notifications.clear();
     _mytalks.clear();
     _mytalks = await widget._firestore.getMyTalks();
-    _productstemp = await widget._firestore.getProducts();
+    _productstemp2 = await widget._firestore.getProducts();
     _profile = widget._firestore.getCurrentUser();
     _notifications = await widget._firestore.getMyNotifications();
 
     for (Notifications n in _notifications) {
       if (!n.seen) noNewNotifications = false;
+    }
+
+    for (Product p in _productstemp2) {
+      if (p.reference.id == "qbgsnuaKJNc6mYjePYKj") _productstemp.add(p);
+    }
+
+    for (Product p in _productstemp2) {
+      if (p.reference.id != "qbgsnuaKJNc6mYjePYKj") _productstemp.add(p);
     }
 
     bool pass = true;
@@ -98,6 +107,7 @@ class _ProductsPageState extends State<ProductsPage>
           )
         : _profile.isHost
             ? DefaultTabController(
+                key: Key("ProductsPage"),
                 length: 3,
                 child: Scaffold(
                   backgroundColor: Colors.white,
@@ -123,6 +133,7 @@ class _ProductsPageState extends State<ProductsPage>
                                 },
                               ),
                               IconButton(
+                                key: Key("AddProducts"),
                                 icon: Icon(
                                   Icons.add,
                                   color: Colors.white,
@@ -171,6 +182,7 @@ class _ProductsPageState extends State<ProductsPage>
                             text: 'All',
                           ),
                           Tab(
+                            key: Key("MyProductsTab"),
                             text: 'My Products',
                           ),
                         ],
@@ -321,6 +333,7 @@ class _ProductsPageState extends State<ProductsPage>
                 child: new SizedBox(
                     width: 162.5,
                     child: FlatButton(
+                        key: Key("ApplyForAProduct" + list[index].reference.id),
                         onPressed: () async {
                           await Navigator.push(
                               context,
@@ -330,24 +343,39 @@ class _ProductsPageState extends State<ProductsPage>
                                       this._profile,
                                       this._firestore)));
                         },
-                        child: FutureBuilder(
-                          future: this._firestore.getImgURL(list[index].image),
-                          builder: (context, url) {
-                            if (url.hasData) {
-                              return Container(
-                                  height: 125.0,
-                                  width: 125.0,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: NetworkImage(url.data))));
-                            } else {
-                              return SizedBox(
-                                  child: CircularProgressIndicator());
-                            }
-                          },
-                        )))),
+                        child: list[index].image == "assets/bag.png"
+                            ? Container(
+                                height: 125.0,
+                                width: 125.0,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: AssetImage("assets/bag.png"))),
+                              )
+                            : FutureBuilder(
+                                future: this
+                                    ._firestore
+                                    .getImgURL(list[index].image),
+                                builder: (context, url) {
+                                  if (url.hasData) {
+                                    return Container(
+                                        height: 125.0,
+                                        width: 125.0,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                            image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image:
+                                                    NetworkImage(url.data))));
+                                  } else {
+                                    return SizedBox(
+                                        child: CircularProgressIndicator());
+                                  }
+                                },
+                              )))),
             Positioned(
                 left: 20.0,
                 top: 195.0,
@@ -394,6 +422,7 @@ class _ProductsPageState extends State<ProductsPage>
                       color: Colors.blue[200]),
                 )),
             Positioned(
+                key: Key("ApplyForAProduct" + list[index].reference.id),
                 right: 19.0,
                 top: 50.0,
                 child: new SizedBox(
@@ -406,24 +435,41 @@ class _ProductsPageState extends State<ProductsPage>
                                   builder: (context) => productWhoApplied(
                                       list[index], this._firestore)));
                         },
-                        child: FutureBuilder(
-                          future: this._firestore.getImgURL(list[index].image),
-                          builder: (context, url) {
-                            if (url.hasData) {
-                              return Container(
-                                  height: 125.0,
-                                  width: 125.0,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: NetworkImage(url.data))));
-                            } else {
-                              return SizedBox(
-                                  child: CircularProgressIndicator());
-                            }
-                          },
-                        )))),
+                        child: list[index].image == "assets/bag.png"
+                            ? Container(
+                                height: 125.0,
+                                width: 125.0,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                        width: 1.5, color: Colors.blue[700]),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: AssetImage("assets/bag.png"))),
+                              )
+                            : FutureBuilder(
+                                future: this
+                                    ._firestore
+                                    .getImgURL(list[index].image),
+                                builder: (context, url) {
+                                  if (url.hasData) {
+                                    return Container(
+                                        height: 125.0,
+                                        width: 125.0,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                            image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image:
+                                                    NetworkImage(url.data))));
+                                  } else {
+                                    return SizedBox(
+                                        child: CircularProgressIndicator());
+                                  }
+                                },
+                              )))),
             Positioned(
                 left: 20.0,
                 top: 195.0,
@@ -529,25 +575,38 @@ class _productWhoAppliedState extends State<productWhoApplied> {
           Positioned(
               right: 30.0,
               top: 70.0,
-              child: FutureBuilder(
-                future: this._firestore.getImgURL(product.image),
-                builder: (context, url) {
-                  if (url.hasData) {
-                    return Container(
-                        height: 200.0,
-                        width: 200.0,
-                        decoration: BoxDecoration(
-                            border:
-                                Border.all(width: 5, color: Colors.blue[700]),
-                            borderRadius: BorderRadius.circular(20.0),
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(url.data))));
-                  } else {
-                    return SizedBox(child: CircularProgressIndicator());
-                  }
-                },
-              )),
+              child: product.image == "assets/bag.png"
+                  ? Container(
+                      height: 200.0,
+                      width: 200.0,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          border:
+                              Border.all(width: 1.5, color: Colors.blue[700]),
+                          borderRadius: BorderRadius.circular(20.0),
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage("assets/bag.png"))),
+                    )
+                  : FutureBuilder(
+                      future: this._firestore.getImgURL(product.image),
+                      builder: (context, url) {
+                        if (url.hasData) {
+                          return Container(
+                              height: 200.0,
+                              width: 200.0,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 5, color: Colors.blue[700]),
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(url.data))));
+                        } else {
+                          return SizedBox(child: CircularProgressIndicator());
+                        }
+                      },
+                    )),
           Positioned(
               left: 20.0,
               top: 20.0,
@@ -618,6 +677,7 @@ class _productWhoAppliedState extends State<productWhoApplied> {
     return Padding(
         padding: EdgeInsets.only(right: 15.0),
         child: FlatButton(
+            key: Key("Candidate" + profile.reference.id),
             onPressed: () {
               giveawayProduct(context, profile);
               this.refreshModel(false);
@@ -653,28 +713,44 @@ class _productWhoAppliedState extends State<productWhoApplied> {
                       Positioned(
                           left: 20.0,
                           top: 50.0,
-                          child: FutureBuilder(
-                            future: this._firestore.getImgURL(profile.photo),
-                            builder: (context, url) {
-                              if (url.hasData) {
-                                return Container(
-                                    height: 60.0,
-                                    width: 60.0,
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1.5,
-                                            color: Colors.blue[700]),
-                                        borderRadius:
-                                            BorderRadius.circular(200.0),
-                                        image: DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: NetworkImage(url.data))));
-                              } else {
-                                return SizedBox(
-                                    child: CircularProgressIndicator());
-                              }
-                            },
-                          )),
+                          child: product.image == "assets/bag.png"
+                              ? Container(
+                                  height: 60.0,
+                                  width: 60.0,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(
+                                          width: 1.5, color: Colors.blue[700]),
+                                      borderRadius:
+                                          BorderRadius.circular(200.0),
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage("assets/bag.png"))),
+                                )
+                              : FutureBuilder(
+                                  future:
+                                      this._firestore.getImgURL(profile.photo),
+                                  builder: (context, url) {
+                                    if (url.hasData) {
+                                      return Container(
+                                          height: 60.0,
+                                          width: 60.0,
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  width: 1.5,
+                                                  color: Colors.blue[700]),
+                                              borderRadius:
+                                                  BorderRadius.circular(200.0),
+                                              image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image:
+                                                      NetworkImage(url.data))));
+                                    } else {
+                                      return SizedBox(
+                                          child: CircularProgressIndicator());
+                                    }
+                                  },
+                                )),
                       Positioned(
                           left: 95.0,
                           top: 52.5,
@@ -743,6 +819,7 @@ class _productWhoAppliedState extends State<productWhoApplied> {
       },
     );
     Widget continueButton = FlatButton(
+      key: Key("ConfirmGiveButton"),
       child: Text("Yes"),
       onPressed: () {
         for (int x = 0; x < this._comments.length; x++) {
@@ -841,6 +918,7 @@ class _productDescriptionState extends State<productDescription> {
   Body(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
+      key: Key("ApplyForAProduct"),
       child: Column(children: <Widget>[
         Stack(alignment: Alignment.topCenter, children: <Widget>[
           Container(
@@ -854,25 +932,38 @@ class _productDescriptionState extends State<productDescription> {
           Positioned(
               right: 30.0,
               top: 70.0,
-              child: FutureBuilder(
-                future: this._firestore.getImgURL(product.image),
-                builder: (context, url) {
-                  if (url.hasData) {
-                    return Container(
-                        height: 200.0,
-                        width: 200.0,
-                        decoration: BoxDecoration(
-                            border:
-                                Border.all(width: 2.5, color: Colors.blue[700]),
-                            borderRadius: BorderRadius.circular(20.0),
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(url.data))));
-                  } else {
-                    return SizedBox(child: CircularProgressIndicator());
-                  }
-                },
-              )),
+              child: product.image == "assets/bag.png"
+                  ? Container(
+                      height: 200.0,
+                      width: 200.0,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          border:
+                              Border.all(width: 1.5, color: Colors.blue[700]),
+                          borderRadius: BorderRadius.circular(20.0),
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage("assets/bag.png"))),
+                    )
+                  : FutureBuilder(
+                      future: this._firestore.getImgURL(product.image),
+                      builder: (context, url) {
+                        if (url.hasData) {
+                          return Container(
+                              height: 200.0,
+                              width: 200.0,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 2.5, color: Colors.blue[700]),
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(url.data))));
+                        } else {
+                          return SizedBox(child: CircularProgressIndicator());
+                        }
+                      },
+                    )),
           Positioned(
               left: 20.0,
               top: 20.0,
@@ -993,6 +1084,7 @@ class _productDescriptionState extends State<productDescription> {
             height: 50.0,
             top: 600.0,
             child: RaisedButton(
+                key: Key("ApplyForButton"),
                 onPressed: () {
                   if (!this.appliedFor)
                     bookingUnbookingAlert(context);
@@ -1041,6 +1133,7 @@ class _productDescriptionState extends State<productDescription> {
       },
     );
     Widget continueButton = FlatButton(
+      key: Key("ContinueButton"),
       child: Text("Continue"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop('dialog');
@@ -1053,8 +1146,9 @@ class _productDescriptionState extends State<productDescription> {
     );
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Booking Seat"),
+      title: Text("Applying for Product"),
       content: TextField(
+        key: Key("ApplianceForm"),
         autofocus: true,
         maxLines: 8,
         controller: textController,
