@@ -359,7 +359,7 @@ class _editProfileDataState extends State<editProfileData> {
                         alignment: Alignment.topCenter,
                         child: SizedBox(
                           child: Image.asset("assets/profilepic.jpg",
-                              width: 450, height: 150, fit: BoxFit.contain),
+                              width: 150, height: 150, fit: BoxFit.contain),
                         ),
                       )
                     : FutureBuilder(
@@ -786,7 +786,7 @@ class _UserPageState extends State<UserPage> {
                       alignment: Alignment.topCenter,
                       child: SizedBox(
                         child: Image.asset("assets/profilepic.jpg",
-                            width: 450, height: 150, fit: BoxFit.contain),
+                            width: 150, height: 150, fit: BoxFit.contain),
                       ),
                     )
                   : FutureBuilder(

@@ -104,6 +104,7 @@ class _addProductPageState extends State<addProductPage> {
 
   _buildNameTF() {
     return Container(
+        key: Key("ProductName"),
         padding: EdgeInsets.only(left: 20, right: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,6 +143,7 @@ class _addProductPageState extends State<addProductPage> {
 
   _buildAudienceTF() {
     return Container(
+        key: Key("TargetAudience"),
         padding: EdgeInsets.only(left: 20, right: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,6 +182,7 @@ class _addProductPageState extends State<addProductPage> {
 
   _buildDescriptionTF() {
     return Container(
+        key: Key("ProductDescription"),
         padding: EdgeInsets.only(left: 20, right: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,8 +225,10 @@ class _addProductPageState extends State<addProductPage> {
       padding: EdgeInsets.only(left: 20, right: 20),
       width: double.infinity,
       child: RaisedButton(
+        key: Key("NextProductPage"),
         elevation: 5.0,
         onPressed: () {
+          print(this._image);
           Navigator.push(
               context,
               MaterialPageRoute(

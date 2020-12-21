@@ -113,25 +113,40 @@ class _notificationsPageState extends State<notificationsPage> {
               Positioned(
                   left: 20.0,
                   top: 50.0,
-                  child: FutureBuilder(
-                    future: this._firestore.getImgURL(product.image),
-                    builder: (context, url) {
-                      if (url.hasData) {
-                        return Container(
-                            height: 60.0,
-                            width: 60.0,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: 1.5, color: Colors.blue[700]),
-                                borderRadius: BorderRadius.circular(200.0),
-                                image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(url.data))));
-                      } else {
-                        return SizedBox(child: CircularProgressIndicator());
-                      }
-                    },
-                  )),
+                  child: product.image == "assets/bag.png"
+                      ? Container(
+                          height: 60.0,
+                          width: 60.0,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(
+                                  width: 1.5, color: Colors.blue[700]),
+                              borderRadius: BorderRadius.circular(200.0),
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: AssetImage("assets/bag.png"))),
+                        )
+                      : FutureBuilder(
+                          future: this._firestore.getImgURL(product.image),
+                          builder: (context, url) {
+                            if (url.hasData) {
+                              return Container(
+                                  height: 60.0,
+                                  width: 60.0,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1.5, color: Colors.blue[700]),
+                                      borderRadius:
+                                          BorderRadius.circular(200.0),
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(url.data))));
+                            } else {
+                              return SizedBox(
+                                  child: CircularProgressIndicator());
+                            }
+                          },
+                        )),
               Positioned(
                   left: 95.0,
                   top: 50.5,

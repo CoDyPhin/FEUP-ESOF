@@ -57,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: kBoxDecorationStyle,
           height: 60.0,
           child: TextField(
+            key: Key("EmailTextField"),
             keyboardType: TextInputType.emailAddress,
             controller: emailController,
             style: TextStyle(
@@ -93,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: kBoxDecorationStyle,
           height: 60.0,
           child: TextField(
+            key: Key("PasswordTextField"),
             controller: passwordController,
             obscureText: true,
             style: TextStyle(
@@ -120,8 +122,10 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
       child: RaisedButton(
+        key: Key("SignInButton"),
         elevation: 5.0,
         onPressed: () async {
+          this._firestore.setLoggedIn(true);
           await context.read<AuthenticationService>().signIn(
                 email: emailController.text.trim(),
                 password: passwordController.text.trim(),

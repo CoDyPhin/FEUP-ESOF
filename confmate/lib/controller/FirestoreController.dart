@@ -15,6 +15,11 @@ class FirestoreController {
   static final FirebaseFirestore firestore = FirebaseFirestore.instance;
   static final storage = FirebaseStorage.instance;
   static Profile _currentUser;
+  bool loggedIn = false;
+
+  void setLoggedIn(bool b) {
+    this.loggedIn = b;
+  }
 
   Profile getCurrentUser() {
     return _currentUser;
@@ -29,8 +34,10 @@ class FirestoreController {
   }
 
   uploadImage(File image, String filename) {
-    final Reference storageRef = storage.ref().child(filename);
-    final UploadTask task = storageRef.putFile(image);
+    if (image != null && filename != null) {
+      final Reference storageRef = storage.ref().child(filename);
+      final UploadTask task = storageRef.putFile(image);
+    }
   }
 
   Future<File> chooseFile() async {
@@ -76,14 +83,23 @@ class FirestoreController {
 
   void addProduct(Talk talk, String name, String description, String audience,
       String image) {
-    firestore.collection("products").add({
-      "audience": audience,
-      "description": description,
-      "name": name,
-      "talkID": talk.reference,
-      "featured": true,
-      "image": image
-    });
+    image == null
+        ? firestore.collection("products").add({
+            "audience": audience,
+            "description": description,
+            "name": name,
+            "talkID": talk.reference,
+            "featured": true,
+            "image": "assets/bag.png"
+          })
+        : firestore.collection("products").add({
+            "audience": audience,
+            "description": description,
+            "name": name,
+            "talkID": talk.reference,
+            "featured": true,
+            "image": image
+          });
   }
 
   void addTalk(String name, String description) {

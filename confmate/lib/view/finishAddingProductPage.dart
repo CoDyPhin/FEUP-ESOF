@@ -3,13 +3,9 @@ import 'dart:io';
 import 'package:confmate/controller/FirestoreController.dart';
 import 'package:confmate/model/Product.dart';
 import 'package:confmate/model/Talk.dart';
-import 'package:confmate/view/productsPage.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:confmate/view/SignInPage.dart';
-import 'package:image_picker/image_picker.dart';
 
 // ignore: camel_case_types
 class finishAddingProductPage extends StatefulWidget {
@@ -161,7 +157,7 @@ class _finishAddingProductPageState extends State<finishAddingProductPage> {
                       alignment: Alignment.topCenter,
                       child: SizedBox(
                         child: Image.asset("assets/profilepic.jpg",
-                            width: 450, height: 150, fit: BoxFit.contain),
+                            width: 60, height: 60, fit: BoxFit.contain),
                       ),
                     )
                   : FutureBuilder(
@@ -209,20 +205,26 @@ class _finishAddingProductPageState extends State<finishAddingProductPage> {
               right: 30.0,
               bottom: 47.5,
               child: IconButton(
+                key: Key("SelectConference"),
                 onPressed: () async {
-                  this._firestore.addProduct(
-                      talk,
-                      this.name,
-                      this.description,
-                      this.audience,
-                      "products/" +
-                          talk.reference.id.toString() +
-                          this._myproducts.length.toString());
-                  this._firestore.uploadImage(
-                      this.file,
-                      "products/" +
-                          talk.reference.id.toString() +
-                          this._myproducts.length.toString());
+                  this.file != null
+                      ? this._firestore.addProduct(
+                          talk,
+                          this.name,
+                          this.description,
+                          this.audience,
+                          "products/" +
+                              talk.reference.id.toString() +
+                              this._myproducts.length.toString())
+                      : this._firestore.addProduct(talk, this.name,
+                          this.description, this.audience, "assets/bag.png");
+                  this.file != null
+                      ? this._firestore.uploadImage(
+                          this.file,
+                          "products/" +
+                              talk.reference.id.toString() +
+                              this._myproducts.length.toString())
+                      : print("no picture!");
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 icon: Icon(
