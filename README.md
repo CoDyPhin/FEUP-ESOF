@@ -2,24 +2,6 @@
 
   Welcome to the documentation pages of the ConfMate of **openCX**!
 
-  You can find here detailed about the ConfMate hereby mentioned as module, from a high-level vision to low-level implementation decisions, a kind of Software Development Report (see [template](https://github.com/softeng-feup/open-cx/blob/master/docs/templates/Development-Report.md)), organized by discipline (as of RUP):
-
-  - Business modeling
-    - [Product Vision](https://github.com/open-cx/open-cx/blob/master/docs/templates/Development-Report.md#Product-Vision)
-    - [Elevator Pitch](https://github.com/open-cx/open-cx/blob/master/docs/templates/Development-Report.md#Elevator-Pitch)
-  - Requirements
-    - [Use Case Diagram](https://github.com/open-cx/open-cx/blob/master/docs/templates/Development-Report.md#Use-case-diagram)
-    - [User stories](https://github.com/open-cx/open-cx/blob/master/docs/templates/Development-Report.md#User-stories)
-    - [Domain model](https://github.com/open-cx/open-cx/blob/master/docs/templates/Development-Report.md#Domain-model)
-  - Architecture and Design
-    - [Logical architecture](https://github.com/open-cx/open-cx/blob/master/docs/templates/Development-Report.md#Logical-architecture)
-    - [Physical architecture](https://github.com/open-cx/open-cx/blob/master/docs/templates/Development-Report.md#Physical-architecture)
-    - [Prototype](https://github.com/open-cx/open-cx/blob/master/docs/templates/Development-Report.md#Prototype)
-  - [Implementation](https://github.com/open-cx/open-cx/blob/master/docs/templates/Development-Report.md#Implementation)
-  - [Test](https://github.com/open-cx/open-cx/blob/master/docs/templates/Development-Report.md#Test)
-  - [Configuration and change management](https://github.com/open-cx/open-cx/blob/master/docs/templates/Development-Report.md#Configuration-and-change-management)
-  - [Project management](https://github.com/open-cx/open-cx/blob/master/docs/templates/Development-Report.md#Project-management)
-
   So far, contributions are exclusively made by the initial team, but we hope to open them to the community, in all areas and topics: requirements, technologies, development, experimentation, testing, etc.
 
   Please contact us!
